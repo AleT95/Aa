@@ -1,0 +1,765 @@
+<title>Linee in Tasca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Concetto: app bancaria tascabile. Ogni linea è un "conto" che si sfoglia in testa,
+   i procedimenti e gli appunti sono i "movimenti", la barra in basso porta alle sezioni. */
+:root {
+  --bg: #F1F2F6;
+  --surface: #FFFFFF;
+  --surface-2: #E8EAF1;
+  --ink: #0D0F1C;
+  --ink-2: #686C82;
+  --line: #E2E4EC;
+  --accent: #3552F2;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E3E8FF;
+  --hero-a: #0E1B66;
+  --hero-b: #1F4FD8;
+  --hero-c: #11A6A0;
+  --on-hero: #FFFFFF;
+  --ok: #0E9F6E;
+  --warn: #D98A00;
+  --crit: #E0294A;
+  --crit-soft: #FDE6EA;
+  --shadow: 0 1px 2px rgb(13 15 28 / .05), 0 6px 24px rgb(13 15 28 / .06);
+  --font-display: "Manrope", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Manrope", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #090A12; --surface: #14151F; --surface-2: #1F2131; --ink: #F2F3FA; --ink-2: #9295AC; --line: #252839;
+    --accent: #7088FF; --accent-ink: #0A0C1A; --accent-soft: #1D2350;
+    --hero-a: #070C33; --hero-b: #1636A8; --hero-c: #0B7C78;
+    --ok: #34D399; --warn: #FBBF24; --crit: #FF5C7A; --crit-soft: #3A1520;
+    --shadow: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #090A12; --surface: #14151F; --surface-2: #1F2131; --ink: #F2F3FA; --ink-2: #9295AC; --line: #252839;
+  --accent: #7088FF; --accent-ink: #0A0C1A; --accent-soft: #1D2350;
+  --hero-a: #070C33; --hero-b: #1636A8; --hero-c: #0B7C78;
+  --ok: #34D399; --warn: #FBBF24; --crit: #FF5C7A; --crit-soft: #3A1520;
+  --shadow: none; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 500 15px/1.45 var(--font-body); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+h1, h2, h3, p { margin: 0; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); }
+
+.app { max-width: 480px; margin-inline: auto; padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
+.pad { padding-inline: 16px; }
+.stack { display: grid; gap: 14px; }
+
+/* ---------- Hero sfogliabile ---------- */
+.hero { position: relative; color: var(--on-hero); padding: 12px 0 18px; border-radius: 0 0 28px 28px; overflow: hidden;
+  background: radial-gradient(120% 90% at 85% 0%, var(--hero-c) 0%, transparent 55%), radial-gradient(90% 80% at 0% 100%, var(--hero-b) 0%, transparent 60%), var(--hero-a); }
+.topbar { display: flex; align-items: center; gap: 10px; padding-inline: 16px; }
+.me { width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgb(255 255 255 / .18); color: var(--on-hero); font-weight: 800; flex: none; }
+.srch { flex: 1; min-width: 0; text-align: left; border: 0; border-radius: 999px; padding: 9px 14px; background: rgb(255 255 255 / .16); color: rgb(255 255 255 / .82); font-weight: 600; font-size: 14px; }
+.ic { width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgb(255 255 255 / .18); color: var(--on-hero); font-size: 20px; font-weight: 700; flex: none; display: grid; place-items: center; }
+.slides { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-top: 18px; }
+.slides::-webkit-scrollbar { display: none; }
+.slide { flex: 0 0 100%; scroll-snap-align: center; display: grid; justify-items: center; gap: 4px; text-align: center; padding: 6px 16px 4px; }
+.slide .eyb { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: rgb(255 255 255 / .8); }
+.slide .big { font: 800 64px/1 var(--font-display); letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+.slide .big small { font-size: 22px; letter-spacing: -.02em; opacity: .8; }
+.slide .prod { font-size: 15px; font-weight: 600; color: rgb(255 255 255 / .9); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slide .prod.vuoto { font-style: italic; font-weight: 500; opacity: .7; }
+.pill-h { margin-top: 10px; border: 0; border-radius: 999px; padding: 8px 18px; background: rgb(255 255 255 / .2); color: var(--on-hero); font-weight: 700; font-size: 14px; backdrop-filter: blur(6px); }
+.dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
+.dots button { width: 6px; height: 6px; padding: 0; border: 0; border-radius: 999px; background: rgb(255 255 255 / .35); transition: width .2s, background .2s; }
+.dots button[aria-current="true"] { width: 18px; background: var(--on-hero); }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+
+/* ---------- Azioni rapide ---------- */
+.azioni { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 18px 12px 4px; }
+.az { border: 0; background: none; padding: 0; display: grid; justify-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--ink); text-align: center; }
+.az i { width: 50px; height: 50px; border-radius: 50%; background: var(--surface); box-shadow: var(--shadow); display: grid; place-items: center; font-style: normal; font-size: 21px; font-weight: 700; color: var(--accent); }
+.az:disabled { opacity: .4; cursor: default; }
+
+/* ---------- Card e righe "movimento" ---------- */
+.card { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); padding: 14px 16px; }
+.card-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.card-h h3 { font: 800 17px/1.2 var(--font-display); letter-spacing: -.02em; }
+.link { border: 0; background: none; padding: 4px 0; color: var(--accent); font-weight: 700; font-size: 14px; }
+.riga { width: 100%; border: 0; background: none; padding: 11px 0; display: flex; align-items: center; gap: 12px; text-align: left; }
+.riga + .riga { border-top: 1px solid var(--line); }
+.av { width: 42px; height: 42px; border-radius: 50%; flex: none; display: grid; place-items: center; color: #FFFFFF; font: 800 14px/1 var(--font-display); letter-spacing: -.02em; }
+.av.sm { width: 36px; height: 36px; font-size: 13px; }
+.tx { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.tx b { font-weight: 700; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tx span { font-size: 13px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dx { text-align: right; display: grid; justify-items: end; gap: 2px; font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
+.dx span { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.dx .crit, .tx .crit { color: var(--crit); }
+.vuoto { color: var(--ink-2); font-size: 14px; padding: 12px 0 6px; }
+
+.chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 10px; font-size: 12.5px; font-weight: 700; background: var(--surface-2); color: var(--ink); white-space: nowrap; }
+.chip.ok { color: var(--ok); } .chip.warn { color: var(--warn); } .chip.crit { color: var(--crit); background: var(--crit-soft); }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.chips::-webkit-scrollbar { display: none; }
+.chips button { border: 0; border-radius: 999px; padding: 7px 13px; background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13px; white-space: nowrap; box-shadow: var(--shadow); }
+.chips button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+/* Barra stato reparto */
+.barra { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: var(--surface-2); gap: 2px; margin: 10px 0 10px; }
+.barra span { display: block; }
+.leg { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--ink-2); }
+.leg span { display: inline-flex; align-items: center; gap: 6px; }
+.leg b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* ---------- Titoli di sezione (tab) ---------- */
+.tab-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 18px 16px 12px; }
+.tab-h h1 { font: 800 30px/1.1 var(--font-display); letter-spacing: -.035em; }
+.btn { border: 0; border-radius: 999px; padding: 10px 16px; background: var(--surface-2); color: var(--ink); font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.danger { background: var(--crit-soft); color: var(--crit); }
+.btn.wide { width: 100%; padding-block: 13px; }
+.btn:disabled { opacity: .5; cursor: default; }
+.cerca { width: 100%; border: 0; border-radius: 999px; padding: 12px 16px; background: var(--surface); box-shadow: var(--shadow); font-weight: 600; }
+.cerca:focus { outline: 2px solid var(--accent); }
+
+/* ---------- Pagina (linea / procedimento) ---------- */
+.pagina { position: fixed; inset: 0; z-index: 30; background: var(--bg); overflow-y: auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); animation: entra .22s ease-out; }
+@keyframes entra { from { transform: translateX(24px); opacity: .6; } to { transform: none; opacity: 1; } }
+.pagina-in { max-width: 480px; margin-inline: auto; }
+.nav { position: sticky; top: 0; z-index: 2; background: var(--bg); display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 16px; }
+.nav .ic { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.testa { display: grid; justify-items: center; text-align: center; gap: 6px; padding: 4px 16px 18px; }
+.testa .av { width: 72px; height: 72px; font-size: 24px; }
+.testa h2 { font: 800 28px/1.15 var(--font-display); letter-spacing: -.03em; text-wrap: balance; }
+.testa p { color: var(--ink-2); font-size: 14px; max-width: 46ch; white-space: pre-wrap; }
+.testa .mono { font-size: 13px; color: var(--ink-2); }
+.stati { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.stati button { border: 0; border-radius: 999px; padding: 6px 12px; font-weight: 700; font-size: 13px; background: var(--surface); color: var(--ink-2); box-shadow: var(--shadow); display: inline-flex; align-items: center; gap: 6px; }
+.stati button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.numeri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.numeri div { background: var(--surface); border-radius: 18px; padding: 12px; box-shadow: var(--shadow); display: grid; gap: 2px; }
+.numeri b { font: 800 24px/1 var(--font-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.numeri span { font-size: 12px; color: var(--ink-2); font-weight: 600; }
+.percorso { display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; padding: 4px 0; }
+.percorso::-webkit-scrollbar { display: none; }
+.percorso button { border: 0; border-radius: 14px; padding: 8px 11px; background: var(--surface-2); font-weight: 700; font-size: 13px; white-space: nowrap; display: grid; gap: 1px; text-align: left; color: var(--ink); }
+.percorso button small { font: 500 11px var(--font-mono); color: var(--ink-2); }
+.percorso button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.percorso button[aria-pressed="true"] small { color: var(--accent-ink); }
+.percorso .fr { color: var(--ink-2); flex: none; }
+.note-box { white-space: pre-wrap; font-size: 14px; }
+
+.regola { background: var(--crit-soft); color: var(--crit); border-radius: 18px; padding: 12px 14px; display: grid; gap: 2px; font-weight: 600; font-size: 14.5px; }
+.regola small { font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.prog { display: grid; gap: 6px; }
+.prog-t { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.prog-b { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.prog-b span { display: block; height: 100%; background: var(--ok); border-radius: 999px; transition: width .25s; }
+.passi { list-style: none; margin: 0; padding: 0; display: grid; }
+.passo { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; border: 0; background: none; width: 100%; text-align: left; }
+.passi li + li .passo { border-top: 1px solid var(--line); }
+.spunta { width: 28px; height: 28px; border-radius: 50%; flex: none; display: grid; place-items: center; font: 600 12px var(--font-mono); background: var(--surface-2); color: var(--ink-2); transition: background .15s; }
+.passo.fatto .spunta { background: var(--ok); color: #FFFFFF; }
+.passo.fatto .pt { color: var(--ink-2); text-decoration: line-through; }
+.passo.avv .spunta { box-shadow: inset 0 0 0 2px var(--crit); }
+.passo.avv .pt { color: var(--crit); font-weight: 700; }
+.passo.avv.fatto .pt { color: var(--ink-2); }
+.pt { padding-top: 3px; font-size: 15px; overflow-wrap: anywhere; }
+.fonte { font-size: 13px; color: var(--ink-2); }
+.az-riga { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+
+/* ---------- Appunti ---------- */
+.ap { display: grid; gap: 4px; padding: 12px 0; }
+.ap + .ap { border-top: 1px solid var(--line); }
+.ap-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ap-top span { font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+.ap p { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14.5px; }
+.compose { display: grid; gap: 8px; }
+.compose textarea { width: 100%; min-height: 76px; border: 0; border-radius: 16px; padding: 12px 14px; background: var(--surface-2); resize: vertical; }
+.compose textarea:focus { outline: 2px solid var(--accent); }
+.compose .r { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.compose select { border: 0; border-radius: 999px; padding: 9px 12px; background: var(--surface-2); font-weight: 700; font-size: 13px; }
+
+/* ---------- Barra di navigazione ---------- */
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); }
+.tabbar-in { max-width: 480px; margin-inline: auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+.tabbar button { border: 0; background: none; display: grid; justify-items: center; gap: 2px; padding: 6px 0; font-size: 11.5px; font-weight: 700; color: var(--ink-2); }
+.tabbar svg { width: 23px; height: 23px; }
+.tabbar button[aria-current="page"] { color: var(--ink); }
+
+/* ---------- Foglio di modifica ---------- */
+.velo { position: fixed; inset: 0; z-index: 50; background: rgb(5 6 14 / .5); display: grid; align-items: end; justify-items: center; animation: velo .18s ease-out; }
+@keyframes velo { from { background: rgb(5 6 14 / 0); } }
+.foglio { width: min(520px, 100%); max-height: 92%; overflow-y: auto; background: var(--bg); border-radius: 26px 26px 0 0; padding: 8px 16px calc(20px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 14px; animation: sale .24s cubic-bezier(.2, .8, .2, 1); }
+@keyframes sale { from { transform: translateY(40px); opacity: .4; } }
+.maniglia { width: 40px; height: 5px; border-radius: 999px; background: var(--line); justify-self: center; }
+.foglio h3 { font: 800 22px/1.2 var(--font-display); letter-spacing: -.02em; }
+.campo { display: grid; gap: 6px; }
+.campo label, .campo .lbl { font-weight: 700; font-size: 13.5px; }
+.campo small { color: var(--ink-2); font-size: 12.5px; }
+.campo input, .campo select, .campo textarea { width: 100%; border: 0; border-radius: 14px; padding: 11px 13px; background: var(--surface); box-shadow: var(--shadow); }
+.campo textarea { resize: vertical; min-height: 64px; line-height: 1.45; }
+.campo input:focus, .campo select:focus, .campo textarea:focus { outline: 2px solid var(--accent); }
+.due { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 12px; }
+.fasi { display: grid; gap: 8px; }
+.fase { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; align-items: start; }
+.fase .n { width: 28px; height: 28px; margin-top: 6px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font: 600 12px var(--font-mono); }
+.fase.crit .n { background: var(--crit); color: #FFFFFF; }
+.fase textarea { width: 100%; min-height: 42px; border: 0; border-radius: 12px; padding: 9px 11px; background: var(--surface); box-shadow: var(--shadow); resize: vertical; }
+.fase.crit textarea { color: var(--crit); font-weight: 700; }
+.fase-az { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+.fase-az button { border: 0; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; background: var(--surface-2); color: var(--ink-2); }
+.fase-az button[aria-pressed="true"] { background: var(--crit); color: #FFFFFF; }
+.fase-az button:disabled { opacity: .35; cursor: default; }
+.conferma { background: var(--crit-soft); color: var(--crit); border-radius: 16px; padding: 12px 14px; display: grid; gap: 10px; font-weight: 600; font-size: 14px; }
+.conferma div { display: flex; gap: 8px; flex-wrap: wrap; }
+.f-az { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; }
+.f-az div { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+
+.avviso { background: var(--surface); border-radius: 20px; padding: 16px; display: grid; gap: 6px; box-shadow: var(--shadow); }
+.avviso b { font-size: 15px; }
+.avviso p { font-size: 14px; color: var(--ink-2); }
+.toast { position: fixed; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 70; background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 700; font-size: 14px; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="app" id="app"><p class="pad vuoto" style="padding-top:40px">Apro le linee…</p></div>
+<div id="pagina-root"></div>
+<nav class="tabbar" aria-label="Sezioni">
+  <div class="tabbar-in">
+    <button type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+    <button type="button" data-tab="linee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h4"/></svg>Linee</button>
+    <button type="button" data-tab="cerca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Cerca</button>
+    <button type="button" data-tab="appunti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 13h8M8 17h5"/></svg>Appunti</button>
+  </div>
+</nav>
+<div id="sheet-root"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  /* ---------- Vocabolario del reparto ---------- */
+  const MOMENTI = [
+    ["avvio", "Avvio linea", "#0E9F6E"],
+    ["produzione", "Produzione", "#3552F2"],
+    ["cambio", "Cambio vasca e formato", "#D98A00"],
+    ["pulizia", "Pulizia linea", "#0891B2"],
+    ["reclage", "Reclage", "#E2582B"],
+    ["lavaggio", "Lavaggio riempitrice", "#4F6BED"],
+    ["fine", "Fine turno", "#7C4DDB"]
+  ];
+  const MOM = Object.fromEntries(MOMENTI.map((m) => [m[0], m]));
+  const STATI = [
+    ["operativa", "Operativa", "var(--ok)", "ok"],
+    ["manutenzione", "Manutenzione", "var(--warn)", "warn"],
+    ["ferma", "Ferma", "var(--crit)", "crit"],
+    ["nd", "Da definire", "var(--ink-2)", ""]
+  ];
+  const STATO = Object.fromEntries(STATI.map((s) => [s[0], s]));
+  const STAZ_BASE = ["Alimentatori", "Riempitrice", "Etichettatrice", "Scatolatrice", "Pellettizzatore"];
+  const COL = ["#3552F2", "#7C4DDB", "#0E9F6E", "#E2582B", "#0891B2", "#C2389B", "#D98A00"];
+
+  const S = { db: null, ready: false, canWrite: true, lines: [], proc: [], appunti: [], okL: false, err: false,
+    tab: "home", sel: "", pagine: [], q: "", filtroMom: "", filtroStaz: "", apLinea: "" };
+
+  const $ = (s, r) => (r || document).querySelector(s);
+  const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const nat = (a, b) => String(a || "").localeCompare(String(b || ""), "it", { numeric: true });
+  const sigla = (l) => (l && (l.nome || String(l.codice || "").replace(/^L\.\s*/i, ""))) || "?";
+  const stazioni = (l) => (l && Array.isArray(l.stazioni) && l.stazioni.length ? l.stazioni : STAZ_BASE);
+  const stato = (l) => STATO[l && l.stato] || STATO.nd;
+  const colLinea = (l) => COL[Math.max(0, S.lines.indexOf(l)) % COL.length];
+  const lineaDi = (codice) => S.lines.find((l) => l.codice === codice);
+  const procDi = (l) => S.proc.filter((p) => p.linea === l.codice);
+  const apDi = (l) => S.appunti.filter((a) => a.linea === l.codice);
+  const momentoDi = (p) => {
+    if (p.momento && MOM[p.momento]) return p.momento;
+    const t = String(p.titolo || "").toLowerCase();
+    if (/reclage/.test(t)) return "reclage";
+    if (/lavagg|cip/.test(t)) return "lavaggio";
+    if (/concaten|cambio/.test(t)) return "cambio";
+    if (/pulizi/.test(t)) return "pulizia";
+    if (/avvio|partenz/.test(t)) return "avvio";
+    if (/fine turno|chiusura|consegn/.test(t)) return "fine";
+    return "produzione";
+  };
+  const dfmt = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  const quando = (iso) => { const d = new Date(iso); return isNaN(d) ? "" : dfmt.format(d); };
+  const ora = () => new Date().toISOString();
+  function toast(t) { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (el.hidden = true), 2300); }
+  function errore(e, cosa) {
+    const c = e && e.code;
+    if (c === "permission_denied" || c === "not_granted") return cosa + ": non hai il permesso di modifica";
+    if (c === "unauthenticated" || c === "signed_out") return cosa + ": accedi a claude.ai e riprova";
+    return cosa + ": controlla la connessione e riprova";
+  }
+
+  /* Spunte dei passi: personali, restano solo su questo dispositivo */
+  let SP = {};
+  try { SP = JSON.parse(localStorage.getItem("spunte") || "{}") || {}; } catch (e) { SP = {}; }
+  const salvaSP = () => { try { localStorage.setItem("spunte", JSON.stringify(SP)); } catch (e) {} };
+
+  /* ---------- Pezzi riutilizzabili ---------- */
+  const avLinea = (l, cls) => `<span class="av ${cls || ""}" style="background:${colLinea(l)}">${esc(sigla(l).slice(0, 3))}</span>`;
+  const chipStato = (l) => { const s = stato(l); return `<span class="chip ${s[3]}"><span class="dot" style="background:${s[2]}"></span>${s[1]}</span>`; };
+  function rigaProc(p, conLinea) {
+    const m = MOM[momentoDi(p)], n = (p.passi || []).length, l = lineaDi(p.linea);
+    const sub = [conLinea && l ? sigla(l) : (conLinea ? p.linea : ""), m[1], p.stazione].filter(Boolean).join(" · ");
+    return `<button class="riga" type="button" data-proc="${esc(p.id)}"><span class="av sm" style="background:${m[2]}">${esc(m[1].slice(0, 2).toUpperCase())}</span><span class="tx"><b>${esc(p.titolo || "Senza titolo")}</b><span>${esc(sub)}</span></span><span class="dx">${n ? n + " fasi" : "—"}${p.regola ? '<span class="crit">regola</span>' : "<span>&nbsp;</span>"}</span></button>`;
+  }
+  function rigaAp(a, conLinea) {
+    const l = lineaDi(a.linea);
+    return `<button class="riga" type="button" data-ap="${esc(a.id)}"><span class="av sm" style="background:var(--surface-2);color:var(--ink)">✎</span><span class="tx"><b>${esc(String(a.testo || "").split("\n")[0])}</b><span>${esc([conLinea && l ? sigla(l) : "", "Appunto", quando(a.creato)].filter(Boolean).join(" · "))}</span></span></button>`;
+  }
+  function rigaLinea(l) {
+    const ps = procDi(l), pn = l.prodotto && l.prodotto.nome, crit = ps.filter((p) => p.regola).length;
+    return `<button class="riga" type="button" data-linea="${esc(l.id)}">${avLinea(l)}<span class="tx"><b>${esc(l.codice || sigla(l))}${pn ? " · " + esc(pn) : ""}</b><span>${chipStatoTxt(l)}${crit ? ' · <span class="crit">' + crit + (crit === 1 ? " regola critica" : " regole critiche") + "</span>" : ""}</span></span><span class="dx">${ps.length}<span>proc.</span></span></button>`;
+  }
+  const chipStatoTxt = (l) => { const s = stato(l); return `<span style="color:${s[2]}">●</span> ${s[1]}`; };
+
+  /* ---------- Home ---------- */
+  function vHome() {
+    if (!S.lines.length) {
+      return `<div class="hero"><div class="topbar"><button class="me" type="button" data-tab="appunti" aria-label="Appunti">R</button><button class="srch" type="button" data-tab="cerca">⌕ Cerca</button></div><div class="slides"><section class="slide"><span class="eyb">Reparto</span><span class="big">0<small> linee</small></span><span class="prod vuoto">Aggiungi la prima linea per iniziare</span>${S.canWrite ? '<button class="pill-h" type="button" data-act="nuova-linea">+ Nuova linea</button>' : ""}</section></div></div>`;
+    }
+    const sel = S.lines.find((l) => l.id === S.sel) || S.lines.find((l) => l.stato === "operativa") || S.lines.find((l) => procDi(l).length) || S.lines[0];
+    S.sel = sel.id;
+    const slides = S.lines.map((l) => {
+      const n = procDi(l).length, pn = l.prodotto && l.prodotto.nome, s = stato(l);
+      return `<section class="slide" data-slide="${esc(l.id)}" aria-label="${esc(l.codice)}"><span class="eyb">${esc(l.codice || sigla(l))} · <span class="dot" style="background:${s[2] === "var(--ink-2)" ? "rgb(255 255 255 / .55)" : s[2]}"></span>${s[1]}</span><span class="big">${n}<small> ${n === 1 ? "procedimento" : "procedimenti"}</small></span><span class="prod ${pn ? "" : "vuoto"}">${pn ? esc(pn) : "Prodotto da indicare"}</span><button class="pill-h" type="button" data-linea="${esc(l.id)}">Apri linea ${esc(sigla(l))}</button></section>`;
+    }).join("");
+    const dots = S.lines.map((l) => `<button type="button" data-dot="${esc(l.id)}" aria-label="${esc(l.codice)}" aria-current="${l.id === sel.id}"></button>`).join("");
+    const w = S.canWrite ? "" : " disabled";
+    return `<div class="hero"><div class="topbar"><button class="me" type="button" data-tab="appunti" aria-label="Appunti">R</button><button class="srch" type="button" data-tab="cerca">⌕ Cerca procedimenti, macchine…</button>${S.canWrite ? '<button class="ic" type="button" data-act="nuova-linea" aria-label="Nuova linea">+</button>' : ""}</div>
+      <div class="slides" id="slides">${slides}</div><div class="dots" id="dots">${dots}</div></div>
+      <div class="azioni"><button class="az" type="button" data-act="nuovo-proc"${w}><i aria-hidden="true">+</i>Procedimento</button><button class="az" type="button" data-act="nuovo-ap"${w}><i aria-hidden="true">✎</i>Appunto</button><button class="az" type="button" data-act="stato"${w}><i aria-hidden="true">⇄</i>Stato</button><button class="az" type="button" data-linea="${esc(sel.id)}"><i aria-hidden="true">⋯</i>Dettagli</button></div>
+      <div class="pad stack" id="home-det" style="margin-top:14px">${homeDet(sel)}</div>`;
+  }
+  function homeDet(l) {
+    const mov = procDi(l).map((p) => ({ t: p.aggiornato || p.creato || "", h: rigaProc(p) }))
+      .concat(apDi(l).map((a) => ({ t: a.creato || "", h: rigaAp(a) })))
+      .sort((a, b) => String(b.t).localeCompare(String(a.t))).slice(0, 6);
+    let h = `<section class="card"><div class="card-h"><h3>Movimenti su ${esc(sigla(l))}</h3><button class="link" type="button" data-linea="${esc(l.id)}">Vedi tutti</button></div>` +
+      (mov.length ? mov.map((m) => m.h).join("") : `<p class="vuoto">Ancora nessun procedimento o appunto su questa linea. Usa + Procedimento per scriverne uno.</p>`) + "</section>";
+    const cnt = STATI.map((s) => [s, S.lines.filter((x) => stato(x) === s).length]).filter((x) => x[1]);
+    const tot = S.lines.length, crit = S.proc.filter((p) => p.regola).length;
+    h += `<section class="card"><div class="card-h"><h3>Stato reparto</h3><span class="mono" style="font-size:13px;color:var(--ink-2)">${tot} linee</span></div>
+      <div class="barra" aria-hidden="true">${cnt.map(([s, n]) => `<span style="flex:${n};background:${s[2]}"></span>`).join("")}</div>
+      <div class="leg">${cnt.map(([s, n]) => `<span><span class="dot" style="background:${s[2]}"></span>${s[1]} <b>${n}</b></span>`).join("")}</div>
+      ${crit ? `<p style="margin-top:10px;font-size:13.5px;color:var(--crit);font-weight:700">${crit} ${crit === 1 ? "regola critica" : "regole critiche"} da rispettare nel reparto</p>` : ""}</section>`;
+    return h;
+  }
+  function selezionaSlide(id, scorri) {
+    if (!id || id === S.sel && !scorri) return;
+    S.sel = id;
+    document.querySelectorAll("[data-dot]").forEach((d) => d.setAttribute("aria-current", String(d.dataset.dot === id)));
+    const det = $("#home-det"), l = S.lines.find((x) => x.id === id);
+    if (det && l) det.innerHTML = homeDet(l);
+    const dettagli = $('.azioni [data-linea]'); if (dettagli) dettagli.dataset.linea = id;
+    if (scorri) { const s = $(`[data-slide="${CSS.escape(id)}"]`); if (s) s.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" }); }
+  }
+
+  /* ---------- Linee ---------- */
+  function vLinee() {
+    return `<div class="tab-h"><h1>Linee</h1>${S.canWrite ? '<button class="btn primary" type="button" data-act="nuova-linea">+ Nuova</button>' : ""}</div>
+      <div class="pad stack"><section class="card">${S.lines.length ? S.lines.map(rigaLinea).join("") : '<p class="vuoto">Nessuna linea ancora.</p>'}</section>
+      <section class="card"><div class="card-h"><h3>Momenti del turno</h3></div><div class="leg" style="margin-top:6px">${MOMENTI.map(([k, n, c]) => `<span><span class="dot" style="background:${c}"></span>${n} <b>${S.proc.filter((p) => momentoDi(p) === k).length}</b></span>`).join("")}</div></section></div>`;
+  }
+
+  /* ---------- Cerca ---------- */
+  function vCerca() {
+    return `<div class="tab-h"><h1>Cerca</h1></div><div class="pad stack"><input class="cerca" id="cerca" type="search" placeholder="Linea, prodotto, macchina, parola…" value="${esc(S.q)}" aria-label="Cerca"><div id="ris">${risultati()}</div></div>`;
+  }
+  function risultati() {
+    const q = S.q.trim().toLowerCase();
+    if (!q) return `<section class="card"><div class="card-h"><h3>Suggerimenti</h3></div><div class="chips" style="padding:8px 0 4px">${["concatenamento", "pulizia", "riempitrice", "OC", "vasca"].map((s) => `<button type="button" data-sugg="${esc(s)}">${esc(s)}</button>`).join("")}</div></section>`;
+    const has = (arr) => arr.join(" ").toLowerCase().includes(q);
+    const L = S.lines.filter((l) => has([l.codice, l.nome, l.prodotto && l.prodotto.nome, l.prodotto && l.prodotto.descrizione, l.note, stazioni(l).join(" ")]));
+    const P = S.proc.filter((p) => has([p.titolo, p.regola, p.stazione, p.fonte, p.linea, (p.passi || []).map((x) => x.t).join(" ")]));
+    const A = S.appunti.filter((a) => has([a.testo, a.linea]));
+    if (!L.length && !P.length && !A.length) return `<p class="vuoto">Niente contiene "${esc(S.q.trim())}". Prova con un'altra parola.</p>`;
+    return [L.length ? `<section class="card"><div class="card-h"><h3>Linee</h3></div>${L.map(rigaLinea).join("")}</section>` : "",
+      P.length ? `<section class="card"><div class="card-h"><h3>Procedimenti</h3></div>${P.map((p) => rigaProc(p, true)).join("")}</section>` : "",
+      A.length ? `<section class="card"><div class="card-h"><h3>Appunti</h3></div>${A.map((a) => rigaAp(a, true)).join("")}</section>` : ""].join("");
+  }
+
+  /* ---------- Appunti ---------- */
+  function vAppunti() {
+    const opts = S.lines.map((l) => `<option value="${esc(l.codice)}" ${l.codice === (S.apLinea || (S.lines.find((x) => x.id === S.sel) || {}).codice) ? "selected" : ""}>${esc(sigla(l))}</option>`).join("");
+    const ap = S.appunti;
+    return `<div class="tab-h"><h1>Appunti</h1></div><div class="pad stack">
+      ${S.canWrite && S.lines.length ? `<section class="card compose"><label for="ap-nuovo" class="card-h"><h3>Nuovo appunto</h3></label><textarea id="ap-nuovo" placeholder="Una cosa vista in turno, un promemoria per chi arriva dopo…"></textarea><div class="r"><select id="ap-linea" aria-label="Linea">${opts}</select><button class="btn primary" type="button" data-act="salva-ap-rapido">Salva appunto</button></div></section>` : ""}
+      <section class="card"><div class="card-h"><h3>Tutti gli appunti</h3><span class="mono" style="font-size:13px;color:var(--ink-2)">${ap.length}</span></div>${ap.length ? ap.map((a) => rigaAp(a, true)).join("") : '<p class="vuoto">Nessun appunto scritto per ora.</p>'}</section></div>`;
+  }
+
+  /* ---------- Pagina linea ---------- */
+  function pLinea(l) {
+    const ps = procDi(l), aps = apDi(l), pn = l.prodotto && l.prodotto.nome, pd = l.prodotto && l.prodotto.descrizione;
+    const crit = ps.filter((p) => p.regola).length;
+    let vis = ps;
+    if (S.filtroMom) vis = vis.filter((p) => momentoDi(p) === S.filtroMom);
+    if (S.filtroStaz) vis = vis.filter((p) => p.stazione === S.filtroStaz);
+    const momUsati = MOMENTI.filter(([k]) => ps.some((p) => momentoDi(p) === k));
+    const gruppi = MOMENTI.map(([k, n]) => [n, vis.filter((p) => momentoDi(p) === k).sort((a, b) => nat(a.titolo, b.titolo))]).filter((g) => g[1].length);
+    return `<div class="nav"><button class="ic" type="button" data-act="indietro" aria-label="Indietro">←</button><span class="mono" style="font-size:13px;color:var(--ink-2)">${esc(l.codice)}</span>${S.canWrite ? '<button class="ic" type="button" data-act="mod-linea" aria-label="Modifica linea">✎</button>' : '<span style="width:38px"></span>'}</div>
+      <div class="testa">${avLinea(l)}<h2>${esc(pn || "Linea " + sigla(l))}</h2><span class="mono">${esc(l.codice)}${pn ? "" : " · prodotto da indicare"}</span>${pd ? `<p>${esc(pd)}</p>` : ""}</div>
+      <div class="pad stack">
+        <div class="stati" role="group" aria-label="Stato della linea">${STATI.map((s) => `<button type="button" data-stato="${s[0]}" aria-pressed="${stato(l) === s}" ${S.canWrite ? "" : "disabled"}><span class="dot" style="background:${s[2]}"></span>${s[1]}</button>`).join("")}</div>
+        <div class="numeri"><div><b>${ps.length}</b><span>procedimenti</span></div><div><b style="${crit ? "color:var(--crit)" : ""}">${crit}</b><span>regole critiche</span></div><div><b>${aps.length}</b><span>appunti</span></div></div>
+        ${l.note ? `<section class="card"><div class="card-h"><h3>Note</h3></div><p class="note-box">${esc(l.note)}</p></section>` : ""}
+        <section class="card"><div class="card-h"><h3>Percorso macchine</h3>${S.filtroStaz ? '<button class="link" type="button" data-staz="">Tutte</button>' : ""}</div>
+          <div class="percorso">${stazioni(l).map((s, i) => (i ? '<span class="fr" aria-hidden="true">›</span>' : "") + `<button type="button" data-staz="${esc(s)}" aria-pressed="${S.filtroStaz === s}"><small>${String(i + 1).padStart(2, "0")}</small>${esc(s)}</button>`).join("")}</div></section>
+        ${momUsati.length > 1 ? `<div class="chips"><button type="button" data-mom="" aria-pressed="${!S.filtroMom}">Tutti</button>${momUsati.map(([k, n]) => `<button type="button" data-mom="${k}" aria-pressed="${S.filtroMom === k}">${esc(n)}</button>`).join("")}</div>` : ""}
+        <section class="card"><div class="card-h"><h3>Procedimenti</h3>${S.canWrite ? '<button class="link" type="button" data-act="nuovo-proc">+ Nuovo</button>' : ""}</div>
+          ${gruppi.length ? gruppi.map(([n, lst]) => `<p style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin-top:10px">${esc(n)}</p>${lst.map((p) => rigaProc(p)).join("")}`).join("") : `<p class="vuoto">${S.filtroStaz || S.filtroMom ? "Niente con questo filtro." : "Nessun procedimento scritto su questa linea."}</p>`}</section>
+        <section class="card"><div class="card-h"><h3>Appunti</h3>${S.canWrite ? '<button class="link" type="button" data-act="nuovo-ap">+ Nuovo</button>' : ""}</div>${aps.length ? aps.map((a) => rigaAp(a)).join("") : '<p class="vuoto">Nessun appunto su questa linea.</p>'}</section>
+      </div>`;
+  }
+
+  /* ---------- Pagina procedimento ---------- */
+  function pProc(p) {
+    const l = lineaDi(p.linea), m = MOM[momentoDi(p)], passi = p.passi || [];
+    const fatti = (SP[p.id] || []).filter((i) => i < passi.length);
+    const perc = passi.length ? Math.round(fatti.length / passi.length * 100) : 0;
+    return `<div class="nav"><button class="ic" type="button" data-act="indietro" aria-label="Indietro">←</button><span class="chip"><span class="dot" style="background:${m[2]}"></span>${esc(m[1])}</span>${S.canWrite ? `<button class="ic" type="button" data-act="mod-proc" aria-label="Modifica procedimento">✎</button>` : '<span style="width:38px"></span>'}</div>
+      <div class="testa"><span class="av" style="background:${m[2]}">${esc(m[1].slice(0, 2).toUpperCase())}</span><h2>${esc(p.titolo || "Senza titolo")}</h2><span class="mono">${esc([p.linea, p.stazione].filter(Boolean).join(" · "))}</span></div>
+      <div class="pad stack">
+        ${p.regola ? `<div class="regola"><small>Regola da rispettare</small>${esc(p.regola)}</div>` : ""}
+        <section class="card">
+          <div class="card-h"><h3>Fasi</h3>${fatti.length ? '<button class="link" type="button" data-act="azzera">Azzera spunte</button>' : ""}</div>
+          ${passi.length ? `<div class="prog" style="margin:6px 0 4px"><div class="prog-t"><span>${fatti.length} di ${passi.length} fatte</span><span>${perc}%</span></div><div class="prog-b"><span style="width:${perc}%"></span></div></div>
+          <ol class="passi">${passi.map((s, i) => `<li><button type="button" class="passo ${s.a ? "avv" : ""} ${fatti.includes(i) ? "fatto" : ""}" data-passo="${i}" aria-pressed="${fatti.includes(i)}"><span class="spunta">${fatti.includes(i) ? "✓" : i + 1}</span><span class="pt">${esc(s.t)}</span></button></li>`).join("")}</ol>`
+          : `<p class="vuoto">Le fasi non sono ancora scritte.</p>${S.canWrite ? '<button class="btn wide" type="button" data-act="mod-proc">✎ Scrivi le fasi</button>' : ""}`}
+        </section>
+        ${p.fonte ? `<p class="fonte">${esc(p.fonte)}</p>` : ""}
+        <div class="az-riga"><button class="btn" type="button" data-act="copia-proc">Copia testo</button>${S.canWrite ? '<button class="btn" type="button" data-act="dup-proc">Duplica</button>' : ""}${l ? `<button class="btn" type="button" data-linea="${esc(l.id)}">Linea ${esc(sigla(l))}</button>` : ""}</div>
+      </div>`;
+  }
+
+  /* ---------- Render ---------- */
+  function render() {
+    const app = $("#app");
+    document.querySelectorAll(".tabbar [data-tab]").forEach((b) => b.setAttribute("aria-current", b.dataset.tab === S.tab ? "page" : "false"));
+    if (!S.ready) return;
+    if (!S.db) { app.innerHTML = `<div class="pad" style="padding-top:24px"><div class="avviso"><b>Da qui non riesco ad aprire i dati.</b><p>Succede quando l'app si apre come anteprima. Aprila dal link su claude.ai con il tuo account per vedere le linee e modificarle.</p></div></div>`; return; }
+    if (S.err) { app.innerHTML = `<div class="pad" style="padding-top:24px"><div class="avviso"><b>Non riesco a leggere i dati.</b><p>Ricarica la pagina tra qualche secondo.</p></div></div>`; return; }
+    if (!S.okL) { app.innerHTML = '<p class="pad vuoto" style="padding-top:40px">Carico le linee…</p>'; return; }
+    const ae = document.activeElement, focusId = ae && ae.id === "cerca" ? ae.id : null, cur = focusId ? ae.selectionStart : null;
+    const scorri = $("#slides") ? $("#slides").scrollLeft : null;
+    const bozza = $("#ap-nuovo") ? $("#ap-nuovo").value : null;
+    app.innerHTML = S.tab === "linee" ? vLinee() : S.tab === "cerca" ? vCerca() : S.tab === "appunti" ? vAppunti() : vHome();
+    if (bozza != null && $("#ap-nuovo")) $("#ap-nuovo").value = bozza;
+    if (scorri != null && $("#slides")) $("#slides").scrollLeft = scorri;
+    else if ($("#slides") && S.sel) { const s = $(`[data-slide="${CSS.escape(S.sel)}"]`); if (s) $("#slides").scrollLeft = s.offsetLeft; }
+    if (focusId && $("#" + focusId)) { const el = $("#" + focusId); el.focus(); try { el.setSelectionRange(cur, cur); } catch (e) {} }
+    renderPagina();
+  }
+  function renderPagina() {
+    const root = $("#pagina-root"), top = S.pagine[S.pagine.length - 1];
+    if (!top) { if (root.innerHTML) { root.innerHTML = ""; document.body.style.overflow = ""; } return; }
+    let html = "";
+    if (top.t === "linea") { const l = S.lines.find((x) => x.id === top.id); if (!l) { S.pagine.pop(); return renderPagina(); } html = pLinea(l); }
+    else { const p = S.proc.find((x) => x.id === top.id); if (!p) { S.pagine.pop(); return renderPagina(); } html = pProc(p); }
+    const vecchia = $(".pagina", root), y = vecchia && vecchia.dataset.k === top.t + top.id ? vecchia.scrollTop : 0;
+    root.innerHTML = `<div class="pagina" data-k="${esc(top.t + top.id)}" ${vecchia && vecchia.dataset.k === top.t + top.id ? 'style="animation:none"' : ""}><div class="pagina-in">${html}</div></div>`;
+    $(".pagina", root).scrollTop = y;
+    document.body.style.overflow = "hidden";
+  }
+  function apri(t, id) { if (t === "linea") { S.filtroMom = ""; S.filtroStaz = ""; } S.pagine.push({ t, id }); renderPagina(); }
+  const lineaAttiva = () => {
+    const top = S.pagine[S.pagine.length - 1];
+    if (top && top.t === "linea") return S.lines.find((l) => l.id === top.id);
+    if (top && top.t === "proc") { const p = S.proc.find((x) => x.id === top.id); if (p) return lineaDi(p.linea); }
+    return S.lines.find((l) => l.id === S.sel) || S.lines[0];
+  };
+  const procAttivo = () => { const top = S.pagine[S.pagine.length - 1]; return top && top.t === "proc" ? S.proc.find((x) => x.id === top.id) : null; };
+
+  /* ---------- Fogli di modifica ---------- */
+  let chiudiFoglio = null;
+  function foglio(html, monta) {
+    const root = $("#sheet-root");
+    root.innerHTML = `<div class="velo" id="velo"><div class="foglio" id="foglio" role="dialog" aria-modal="true"><span class="maniglia" aria-hidden="true"></span>${html}</div></div>`;
+    const velo = $("#velo");
+    chiudiFoglio = () => { root.innerHTML = ""; chiudiFoglio = null; render(); };
+    velo.addEventListener("click", (e) => { if (e.target === velo) chiudiFoglio(); });
+    if (monta) monta($("#foglio"));
+    const primo = $("#foglio input, #foglio textarea, #foglio select"); if (primo) primo.focus({ preventScroll: true });
+  }
+  const optLinee = (sel) => S.lines.map((l) => `<option value="${esc(l.codice)}" ${l.codice === sel ? "selected" : ""}>${esc(l.codice)}${l.prodotto && l.prodotto.nome ? " · " + esc(l.prodotto.nome) : ""}</option>`).join("");
+  function bloccaBottoni(on) { document.querySelectorAll("#foglio button").forEach((b) => (b.disabled = on)); }
+  function confermaElimina(box, testo, azione) {
+    box.innerHTML = `<div class="conferma"><span>${esc(testo)}</span><div><button class="btn danger" type="button" id="si-elimina">Sì, elimina</button><button class="btn" type="button" id="no-elimina">Annulla</button></div></div>`;
+    $("#no-elimina").onclick = () => (box.innerHTML = "");
+    $("#si-elimina").onclick = azione;
+  }
+
+  function foglioLinea(l) {
+    const nuova = !l; l = l || { codice: "", nome: "", prodotto: { nome: "", descrizione: "" }, stato: "nd", note: "" };
+    const st = stazioni(l).join("\n");
+    foglio(`<h3>${nuova ? "Nuova linea" : "Modifica " + esc(l.codice)}</h3>
+      <div class="due"><div class="campo"><label for="f-cod">Codice</label><input id="f-cod" value="${esc(l.codice)}" placeholder="L. KZ" autocomplete="off"></div>
+      <div class="campo"><label for="f-sig">Sigla</label><input id="f-sig" value="${esc(l.nome || "")}" placeholder="KZ" maxlength="6" autocomplete="off"></div></div>
+      <div class="campo"><label for="f-pn">Prodotto</label><input id="f-pn" value="${esc(l.prodotto && l.prodotto.nome)}" placeholder="Cosa produce la linea"></div>
+      <div class="campo"><label for="f-pd">Descrizione prodotto</label><textarea id="f-pd" rows="2" placeholder="Formato, confezione, particolarità">${esc(l.prodotto && l.prodotto.descrizione)}</textarea></div>
+      <div class="campo"><label for="f-st">Stato</label><select id="f-st">${STATI.map((s) => `<option value="${s[0]}" ${stato(l)[0] === s[0] ? "selected" : ""}>${s[1]}</option>`).join("")}</select></div>
+      <div class="campo"><label for="f-staz">Macchine in ordine</label><textarea id="f-staz" rows="5">${esc(st)}</textarea><small>Una per riga, dalla prima all'ultima.</small></div>
+      <div class="campo"><label for="f-note">Note</label><textarea id="f-note" rows="3" placeholder="Cose da sapere su questa linea">${esc(l.note || "")}</textarea></div>
+      <div id="f-conf"></div>
+      <div class="f-az">${nuova ? "" : '<button class="btn danger" type="button" id="f-del">Elimina</button>'}<div><button class="btn" type="button" id="f-ann">Annulla</button><button class="btn primary" type="button" id="f-ok">${nuova ? "Crea linea" : "Salva"}</button></div></div>`, () => {
+      $("#f-ann").onclick = () => chiudiFoglio();
+      $("#f-ok").onclick = async () => {
+        const codice = $("#f-cod").value.trim(), nome = $("#f-sig").value.trim() || codice.replace(/^L\.\s*/i, "");
+        if (!codice) { toast("Scrivi il codice della linea"); $("#f-cod").focus(); return; }
+        if (S.lines.some((x) => x.codice === codice && x.id !== l.id)) { toast("Esiste già una linea " + codice); return; }
+        const staz = $("#f-staz").value.split("\n").map((s) => s.trim()).filter(Boolean);
+        const dati = { codice, nome, stato: $("#f-st").value, note: $("#f-note").value.trim(), stazioni: staz.length ? staz : STAZ_BASE,
+          prodotto: { nome: $("#f-pn").value.trim(), descrizione: $("#f-pd").value.trim() }, aggiornato: ora() };
+        bloccaBottoni(true);
+        try {
+          if (nuova) {
+            const slug = nome.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+            const id = slug && !S.lines.some((x) => x.id === "l-" + slug) ? "l-" + slug : undefined;
+            const ref = S.db.collection("linee").doc(id);
+            await ref.set(Object.assign({ metodo: [], parametri: {}, tolleranze: [], creato: ora() }, dati));
+            S.sel = ref.id; toast("Linea " + codice + " creata");
+          } else {
+            await S.db.doc("linee/" + l.id).update(dati);
+            if (codice !== l.codice) {
+              for (const p of procDi(l)) await S.db.doc("procedure/" + p.id).update({ linea: codice });
+              for (const a of apDi(l)) await S.db.doc("appunti/" + a.id).update({ linea: codice });
+            }
+            toast("Linea salvata");
+          }
+          chiudiFoglio();
+        } catch (e) { bloccaBottoni(false); toast(errore(e, "Linea non salvata")); }
+      };
+      if (!nuova) $("#f-del").onclick = () => {
+        const n = procDi(l).length, a = apDi(l).length;
+        confermaElimina($("#f-conf"), `Elimini ${l.codice}${n || a ? ` insieme a ${n} procedimenti e ${a} appunti` : ""}? Non si torna indietro.`, async () => {
+          bloccaBottoni(true);
+          try {
+            for (const p of procDi(l)) await S.db.doc("procedure/" + p.id).delete();
+            for (const x of apDi(l)) await S.db.doc("appunti/" + x.id).delete();
+            await S.db.doc("linee/" + l.id).delete();
+            S.pagine = S.pagine.filter((pg) => !(pg.t === "linea" && pg.id === l.id));
+            if (S.sel === l.id) S.sel = "";
+            toast("Linea eliminata"); chiudiFoglio();
+          } catch (e) { bloccaBottoni(false); toast(errore(e, "Linea non eliminata")); }
+        });
+      };
+    });
+  }
+
+  function foglioProc(p, lineaPred, copia) {
+    const nuovo = !p || copia;
+    const base = p || { titolo: "", linea: lineaPred || "", momento: "produzione", stazione: "", regola: "", passi: [], fonte: "" };
+    let P = (base.passi || []).map((s) => ({ t: s.t || "", a: !!s.a }));
+    if (!P.length) P.push({ t: "", a: false });
+    const staz = () => { const l = lineaDi($("#f-lin") ? $("#f-lin").value : base.linea); return stazioni(l); };
+    const optStaz = (sel) => `<option value="">Nessuna in particolare</option>` + staz().map((s) => `<option ${s === sel ? "selected" : ""}>${esc(s)}</option>`).join("") + (sel && !staz().includes(sel) ? `<option selected>${esc(sel)}</option>` : "");
+    const fasiHtml = () => P.map((s, i) => `<div class="fase ${s.a ? "crit" : ""}"><span class="n">${i + 1}</span><div><textarea class="f-fase" data-i="${i}" rows="2" aria-label="Fase ${i + 1}" placeholder="Cosa fare in questa fase">${esc(s.t)}</textarea><div class="fase-az"><button type="button" data-crit="${i}" aria-pressed="${s.a}">⚠ Critica</button><button type="button" data-su="${i}" ${i ? "" : "disabled"}>↑</button><button type="button" data-giu="${i}" ${i < P.length - 1 ? "" : "disabled"}>↓</button><button type="button" data-via="${i}">Togli</button></div></div></div>`).join("");
+    foglio(`<h3>${copia ? "Duplica procedimento" : nuovo ? "Nuovo procedimento" : "Modifica procedimento"}</h3>
+      <div class="campo"><label for="f-tit">Titolo</label><input id="f-tit" value="${esc(base.titolo)}" placeholder="Es. Concatenamento (cambio vasca)"></div>
+      <div class="due"><div class="campo"><label for="f-lin">Linea</label><select id="f-lin">${optLinee(base.linea)}</select></div>
+      <div class="campo"><label for="f-mom">Momento del turno</label><select id="f-mom">${MOMENTI.map(([k, n]) => `<option value="${k}" ${momentoDi(base) === k ? "selected" : ""}>${n}</option>`).join("")}</select></div></div>
+      <div class="campo"><label for="f-staz">Macchina</label><select id="f-staz">${optStaz(base.stazione)}</select></div>
+      <div class="campo"><label for="f-reg">Regola critica</label><textarea id="f-reg" rows="2" placeholder="Quello che non va mai sbagliato. Lascia vuoto se non c'è.">${esc(base.regola)}</textarea></div>
+      <div class="campo"><span class="lbl">Fasi</span><div class="fasi" id="f-fasi">${fasiHtml()}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="f-add">+ Aggiungi fase</button><button class="btn" type="button" id="f-incolla-t">Incolla un testo</button></div>
+        <div id="f-incolla" hidden class="campo"><textarea id="f-incolla-tx" rows="5" placeholder="Incolla qui la procedura: ogni riga diventa una fase"></textarea><button class="btn" type="button" id="f-incolla-ok">Trasforma in fasi</button></div></div>
+      <div class="campo"><label for="f-fonte">Fonte o nota</label><input id="f-fonte" value="${esc(base.fonte)}" placeholder="Da dove viene la procedura"></div>
+      <div id="f-conf"></div>
+      <div class="f-az">${nuovo ? "" : '<button class="btn danger" type="button" id="f-del">Elimina</button>'}<div><button class="btn" type="button" id="f-ann">Annulla</button><button class="btn primary" type="button" id="f-ok">${nuovo ? "Crea" : "Salva"}</button></div></div>`, (f) => {
+      const ridisegna = () => { $("#f-fasi").innerHTML = fasiHtml(); };
+      f.addEventListener("input", (e) => { if (e.target.classList.contains("f-fase")) P[+e.target.dataset.i].t = e.target.value; });
+      $("#f-fasi").addEventListener("click", (e) => {
+        const b = e.target.closest("button"); if (!b) return;
+        const d = b.dataset;
+        if (d.crit != null) P[+d.crit].a = !P[+d.crit].a;
+        else if (d.su != null) { const i = +d.su; [P[i - 1], P[i]] = [P[i], P[i - 1]]; }
+        else if (d.giu != null) { const i = +d.giu; [P[i + 1], P[i]] = [P[i], P[i + 1]]; }
+        else if (d.via != null) { P.splice(+d.via, 1); if (!P.length) P.push({ t: "", a: false }); }
+        ridisegna();
+      });
+      $("#f-add").onclick = () => { P.push({ t: "", a: false }); ridisegna(); const t = document.querySelectorAll(".f-fase"); t[t.length - 1].focus(); };
+      $("#f-incolla-t").onclick = () => { $("#f-incolla").hidden = !$("#f-incolla").hidden; if (!$("#f-incolla").hidden) $("#f-incolla-tx").focus(); };
+      $("#f-incolla-ok").onclick = () => {
+        const righe = $("#f-incolla-tx").value.split("\n").map((r) => r.replace(/^\s*(\d+[.)]|[-•*])\s*/, "").trim()).filter(Boolean);
+        if (!righe.length) return;
+        P = P.filter((s) => s.t.trim()).concat(righe.map((t) => ({ t, a: /^(attenzione|importante|vietato|mai)\b/i.test(t) })));
+        $("#f-incolla-tx").value = ""; $("#f-incolla").hidden = true; ridisegna(); toast(righe.length + " fasi aggiunte");
+      };
+      $("#f-lin").onchange = () => { $("#f-staz").innerHTML = optStaz($("#f-staz").value); };
+      $("#f-ann").onclick = () => chiudiFoglio();
+      $("#f-ok").onclick = async () => {
+        const titolo = $("#f-tit").value.trim();
+        if (!titolo) { toast("Dai un titolo al procedimento"); $("#f-tit").focus(); return; }
+        if (!$("#f-lin").value) { toast("Crea prima una linea"); return; }
+        const dati = { titolo, linea: $("#f-lin").value, momento: $("#f-mom").value, stazione: $("#f-staz").value, regola: $("#f-reg").value.trim(),
+          passi: P.map((s) => ({ t: s.t.trim(), a: s.a })).filter((s) => s.t), fonte: $("#f-fonte").value.trim(), aggiornato: ora() };
+        bloccaBottoni(true);
+        try {
+          if (nuovo) {
+            const ref = S.db.collection("procedure").doc();
+            await ref.set(Object.assign({ creato: ora() }, dati));
+            chiudiFoglio(); toast(copia ? "Procedimento duplicato" : "Procedimento creato");
+            if (copia) S.pagine.pop();
+            apri("proc", ref.id);
+          } else {
+            await S.db.doc("procedure/" + p.id).update(dati);
+            if ((p.passi || []).length !== dati.passi.length) { delete SP[p.id]; salvaSP(); }
+            chiudiFoglio(); toast("Procedimento salvato");
+          }
+        } catch (e) { bloccaBottoni(false); toast(errore(e, "Procedimento non salvato")); }
+      };
+      if (!nuovo) $("#f-del").onclick = () => confermaElimina($("#f-conf"), `Elimini "${p.titolo}"? Non si torna indietro.`, async () => {
+        bloccaBottoni(true);
+        try {
+          await S.db.doc("procedure/" + p.id).delete();
+          delete SP[p.id]; salvaSP();
+          S.pagine = S.pagine.filter((pg) => !(pg.t === "proc" && pg.id === p.id));
+          toast("Procedimento eliminato"); chiudiFoglio();
+        } catch (e) { bloccaBottoni(false); toast(errore(e, "Procedimento non eliminato")); }
+      });
+    });
+  }
+
+  function foglioAp(a, lineaPred) {
+    const nuovo = !a; a = a || { testo: "", linea: lineaPred || "" };
+    foglio(`<h3>${nuovo ? "Nuovo appunto" : "Appunto"}</h3>${nuovo ? "" : `<span class="mono" style="font-size:12.5px;color:var(--ink-2)">Scritto ${esc(quando(a.creato))}${a.aggiornato && a.aggiornato !== a.creato ? " · modificato " + esc(quando(a.aggiornato)) : ""}</span>`}
+      <div class="campo"><label for="f-al">Linea</label><select id="f-al" ${S.canWrite ? "" : "disabled"}>${optLinee(a.linea)}</select></div>
+      <div class="campo"><label for="f-at">Testo</label><textarea id="f-at" rows="6" ${S.canWrite ? "" : "readonly"} placeholder="Scrivi qui…">${esc(a.testo)}</textarea></div>
+      <div id="f-conf"></div>
+      <div class="f-az">${!nuovo && S.canWrite ? '<button class="btn danger" type="button" id="f-del">Elimina</button>' : ""}<div><button class="btn" type="button" id="f-copia">Copia</button><button class="btn" type="button" id="f-ann">Chiudi</button>${S.canWrite ? `<button class="btn primary" type="button" id="f-ok">Salva</button>` : ""}</div></div>`, () => {
+      $("#f-ann").onclick = () => chiudiFoglio();
+      $("#f-copia").onclick = () => copia($("#f-at").value);
+      if ($("#f-ok")) $("#f-ok").onclick = async () => {
+        const testo = $("#f-at").value.trim();
+        if (!testo) { toast("L'appunto è vuoto"); return; }
+        bloccaBottoni(true);
+        try {
+          if (nuovo) await S.db.collection("appunti").doc().set({ testo, linea: $("#f-al").value, creato: ora(), aggiornato: ora() });
+          else await S.db.doc("appunti/" + a.id).update({ testo, linea: $("#f-al").value, aggiornato: ora() });
+          toast("Appunto salvato"); chiudiFoglio();
+        } catch (e) { bloccaBottoni(false); toast(errore(e, "Appunto non salvato")); }
+      };
+      if ($("#f-del")) $("#f-del").onclick = () => confermaElimina($("#f-conf"), "Elimini questo appunto?", async () => {
+        bloccaBottoni(true);
+        try { await S.db.doc("appunti/" + a.id).delete(); toast("Appunto eliminato"); chiudiFoglio(); }
+        catch (e) { bloccaBottoni(false); toast(errore(e, "Appunto non eliminato")); }
+      });
+    });
+  }
+
+  function copia(testo) {
+    const fallback = () => {
+      foglio(`<h3>Copia il testo</h3><div class="campo"><textarea id="f-copia-tx" rows="10" readonly>${esc(testo)}</textarea><small>Tieni premuto sul testo e scegli Copia.</small></div><button class="btn" type="button" id="f-ann">Chiudi</button>`, () => { $("#f-ann").onclick = () => chiudiFoglio(); $("#f-copia-tx").select(); });
+    };
+    try { navigator.clipboard.writeText(testo).then(() => toast("Testo copiato"), fallback); } catch (e) { fallback(); }
+  }
+  function testoProc(p) {
+    return [p.titolo, p.linea + (p.stazione ? " · " + p.stazione : ""), p.regola ? "REGOLA: " + p.regola : "", "",
+      ...(p.passi || []).map((s, i) => `${i + 1}. ${s.a ? "⚠ " : ""}${s.t}`), p.fonte ? "\n" + p.fonte : ""].filter((x, i) => x || i === 3).join("\n");
+  }
+
+  async function cambiaStato(l, k) {
+    if (!S.canWrite || !l || l.stato === k) return;
+    try { await S.db.doc("linee/" + l.id).update({ stato: k, aggiornato: ora() }); toast(sigla(l) + " · " + STATO[k][1]); }
+    catch (e) { toast(errore(e, "Stato non cambiato")); }
+  }
+
+  /* ---------- Eventi ---------- */
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b || b.disabled) return;
+    if (b.closest("#foglio")) return;
+    const d = b.dataset;
+    if (d.tab) { S.tab = d.tab; S.pagine = []; render(); window.scrollTo(0, 0); if (d.tab === "cerca") setTimeout(() => $("#cerca") && $("#cerca").focus(), 0); return; }
+    if (d.dot) { selezionaSlide(d.dot, true); return; }
+    if (d.linea) { apri("linea", d.linea); return; }
+    if (d.proc) { apri("proc", d.proc); return; }
+    if (d.ap) { const a = S.appunti.find((x) => x.id === d.ap); if (a) foglioAp(a); return; }
+    if (d.sugg) { S.q = d.sugg; render(); return; }
+    if (d.stato) { cambiaStato(lineaAttiva(), d.stato); return; }
+    if (d.staz != null) { S.filtroStaz = S.filtroStaz === d.staz ? "" : d.staz; renderPagina(); return; }
+    if (d.mom != null) { S.filtroMom = d.mom; renderPagina(); return; }
+    if (d.passo != null) {
+      const p = procAttivo(); if (!p) return;
+      const i = +d.passo, arr = SP[p.id] || [];
+      SP[p.id] = arr.includes(i) ? arr.filter((x) => x !== i) : arr.concat(i);
+      salvaSP(); renderPagina();
+      if (SP[p.id].length === (p.passi || []).length) toast("Tutte le fasi fatte ✓");
+      return;
+    }
+    switch (d.act) {
+      case "indietro": S.pagine.pop(); renderPagina(); break;
+      case "nuova-linea": foglioLinea(null); break;
+      case "mod-linea": foglioLinea(lineaAttiva()); break;
+      case "nuovo-proc": { const l = lineaAttiva(); foglioProc(null, l && l.codice); break; }
+      case "mod-proc": { const p = procAttivo(); if (p) foglioProc(p); break; }
+      case "dup-proc": { const p = procAttivo(); if (p) foglioProc(p, null, true); break; }
+      case "copia-proc": { const p = procAttivo(); if (p) copia(testoProc(p)); break; }
+      case "azzera": { const p = procAttivo(); if (p) { delete SP[p.id]; salvaSP(); renderPagina(); } break; }
+      case "nuovo-ap": { const l = lineaAttiva(); foglioAp(null, l && l.codice); break; }
+      case "stato": {
+        const l = lineaAttiva(); if (!l) break;
+        const ord = STATI.map((s) => s[0]), k = ord[(ord.indexOf(stato(l)[0]) + 1) % ord.length];
+        cambiaStato(l, k); break;
+      }
+      case "salva-ap-rapido": {
+        const t = $("#ap-nuovo").value.trim(); if (!t) { toast("Scrivi qualcosa prima"); break; }
+        b.disabled = true;
+        S.db.collection("appunti").doc().set({ testo: t, linea: $("#ap-linea").value, creato: ora(), aggiornato: ora() })
+          .then(() => { $("#ap-nuovo").value = ""; toast("Appunto salvato"); }, (err) => toast(errore(err, "Appunto non salvato")))
+          .finally(() => { b.disabled = false; });
+        break;
+      }
+    }
+  });
+  document.addEventListener("input", (e) => {
+    if (e.target.id === "cerca") { S.q = e.target.value; const r = $("#ris"); if (r) r.innerHTML = risultati(); }
+    if (e.target.id === "ap-linea") S.apLinea = e.target.value;
+  });
+  document.addEventListener("change", (e) => { if (e.target.id === "ap-linea") S.apLinea = e.target.value; });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (chiudiFoglio) chiudiFoglio(); else if (S.pagine.length) { S.pagine.pop(); renderPagina(); }
+  });
+  let tScroll = 0;
+  document.addEventListener("scroll", (e) => {
+    if (e.target.id !== "slides") return;
+    clearTimeout(tScroll);
+    tScroll = setTimeout(() => {
+      const el = e.target, i = Math.round(el.scrollLeft / el.clientWidth), s = el.children[i];
+      if (s && s.dataset.slide) selezionaSlide(s.dataset.slide);
+    }, 90);
+  }, true);
+
+  /* ---------- Avvio ---------- */
+  async function init() {
+    const c = window.claude;
+    if (c && c.use) {
+      try { S.db = await c.use("db"); } catch (e) { S.db = null; }
+      try { const u = await c.use("user"); if (u && typeof u.can === "function") { const cw = await u.can("data.write"); S.canWrite = cw !== false; } } catch (e) {}
+    }
+    S.ready = true; render();
+    if (!S.db) return;
+    S.db.collection("linee").onSnapshot((snap) => {
+      S.lines = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())).sort((a, b) => nat(a.codice, b.codice));
+      S.okL = true; if (!chiudiFoglio) render();
+    }, () => { S.err = true; render(); });
+    S.db.collection("procedure").onSnapshot((snap) => {
+      S.proc = snap.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+      if (!chiudiFoglio) render();
+    }, () => {});
+    S.db.collection("appunti").onSnapshot((snap) => {
+      S.appunti = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())).sort((a, b) => String(b.creato || "").localeCompare(String(a.creato || "")));
+      if (!chiudiFoglio) render();
+    }, () => {});
+  }
+  init();
+})();
+</script>
