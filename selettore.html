@@ -233,7 +233,6 @@ h1, h2, h3, p, ol { margin: 0; }
     ["reclage", "Reclage", "#D2602A", "Come si fa il reclage su questa linea."],
     ["pulizia", "Pulizia linea", "#0E8BA6", "Cosa pulire, con cosa e ogni quanto."],
     ["qualita", "Controlli qualità", "#2E8C7A", "Pesate, limiti di legge, controllo etichette e lotti."],
-    ["allarmi", "Allarmi e guasti", "#B5541C", "Codici allarme frequenti e cosa fare quando compaiono."],
     ["fine", "Fine turno e consegne", "#8150C9", "Chiusura, consegne al turno dopo, cosa lasciare in ordine."]
   ];
   const MOM = Object.fromEntries(MOMENTI.map((m) => [m[0], m]));
@@ -261,7 +260,6 @@ h1, h2, h3, p, ol { margin: 0; }
     if (p.momento && MOM[p.momento]) return p.momento;
     const t = String(p.titolo || "").toLowerCase();
     if (/sicurezz|dpi\b/.test(t)) return "sicurezza";
-    if (/allarm|guast|errore/.test(t)) return "allarmi";
     if (/pesat|pesi\b|qualit|controll/.test(t)) return "qualita";
     if (/reclage/.test(t)) return "reclage";
     if (/lavagg|cip/.test(t)) return "lavaggio";
@@ -285,7 +283,7 @@ h1, h2, h3, p, ol { margin: 0; }
   /* ---------- Pannello ---------- */
   const tastoLinea = (x) => { const n = procDi(x).length, pn = x.prodotto && x.prodotto.nome;
     return `<button class="tasto" type="button" data-linea="${esc(x.codice)}"><span class="cnt">${n || ""}</span><span class="big">${esc(sigla(x))}</span><span class="sub">${esc(pn || x.codice)}</span></button>`; };
-  const MENU = ["prodotto", "sicurezza", "avvio", "produzione", "cambio", "lavaggio", "reclage", "pulizia", "qualita", "allarmi", "fine", "macchine", "appunti"];
+  const MENU = ["prodotto", "sicurezza", "avvio", "produzione", "cambio", "lavaggio", "reclage", "pulizia", "qualita", "fine", "macchine", "appunti"];
   function vPannello() {
     if (!S.lines.length) {
       return `<div class="avviso"><b>Nessuna linea sul pannello.</b><p>Aggiungi la prima linea: poi potrai scriverci sopra procedimenti e appunti.</p>${S.canWrite ? '<div class="az"><button class="btn primary" type="button" data-act="nuova-linea">+ Aggiungi linea</button></div>' : ""}</div>`;
