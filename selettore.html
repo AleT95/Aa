@@ -173,6 +173,66 @@ h1, h2, h3, p, ol { margin: 0; }
 .elenco .qui { border-color: var(--ink); }
 .fonte { font-size: 13px; color: var(--ink-2); }
 
+/* ---------- Riferimenti dal foglio: oggetti reali, con i loro colori veri ---------- */
+.rif-w { display: grid; gap: 8px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.rif { display: flex; flex-wrap: wrap; gap: 10px; }
+.vis { margin: 0; display: grid; gap: 6px; justify-items: center; align-content: start; padding: 10px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); max-width: 100%; min-width: 0; }
+.vis.largo { flex: 1 1 100%; justify-items: stretch; }
+.vis figcaption { font-size: 12.5px; color: var(--ink-2); text-align: center; line-height: 1.3; max-width: 220px; }
+.torre { display: grid; gap: 3px; width: 34px; padding: 3px; background: #2A2D2F; border-radius: 6px; }
+.lc { height: 17px; border-radius: 4px; }
+.lc.rosso { background: #5C2622; } .lc.arancio { background: #5E3D14; } .lc.verde { background: #17402B; } .lc.blu { background: #1A2E52; }
+.lc.rosso.fissa, .lc.rosso.lamp { background: #F0402F; box-shadow: 0 0 10px #F0402F; }
+.lc.arancio.fissa, .lc.arancio.lamp { background: #FFA41F; box-shadow: 0 0 10px #FFA41F; }
+.lc.verde.fissa, .lc.verde.lamp { background: #22C473; box-shadow: 0 0 10px #22C473; }
+.lc.blu.fissa, .lc.blu.lamp { background: #3B8BFF; box-shadow: 0 0 10px #3B8BFF; }
+.lc.lamp { animation: lampeggia 1s steps(1) infinite; }
+@keyframes lampeggia { 50% { opacity: .2; box-shadow: none; } }
+.torre .base { height: 10px; background: #111314; border-radius: 0 0 4px 4px; }
+.hmi-r { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; }
+.hmi-r .fr { color: var(--ink-2); font-weight: 700; }
+.hmi { font: 700 12.5px/1.15 var(--font-mono); padding: 10px 12px; min-width: 92px; text-align: center; color: #FFFFFF; letter-spacing: .02em; }
+.hmi.azz { background: #9CCBEB; color: #123049; } .hmi.blu { background: #1C6FD0; } .hmi.verde { background: #2E9E44; }
+.msg { font: 700 13px/1.4 var(--font-mono); padding: 10px 12px; letter-spacing: .02em; overflow-wrap: anywhere; }
+.msg.nero { background: #0E1412; color: #71D9CB; } .msg.teal { background: #5DB9BF; color: #0E3A3F; } .msg.verde { background: #43AE5A; color: #0E3216; }
+.pls { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.pl { display: grid; justify-items: center; gap: 5px; padding: 5px; border-radius: 12px; border: 3px solid transparent; }
+.pl.evid { border-color: #2E9E44; }
+.tg { background: #151515; color: #EEEEEE; font: 700 9.5px/1.15 var(--font-mono); padding: 4px 6px; text-align: center; max-width: 80px; text-transform: uppercase; }
+.bt { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #C9CDD1; background: radial-gradient(circle at 40% 35%, #A3ABB2, #485057); }
+.bt.giallo { background: radial-gradient(circle at 40% 35%, #FFF6C2, #F2B705); box-shadow: 0 0 12px rgb(242 183 5 / .55); }
+.bt.verde { background: radial-gradient(circle at 40% 35%, #A8F5C8, #1FB36A); box-shadow: 0 0 12px rgb(31 179 106 / .5); }
+.bt.bianco { background: radial-gradient(circle at 40% 35%, #FFFFFF, #CFD3D6); }
+.bt.blu { background: radial-gradient(circle at 40% 35%, #8FC1FF, #1F63D6); }
+.sig { font: 700 10.5px var(--font-mono); color: var(--ink-2); }
+.mano { width: 112px; height: 112px; }
+.mano .ghiera { fill: #9EA6AC; } .mano .quadrante { fill: #F6F6F2; }
+.mano .tacche line { stroke: #222222; stroke-width: 1.6; } .mano .tacche text { font: 700 8px var(--font-mono); fill: #222222; text-anchor: middle; }
+.mano .unita { font: 600 8px var(--font-mono); fill: #555555; text-anchor: middle; }
+.mano .lancetta { stroke: #D2342B; stroke-width: 2.4; stroke-linecap: round; } .mano .perno { fill: #222222; }
+.mon { width: 236px; max-width: 100%; background: #CCD9E8; color: #10243B; border: 3px solid #2E3236; font: 500 12px/1.3 var(--font-body); display: grid; gap: 6px; padding-bottom: 6px; }
+.mon-t { display: flex; align-items: center; gap: 8px; background: #B4C7DC; padding: 4px 6px; }
+.mon-t span { font-size: 10px; border: 1px solid #10243B; padding: 0 4px; } .mon-t b { flex: 1; text-align: center; font-size: 15px; letter-spacing: .04em; }
+.mon p { padding: 0 8px; } .mon-c { display: grid; gap: 4px; padding: 0 12px; }
+.mon-c span { display: flex; align-items: center; gap: 6px; } .mon-c i { width: 12px; height: 12px; border: 1px solid #10243B; background: #FFFFFF; display: inline-grid; place-items: center; font-style: normal; font-size: 10px; }
+.mon-c i.x::after { content: "✓"; color: #10243B; }
+.mon-b { display: flex; gap: 4px; padding: 0 6px; flex-wrap: wrap; } .mon-b span { flex: 1; text-align: center; border: 1px solid #10243B; background: #E6EDF5; padding: 3px 2px; font-size: 11px; border-radius: 3px; }
+.mon-b span.evid { outline: 2px solid #D2342B; outline-offset: 1px; border-radius: 50%; }
+.mon small { padding: 0 8px; font-size: 11px; }
+.dpi { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.ic-d { display: grid; justify-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; color: var(--ink-2); width: 62px; text-align: center; }
+.ic-d svg { width: 44px; height: 44px; }
+.ic-d .obbligo { fill: #1F63B5; } .ic-d .obbligo-g { fill: none; stroke: #FFFFFF; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.ic-d .pericolo { fill: #F5C400; stroke: #151515; stroke-width: 2; stroke-linejoin: round; } .ic-d .pericolo-g { fill: none; stroke: #151515; stroke-width: 2.4; stroke-linecap: round; }
+.band { width: 104px; height: 38px; background: linear-gradient(#AEB9C4, #8D9AA7); border-radius: 3px; display: grid; place-items: center; }
+.band span { width: 34px; height: 30px; display: grid; place-items: center; background: #E1E7EC; color: #26313B; font: 700 9px var(--font-mono); border: 1px solid #6A7682; }
+.band.nera span { background: #121212; color: #D9D9D9; }
+.peso { display: grid; grid-template-columns: auto auto; align-items: center; gap: 6px 10px; padding: 10px; background: #1B3D8C; color: #FFFFFF; font: 700 12px var(--font-mono); }
+.peso .auto { grid-column: 1 / -1; background: #2E9E44; text-align: center; padding: 4px; }
+.peso .lbl { color: #F2C200; font-size: 10.5px; } .peso .val { background: #1C6FD0; padding: 5px 10px; text-align: right; font-size: 15px; }
+.timer { font: 700 26px/1 var(--font-display); padding: 6px 4px; }
+.ha-rif { display: block; margin-top: 4px; font: 500 12px var(--font-mono); color: var(--ink-2); }
+
 /* ---------- Fogli ---------- */
 .velo { position: fixed; inset: 0; z-index: 60; background: rgb(0 0 0 / .45); display: flex; align-items: flex-end; justify-content: center; }
 .foglio { width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; background: var(--bg); border-radius: 20px 20px 0 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 14px; }
@@ -360,8 +420,42 @@ h1, h2, h3, p, ol { margin: 0; }
     return h + "</section>";
   }
 
+  /* ---------- Riferimenti visivi (come sul foglio plastificato) ---------- */
+  const LUCI = [["rosso", "rossa"], ["arancio", "gialla"], ["verde", "verde"], ["blu", "blu"]];
+  const ICONE = {
+    occhiali: ['obbligo', '<circle cx="13" cy="21" r="5"/><circle cx="27" cy="21" r="5"/><path d="M18 21h4M8 19l-2-3M32 19l2-3"/>', "Occhiali"],
+    guanti: ['obbligo', '<path d="M14 30V15a1.6 1.6 0 0 1 3.2 0v7M17.2 21V11.5a1.6 1.6 0 0 1 3.2 0V21M20.4 21v-8.5a1.6 1.6 0 0 1 3.2 0V22M23.6 22v-6a1.6 1.6 0 0 1 3.2 0V27c0 3-2 5-5 5h-3c-2 0-3-1-4-2l-4-5a1.6 1.6 0 0 1 2.4-2l2 2"/>', "Guanti"],
+    maschera: ['obbligo', '<path d="M11 18c3-3 15-3 18 0v5c0 4-4 7-9 7s-9-3-9-7z"/><path d="M11 20H7M29 20h4M16 24h8"/>', "Maschera"],
+    caldo: ['pericolo', '<path d="M15 27c-2-3 2-5 0-8M20 27c-2-3 2-5 0-8M25 27c-2-3 2-5 0-8"/>', "Rischio termico"],
+    scivoloso: ['pericolo', '<path d="M20 15v8M20 27v.5"/>', "Scivoloso"]
+  };
+  function vis(v) {
+    const cap = v.cap ? `<figcaption>${esc(v.cap)}</figcaption>` : "";
+    switch (v.k) {
+      case "torre": { const on = v.on || {};
+        return `<figure class="vis"><div class="torre" role="img" aria-label="${esc(v.cap || "Colonna luminosa")}">${LUCI.map(([c]) => `<span class="lc ${c} ${on[c] || ""}"></span>`).join("")}<span class="base"></span></div>${cap}</figure>`; }
+      case "hmi": return `<figure class="vis"><div class="hmi-r">${v.tasti.map(([t, c], i) => (i ? '<span class="fr" aria-hidden="true">›</span>' : "") + `<span class="hmi ${c}">${esc(t)}</span>`).join("")}</div>${cap}</figure>`;
+      case "msg": return `<figure class="vis largo"><div class="msg ${v.c || "nero"}">${esc(v.t)}</div>${cap}</figure>`;
+      case "pulsanti": return `<figure class="vis"><div class="pls">${v.tasti.map((b) => `<span class="pl ${b.evid ? "evid" : ""}"><span class="tg">${esc(b.t)}</span><span class="bt ${b.luce || ""}"></span>${b.sig ? `<span class="sig">${esc(b.sig)}</span>` : ""}</span>`).join("")}</div>${cap}</figure>`;
+      case "manometro": {
+        const max = v.max || 6, val = Math.max(0, Math.min(max, +v.val || 0)), cx = 50, cy = 52, r = 38;
+        const pt = (x, rr) => { const a = (135 + 270 * x / max) * Math.PI / 180; return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)]; };
+        let tacche = "";
+        for (let i = 0; i <= max; i++) { const [x1, y1] = pt(i, r - 2), [x2, y2] = pt(i, r - 9), [tx, ty] = pt(i, r - 17); tacche += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/><text x="${tx.toFixed(1)}" y="${(ty + 3).toFixed(1)}">${i}</text>`; }
+        const [nx, ny] = pt(val, r - 8);
+        return `<figure class="vis"><svg class="mano" viewBox="0 0 100 100" role="img" aria-label="Manometro a ${val} bar"><circle cx="50" cy="52" r="44" class="ghiera"/><circle cx="50" cy="52" r="40" class="quadrante"/><g class="tacche">${tacche}</g><text x="50" y="80" class="unita">bar</text><line x1="50" y1="52" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" class="lancetta"/><circle cx="50" cy="52" r="4" class="perno"/></svg>${cap}</figure>`;
+      }
+      case "monitor": return `<figure class="vis"><div class="mon"><div class="mon-t"><span>Menu</span><b>${esc(v.titolo)}</b></div>${v.sotto ? `<p>${esc(v.sotto)}</p>` : ""}<div class="mon-c">${(v.check || []).map(([l, c]) => `<span><i class="${c ? "x" : ""}"></i>${esc(l)}</span>`).join("")}</div><div class="mon-b">${(v.tasti || []).map((t) => `<span class="${t === v.evid ? "evid" : ""}">${esc(t)}</span>`).join("")}</div>${v.stato ? `<small>Stato: ${esc(v.stato)}</small>` : ""}</div>${cap}</figure>`;
+      case "dpi": return `<figure class="vis"><div class="dpi">${v.voci.map((k) => { const ic = ICONE[k]; if (!ic) return ""; return `<span class="ic-d"><svg viewBox="0 0 40 40" aria-hidden="true">${ic[0] === "obbligo" ? '<circle cx="20" cy="20" r="18" class="obbligo"/>' : '<path d="M20 4 37 34H3z" class="pericolo"/>'}<g class="${ic[0]}-g">${ic[1]}</g></svg>${esc(ic[2])}</span>`; }).join("")}</div>${cap}</figure>`;
+      case "bandelletta": return `<figure class="vis"><div class="band ${v.nera ? "nera" : ""}" role="img" aria-label="Bandelletta termica ${v.nera ? "nera" : "da annerire"}"><span>${esc(v.t || "82°C")}</span></div>${cap}</figure>`;
+      case "peso": return `<figure class="vis"><div class="peso"><span class="auto">AUTOMATICO</span><span class="lbl">REGOLAZIONE PESO</span><span class="val">${esc(v.peso)}</span><span class="lbl">VELOCITÀ MACCHINA</span><span class="val">${esc(v.vel)}</span></div>${cap}</figure>`;
+      case "timer": return `<figure class="vis"><div class="timer">${esc(v.t)}</div>${cap}</figure>`;
+      default: return "";
+    }
+  }
+
   /* ---------- Esecuzione fase per fase ---------- */
-  const carte = (p) => (p.regola ? [{ regola: true, t: p.regola }] : []).concat((p.passi || []).map((s, i) => ({ t: s.t, a: s.a, i })));
+  const carte = (p) => (p.regola ? [{ regola: true, t: p.regola }] : []).concat((p.passi || []).map((s, i) => ({ t: s.t, a: s.a, v: s.v, i })));
   function vEsec(p) {
     const C = carte(p), passi = p.passi || [], fatti = (SP[p.id] || []).filter((i) => i < passi.length);
     let pos = Math.min(POS[p.id] || 0, C.length);
@@ -371,7 +465,7 @@ h1, h2, h3, p, ol { margin: 0; }
     if (!passi.length) carta = `<div class="fase"><span class="eti">Fasi</span><p class="testo">Le fasi di questo procedimento non sono ancora scritte.</p>${p.regola ? `<p style="color:var(--crit);font-weight:700">⚠ ${esc(p.regola)}</p>` : ""}${S.canWrite ? '<div class="az"><button class="btn primary" type="button" data-act="mod-proc">Scrivi le fasi</button></div>' : ""}</div>`;
     else if (fine) carta = `<div class="fase fine"><span class="eti">Fine</span><p class="testo">${fatti.length === passi.length ? "Tutte le fasi fatte." : `${fatti.length} fasi su ${passi.length} segnate come fatte.`}</p><div class="az"><button class="btn" type="button" data-act="ricomincia">Ricomincia da capo</button><button class="btn primary" type="button" data-act="chiudi-esec">Torna al pannello</button></div></div>`;
     else if (c.regola) carta = `<div class="fase regola"><span class="eti">⚠ Prima di iniziare · regola</span><p class="testo">${esc(c.t)}</p></div>`;
-    else carta = `<div class="fase ${c.a ? "critica" : ""}"><span class="eti">${c.a ? "⚠ " : ""}Fase ${c.i + 1} di ${passi.length}${c.a ? " · attenzione" : ""}</span><p class="testo">${esc(c.t)}</p>${fatti.includes(c.i) ? '<span class="fatta">✓ Già segnata come fatta</span>' : ""}</div>`;
+    else carta = `<div class="fase ${c.a ? "critica" : ""}"><span class="eti">${c.a ? "⚠ " : ""}Fase ${c.i + 1} di ${passi.length}${c.a ? " · attenzione" : ""}</span><p class="testo">${esc(c.t)}</p>${c.v && c.v.length ? `<div class="rif-w"><span class="eti">Sul foglio</span><div class="rif">${c.v.map(vis).join("")}</div></div>` : ""}${fatti.includes(c.i) ? '<span class="fatta">✓ Già segnata come fatta</span>' : ""}</div>`;
     const pedali = passi.length && !fine ? `<div class="pedali"><button type="button" data-act="prec" ${pos ? "" : "disabled"}>Indietro</button><button type="button" class="avanti ${c.regola ? "rosso" : ""}" data-act="avanti">${c.regola ? "Ho capito" : pos === C.length - 1 ? "Fatto, finito" : "Fatto, avanti"}</button></div>` : "<span></span>";
     const elenco = S.elenco ? `<ol class="elenco">${C.map((x, k) => `<li><button type="button" data-vai="${k}" class="${x.regola || x.a ? "crit" : ""} ${!x.regola && fatti.includes(x.i) ? "ok" : ""} ${k === pos ? "qui" : ""}"><span class="nn">${x.regola ? "!" : !x.regola && fatti.includes(x.i) ? "✓" : x.i + 1}</span><span>${esc(x.t)}</span></button></li>`).join("")}</ol>` : "";
     return `<div class="esec" id="esec" role="dialog" aria-modal="true" aria-label="${esc(p.titolo)}"><div class="esec-in">
@@ -491,11 +585,11 @@ h1, h2, h3, p, ol { margin: 0; }
   function foglioProc(p, lineaPred, copia, momPred) {
     const nuovo = !p || copia;
     const base = p || { titolo: "", linea: lineaPred || "", momento: momPred || "produzione", stazione: "", regola: "", passi: [], fonte: "" };
-    let P = (base.passi || []).map((s) => ({ t: s.t || "", a: !!s.a }));
+    let P = (base.passi || []).map((s) => ({ t: s.t || "", a: !!s.a, v: s.v }));
     if (!P.length) P.push({ t: "", a: false });
     const staz = () => stazioni(lineaDi($("#f-lin") ? $("#f-lin").value : base.linea));
     const optStaz = (sel) => `<option value="">Nessuna in particolare</option>` + staz().map((s) => `<option ${s === sel ? "selected" : ""}>${esc(s)}</option>`).join("") + (sel && !staz().includes(sel) ? `<option selected>${esc(sel)}</option>` : "");
-    const fasiHtml = () => P.map((s, i) => `<div class="fase-e ${s.a ? "crit" : ""}"><span class="n">${i + 1}</span><div><textarea class="f-fase" data-i="${i}" rows="2" aria-label="Fase ${i + 1}" placeholder="Cosa fare in questa fase">${esc(s.t)}</textarea><div class="fase-az"><button type="button" data-crit="${i}" aria-pressed="${s.a}">⚠ Critica</button><button type="button" data-su="${i}" ${i ? "" : "disabled"} aria-label="Sposta su">↑</button><button type="button" data-giu="${i}" ${i < P.length - 1 ? "" : "disabled"} aria-label="Sposta giù">↓</button><button type="button" data-via="${i}">Togli</button></div></div></div>`).join("");
+    const fasiHtml = () => P.map((s, i) => `<div class="fase-e ${s.a ? "crit" : ""}"><span class="n">${i + 1}</span><div><textarea class="f-fase" data-i="${i}" rows="2" aria-label="Fase ${i + 1}" placeholder="Cosa fare in questa fase">${esc(s.t)}</textarea><div class="fase-az"><button type="button" data-crit="${i}" aria-pressed="${s.a}">⚠ Critica</button><button type="button" data-su="${i}" ${i ? "" : "disabled"} aria-label="Sposta su">↑</button><button type="button" data-giu="${i}" ${i < P.length - 1 ? "" : "disabled"} aria-label="Sposta giù">↓</button><button type="button" data-via="${i}">Togli</button></div>${s.v && s.v.length ? `<small class="ha-rif">◧ ${s.v.length} ${s.v.length === 1 ? "riferimento" : "riferimenti"} dal foglio</small>` : ""}</div></div>`).join("");
     foglio(`<h3>${copia ? "Duplica procedimento" : nuovo ? "Nuovo procedimento" : "Modifica procedimento"}</h3>
       <div class="campo"><label for="f-tit">Titolo</label><input id="f-tit" value="${esc(base.titolo)}" placeholder="Es. Concatenamento (cambio vasca)"></div>
       <div class="due"><div class="campo"><label for="f-lin">Linea</label><select id="f-lin">${optLinee(base.linea)}</select></div>
@@ -534,7 +628,7 @@ h1, h2, h3, p, ol { margin: 0; }
         if (!titolo) { toast("Dai un titolo al procedimento"); $("#f-tit").focus(); return; }
         if (!$("#f-lin").value) { toast("Crea prima una linea"); return; }
         const dati = { titolo, linea: $("#f-lin").value, momento: $("#f-mom").value, stazione: $("#f-staz").value, regola: $("#f-reg").value.trim(),
-          passi: P.map((s) => ({ t: s.t.trim(), a: s.a })).filter((s) => s.t), fonte: $("#f-fonte").value.trim(), aggiornato: ora() };
+          passi: P.map((s) => Object.assign({ t: s.t.trim(), a: s.a }, s.v && s.v.length ? { v: s.v } : {})).filter((s) => s.t), fonte: $("#f-fonte").value.trim(), aggiornato: ora() };
         bloccaBottoni(true);
         try {
           if (nuovo) {
