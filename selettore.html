@@ -64,9 +64,9 @@ h1, h2, h3, p, ol { margin: 0; }
 .stadio-h h2 { font: 700 19px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .04em; flex: 1; }
 .stadio-h .lnk { border: 0; background: none; padding: 4px 0; font-weight: 700; font-size: 14px; color: var(--accent); }
 .stadio.fatto .stadio-h h2 { color: var(--ink-2); }
-.scelto { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
-.scelto b { font: 700 22px/1 var(--font-display); letter-spacing: .02em; }
-.scelto span:not(.spia) { color: var(--ink-2); font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scelto { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+.scelto b { font: 700 30px/1 var(--font-display); letter-spacing: .02em; }
+.scelto span { color: var(--ink-2); font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .tasti { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
 .tasti.larghi { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
@@ -83,9 +83,6 @@ h1, h2, h3, p, ol { margin: 0; }
 .tasto .barretta { height: 4px; border-radius: 2px; width: 28px; margin-top: 2px; }
 .tasto.aggiungi { border-style: dashed; box-shadow: none; background: transparent; place-content: center; text-align: center; color: var(--ink-2); font-weight: 700; }
 
-.spia { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
-.spia.on { box-shadow: 0 0 0 3px color-mix(in srgb, var(--spia) 30%, transparent); }
-
 /* ---------- Risultato ---------- */
 .esito { display: grid; gap: 8px; padding-block: 16px 6px; border-top: 2px solid var(--ink); }
 .esito-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
@@ -98,16 +95,32 @@ h1, h2, h3, p, ol { margin: 0; }
 .proc .reg { grid-column: 1; font-size: 13px; font-weight: 700; color: var(--crit); }
 .vuoto { color: var(--ink-2); font-size: 15px; padding: 6px 0; }
 
+/* ---------- Menu a tendina della linea ---------- */
+.menus { display: grid; gap: 8px; padding-block: 14px; border-top: 2px solid var(--ink); }
+.menu { border: 1px solid var(--line); border-radius: 14px; background: var(--key); overflow: hidden; }
+.menu-h { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 14px; border: 0; background: none; text-align: left; }
+.menu-h .barretta { width: 5px; height: 26px; border-radius: 3px; flex: none; }
+.menu-h .mt { flex: 1; min-width: 0; font: 700 18px/1.15 var(--font-display); text-transform: uppercase; letter-spacing: .03em; }
+.menu-h .mc { font: 500 12.5px var(--font-mono); color: var(--ink); text-align: right; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menu-h .mc.spento { color: var(--ink-2); }
+.menu-h .chev { font-size: 16px; color: var(--ink-2); transition: transform .15s; }
+.menu-h[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.menu-h[aria-expanded="true"] { background: var(--panel); border-bottom: 1px solid var(--line); }
+.menu-b { display: grid; gap: 10px; padding: 12px 14px 14px; }
+.prod-n { font: 700 24px/1.1 var(--font-display); }
+.sotto { font: 700 12px var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); margin-top: 4px; }
+.regola-r { display: grid; gap: 2px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--crit); background: var(--crit-soft); color: var(--crit); }
+.regola-r small { font-size: 12.5px; opacity: .85; }
+.percorso { display: grid; gap: 6px; padding: 0; list-style: none; counter-reset: m; }
+.percorso li { display: flex; align-items: baseline; gap: 10px; counter-increment: m; padding: 8px 10px; border-radius: 10px; background: var(--panel); }
+.percorso li::before { content: counter(m, decimal-leading-zero); font: 700 12px var(--font-mono); color: var(--ink-2); }
+.percorso li span { flex: 1; font-size: 15px; font-family: var(--font-body); font-weight: 600; }
+.percorso li small { font: 500 12px var(--font-mono); color: var(--ink-2); }
+
 /* ---------- Scheda linea ---------- */
 .scheda { display: grid; gap: 12px; margin-top: 18px; padding: 14px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); }
 .scheda h3 { font: 700 17px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .05em; }
 .scheda-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.lampade { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-.lampade button { display: grid; justify-items: center; gap: 6px; padding: 10px 4px 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--key); font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
-.lampade button .spia { width: 14px; height: 14px; opacity: .35; }
-.lampade button[aria-pressed="true"] { color: var(--ink); border-color: var(--ink); }
-.lampade button[aria-pressed="true"] .spia { opacity: 1; box-shadow: 0 0 0 4px color-mix(in srgb, var(--spia) 28%, transparent); }
-.lampade button:disabled { cursor: default; }
 .note { white-space: pre-wrap; font-size: 15px; }
 .ap { display: grid; gap: 2px; width: 100%; text-align: left; padding: 10px 0; border: 0; border-top: 1px solid var(--line); background: none; }
 .ap span { font-size: 15px; white-space: pre-wrap; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -210,47 +223,46 @@ h1, h2, h3, p, ol { margin: 0; }
 (function () {
   "use strict";
   /* ---------- Vocabolario del reparto ---------- */
+  /* Momenti/argomenti: ogni procedimento ne ha uno e finisce nel menu omonimo della linea */
   const MOMENTI = [
-    ["avvio", "Avvio linea", "#23924A"],
-    ["produzione", "Produzione", "#1E5EA8"],
-    ["cambio", "Cambio vasca e formato", "#C98F00"],
-    ["pulizia", "Pulizia linea", "#0E8BA6"],
-    ["reclage", "Reclage", "#D2602A"],
-    ["lavaggio", "Lavaggio riempitrice", "#5468D4"],
-    ["fine", "Fine turno", "#8150C9"]
+    ["sicurezza", "Sicurezza e DPI", "#CC3329", "DPI da indossare, rischi della linea, cosa non fare mai."],
+    ["avvio", "Avvio linea", "#23924A", "Controlli e passaggi per far partire la linea a inizio turno."],
+    ["produzione", "Produzione", "#1E5EA8", "Velocità, dosaggi, regolazioni durante la marcia."],
+    ["cambio", "Cambio vasca e formato", "#C98F00", "Concatenamento, cambio vasca, cambio formato o prodotto."],
+    ["lavaggio", "Lavaggio e sterilizzazione", "#5468D4", "Che lavaggio si fa, quando, quanto dura (CIP, sterilizzazione)."],
+    ["reclage", "Reclage", "#D2602A", "Come si fa il reclage su questa linea."],
+    ["pulizia", "Pulizia linea", "#0E8BA6", "Cosa pulire, con cosa e ogni quanto."],
+    ["qualita", "Controlli qualità", "#2E8C7A", "Pesate, limiti di legge, controllo etichette e lotti."],
+    ["allarmi", "Allarmi e guasti", "#B5541C", "Codici allarme frequenti e cosa fare quando compaiono."],
+    ["fine", "Fine turno e consegne", "#8150C9", "Chiusura, consegne al turno dopo, cosa lasciare in ordine."]
   ];
   const MOM = Object.fromEntries(MOMENTI.map((m) => [m[0], m]));
-  const STATI = [
-    ["operativa", "Operativa", "var(--ok)"],
-    ["manutenzione", "Manutenz.", "var(--warn)"],
-    ["ferma", "Ferma", "var(--crit)"],
-    ["nd", "Da definire", "var(--ink-2)"]
-  ];
-  const STATO = Object.fromEntries(STATI.map((s) => [s[0], s]));
   const STAZ_BASE = ["Alimentatori", "Riempitrice", "Etichettatrice", "Scatolatrice", "Pellettizzatore"];
 
   const S = { db: null, ready: false, canWrite: true, lines: [], proc: [], appunti: [], okL: false, err: false,
-    linea: "", mom: "", staz: "", q: "", run: "" };
+    linea: "", q: "", run: "" };
 
   /* Selezione, spunte e posizione di esecuzione: comodità personali, restano su questo dispositivo */
   const leggi = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || "null") || d; } catch (e) { return d; } };
   const scrivi = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
-  let SP = leggi("spunte", {}), POS = leggi("posizione", {});
+  let SP = leggi("spunte", {}), POS = leggi("posizione", {}), APERTI = leggi("menu-aperti", {});
   Object.assign(S, leggi("selezione", {}));
-  const salvaSel = () => scrivi("selezione", { linea: S.linea, mom: S.mom, staz: S.staz });
+  const salvaSel = () => scrivi("selezione", { linea: S.linea });
 
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const nat = (a, b) => String(a || "").localeCompare(String(b || ""), "it", { numeric: true });
   const sigla = (l) => (l && (l.nome || String(l.codice || "").replace(/^L\.\s*/i, ""))) || "?";
   const stazioni = (l) => (l && Array.isArray(l.stazioni) && l.stazioni.length ? l.stazioni : STAZ_BASE);
-  const stato = (l) => STATO[l && l.stato] || STATO.nd;
   const lineaDi = (codice) => S.lines.find((l) => l.codice === codice);
   const procDi = (l) => S.proc.filter((p) => p.linea === l.codice);
   const apDi = (l) => S.appunti.filter((a) => a.linea === l.codice);
   const momentoDi = (p) => {
     if (p.momento && MOM[p.momento]) return p.momento;
     const t = String(p.titolo || "").toLowerCase();
+    if (/sicurezz|dpi\b/.test(t)) return "sicurezza";
+    if (/allarm|guast|errore/.test(t)) return "allarmi";
+    if (/pesat|pesi\b|qualit|controll/.test(t)) return "qualita";
     if (/reclage/.test(t)) return "reclage";
     if (/lavagg|cip/.test(t)) return "lavaggio";
     if (/concaten|cambio/.test(t)) return "cambio";
@@ -259,11 +271,9 @@ h1, h2, h3, p, ol { margin: 0; }
     if (/fine turno|chiusura|consegn/.test(t)) return "fine";
     return "produzione";
   };
-  const ordineMom = (p) => MOMENTI.findIndex((m) => m[0] === momentoDi(p));
   const dfmt = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
   const quando = (iso) => { const d = new Date(iso); return isNaN(d) ? "" : dfmt.format(d); };
   const ora = () => new Date().toISOString();
-  const spia = (colore, on) => `<span class="spia ${on ? "on" : ""}" style="background:${colore};--spia:${colore}"></span>`;
   function toast(t) { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (el.hidden = true), 2300); }
   function errore(e, cosa) {
     const c = e && e.code;
@@ -272,67 +282,67 @@ h1, h2, h3, p, ol { margin: 0; }
     return cosa + ": controlla la connessione e riprova";
   }
 
-  /* ---------- Pannello di selezione ---------- */
+  /* ---------- Pannello ---------- */
+  const tastoLinea = (x) => { const n = procDi(x).length, pn = x.prodotto && x.prodotto.nome;
+    return `<button class="tasto" type="button" data-linea="${esc(x.codice)}"><span class="cnt">${n || ""}</span><span class="big">${esc(sigla(x))}</span><span class="sub">${esc(pn || x.codice)}</span></button>`; };
+  const MENU = ["prodotto", "sicurezza", "avvio", "produzione", "cambio", "lavaggio", "reclage", "pulizia", "qualita", "allarmi", "fine", "macchine", "appunti"];
   function vPannello() {
     if (!S.lines.length) {
       return `<div class="avviso"><b>Nessuna linea sul pannello.</b><p>Aggiungi la prima linea: poi potrai scriverci sopra procedimenti e appunti.</p>${S.canWrite ? '<div class="az"><button class="btn primary" type="button" data-act="nuova-linea">+ Aggiungi linea</button></div>' : ""}</div>`;
     }
     const l = lineaDi(S.linea);
-    if (!l) { S.linea = ""; S.mom = ""; S.staz = ""; }
-    let h = "";
-
-    /* 1 · Linea */
     if (!l) {
-      h += `<section class="stadio"><div class="stadio-h"><span class="n">1</span><h2>Su che linea sei?</h2></div><div class="tasti">${S.lines.map((x) => {
-        const s = stato(x), n = procDi(x).length, pn = x.prodotto && x.prodotto.nome;
-        return `<button class="tasto" type="button" data-linea="${esc(x.codice)}"><span class="cnt">${n || ""}</span><span class="big">${esc(sigla(x))}</span><span class="sub">${spia(s[2])} ${esc(pn || s[1])}</span></button>`;
-      }).join("")}${S.canWrite ? '<button class="tasto aggiungi" type="button" data-act="nuova-linea">+ Linea</button>' : ""}</div></section>`;
-      return h;
+      S.linea = "";
+      return `<section class="stadio"><div class="stadio-h"><h2>Su che linea sei?</h2></div><div class="tasti">${S.lines.map(tastoLinea).join("")}${S.canWrite ? '<button class="tasto aggiungi" type="button" data-act="nuova-linea">+ Linea</button>' : ""}</div></section>`;
     }
-    const s = stato(l), pn = l.prodotto && l.prodotto.nome;
-    h += `<section class="stadio fatto"><div class="stadio-h"><span class="n">1</span><h2>Linea</h2><button class="lnk" type="button" data-act="cambia-linea">Cambia</button></div>
-      <div class="scelto">${spia(s[2], true)}<b>${esc(sigla(l))}</b><span>${esc([l.codice, pn || "prodotto da indicare", s[1]].join(" · "))}</span></div></section>`;
-
-    const tutti = procDi(l);
-    /* 2 · Momento */
-    if (tutti.length) {
-      const conta = (k) => tutti.filter((p) => momentoDi(p) === k && (!S.staz || p.stazione === S.staz)).length;
-      h += `<section class="stadio"><div class="stadio-h"><span class="n">2</span><h2>Cosa stai facendo?</h2>${S.mom ? '<button class="lnk" type="button" data-mom="">Tutti</button>' : ""}</div>
-        <div class="tasti larghi">${MOMENTI.map(([k, n, c]) => { const q = conta(k); return `<button class="tasto" type="button" data-mom="${k}" aria-pressed="${S.mom === k}" ${q || S.mom === k ? "" : "disabled"}><span class="cnt">${q || ""}</span><span class="nome">${esc(n)}</span><span class="barretta" style="background:${c}"></span></button>`; }).join("")}</div></section>`;
-
-      /* 3 · Macchina */
-      const staz = stazioni(l).concat(tutti.map((p) => p.stazione).filter((x) => x && !stazioni(l).includes(x)));
-      const contaS = (st) => tutti.filter((p) => p.stazione === st && (!S.mom || momentoDi(p) === S.mom)).length;
-      h += `<section class="stadio"><div class="stadio-h"><span class="n">3</span><h2>Su che macchina?</h2>${S.staz ? '<button class="lnk" type="button" data-staz="">Tutte</button>' : ""}</div>
-        <div class="tasti">${staz.map((st, i) => { const q = contaS(st); return `<button class="tasto" type="button" data-staz="${esc(st)}" aria-pressed="${S.staz === st}" ${q || S.staz === st ? "" : "disabled"}><span class="cnt">${q || ""}</span><span class="sub mono">${String(i + 1).padStart(2, "0")}</span><span class="nome">${esc(st)}</span></button>`; }).join("")}</div></section>`;
+    const pn = l.prodotto && l.prodotto.nome, tuttiAperti = MENU.every((k) => APERTI[k]);
+    return `<section class="stadio fatto"><div class="stadio-h"><h2>Linea</h2><button class="lnk" type="button" data-act="cambia-linea">Cambia linea</button></div>
+      <div class="scelto"><b>${esc(sigla(l))}</b><span>${esc([l.codice, pn || "prodotto da indicare"].join(" · "))}</span>${S.canWrite ? '<button class="btn" type="button" data-act="mod-linea">Modifica</button>' : ""}</div>
+      ${l.note ? `<p class="note">${esc(l.note)}</p>` : ""}</section>
+      <section class="menus"><div class="stadio-h"><h2>Tutto su ${esc(sigla(l))}</h2><button class="lnk" type="button" data-act="tutti-menu">${tuttiAperti ? "Chiudi tutti" : "Apri tutti"}</button></div>
+      ${MENU.map((k) => menu(l, k)).join("")}</section>`;
+  }
+  function menu(l, k) {
+    const aperto = !!APERTI[k], sez = l.sezioni || {}, testo = sez[k] || "", w = S.canWrite;
+    const blocNote = (hint) => (testo ? `<p class="note">${esc(testo)}</p>` : `<p class="vuoto">${esc(hint)}</p>`);
+    const btnNote = w ? `<button class="btn" type="button" data-act="note-sez" data-k="${k}">${testo ? "Modifica note" : "+ Scrivi note"}</button>` : "";
+    let titolo, colore, conto, corpo;
+    if (k === "prodotto") {
+      const pr = l.prodotto || {};
+      titolo = "Prodotto"; colore = "var(--ink)"; conto = pr.nome || "da indicare";
+      corpo = `${pr.nome ? `<p class="prod-n">${esc(pr.nome)}</p>` : '<p class="vuoto">Nessun prodotto indicato per questa linea.</p>'}${pr.descrizione ? `<p class="note">${esc(pr.descrizione)}</p>` : ""}
+        ${testo ? `<p class="note">${esc(testo)}</p>` : '<p class="vuoto">Formato, codici, viscosità, particolarità del prodotto.</p>'}
+        ${w ? '<div class="az"><button class="btn" type="button" data-act="mod-prodotto">Modifica prodotto</button></div>' : ""}`;
+    } else if (k === "macchine") {
+      const st = stazioni(l);
+      titolo = "Macchine"; colore = "var(--ink-2)"; conto = st.length + " in linea";
+      corpo = `<ol class="percorso">${st.map((x) => { const n = procDi(l).filter((p) => p.stazione === x).length; return `<li><span class="mono">${esc(x)}</span>${n ? `<small>${n} proc.</small>` : ""}</li>`; }).join("")}</ol>
+        ${blocNote("Particolarità delle macchine, regolazioni, ricambi.")}<div class="az">${btnNote}${w ? '<button class="btn" type="button" data-act="mod-linea">Cambia macchine</button>' : ""}</div>`;
+    } else if (k === "appunti") {
+      const aps = apDi(l);
+      titolo = "Appunti"; colore = "var(--accent)"; conto = aps.length ? String(aps.length) : "nessuno";
+      corpo = `${w ? `<div class="compone"><textarea id="ap-nuovo" placeholder="Una cosa vista in turno su ${esc(sigla(l))}, un promemoria per chi arriva dopo…" aria-label="Nuovo appunto"></textarea><div class="az"><button class="btn primary" type="button" data-act="salva-ap">Salva appunto</button></div></div>` : ""}
+        <div>${aps.length ? aps.map((a) => rigaAp(a)).join("") : '<p class="vuoto">Nessun appunto su questa linea.</p>'}</div>`;
+    } else {
+      const m = MOM[k], ps = procDi(l).filter((p) => momentoDi(p) === k).sort((a, b) => nat(a.titolo, b.titolo));
+      titolo = m[1]; colore = m[2];
+      let extra = "";
+      if (k === "sicurezza") {
+        const reg = procDi(l).filter((p) => p.regola && momentoDi(p) !== "sicurezza");
+        if (reg.length) extra = `<p class="sotto">Regole critiche degli altri procedimenti</p>${reg.map((p) => `<button class="regola-r" type="button" data-proc="${esc(p.id)}"><b>⚠ ${esc(p.regola)}</b><small>${esc(p.titolo)}</small></button>`).join("")}`;
+        conto = [ps.length && ps.length + " proc.", reg.length && reg.length + (reg.length === 1 ? " regola" : " regole")].filter(Boolean).join(" · ");
+      } else conto = ps.length ? ps.length + " proc." : "";
+      conto = conto || (testo ? "note" : "vuoto");
+      corpo = `${blocNote(m[3])}${ps.map((p) => rigaProc(p)).join("")}${extra}
+        ${w ? `<div class="az">${btnNote}<button class="btn" type="button" data-act="nuovo-proc" data-k="${k}">+ Procedimento</button></div>` : ""}`;
     }
-
-    /* Esito */
-    const vis = tutti.filter((p) => (!S.mom || momentoDi(p) === S.mom) && (!S.staz || p.stazione === S.staz))
-      .sort((a, b) => ordineMom(a) - ordineMom(b) || nat(a.titolo, b.titolo));
-    const filtro = [S.mom && MOM[S.mom][1], S.staz].filter(Boolean).join(" · ") || "nessun filtro";
-    h += `<section class="esito"><div class="esito-h"><h2>${vis.length} ${vis.length === 1 ? "procedimento" : "procedimenti"}</h2><span>${esc(sigla(l))} · ${esc(filtro)}</span></div>
-      ${vis.length ? vis.map(rigaProc).join("") : `<p class="vuoto">${tutti.length ? "Niente con questa combinazione. Togli un filtro." : "Su questa linea non c'è ancora nessun procedimento scritto."}</p>`}
-      ${S.canWrite ? '<div class="az"><button class="btn" type="button" data-act="nuovo-proc">+ Scrivi procedimento</button></div>' : ""}</section>`;
-
-    h += schedaLinea(l);
-    return h;
+    const vuoto = conto === "vuoto" || conto === "nessuno" || conto === "da indicare";
+    return `<section class="menu"><button class="menu-h" type="button" data-menu="${k}" aria-expanded="${aperto}"><span class="barretta" style="background:${colore}"></span><span class="mt">${esc(titolo)}</span><span class="mc ${vuoto ? "spento" : ""}">${esc(conto)}</span><span class="chev" aria-hidden="true">▾</span></button>${aperto ? `<div class="menu-b">${corpo}</div>` : ""}</section>`;
   }
   function rigaProc(p, conLinea) {
     const m = MOM[momentoDi(p)], n = (p.passi || []).length, fatti = (SP[p.id] || []).filter((i) => i < n).length;
-    const meta = [conLinea ? p.linea : "", m[1], p.stazione, n ? (fatti ? `${fatti}/${n} fasi` : `${n} fasi`) : "fasi da scrivere"].filter(Boolean).join(" · ");
+    const meta = [conLinea ? p.linea : "", conLinea ? m[1] : "", p.stazione, n ? (fatti ? `${fatti}/${n} fasi` : `${n} fasi`) : "fasi da scrivere"].filter(Boolean).join(" · ");
     return `<button class="proc" type="button" data-proc="${esc(p.id)}"><b>${esc(p.titolo || "Senza titolo")}</b><span class="vai">${fatti && fatti < n ? "Riprendi" : "Esegui"}</span><span class="meta">${esc(meta)}</span>${p.regola ? '<span class="reg">⚠ Ha una regola critica</span>' : ""}</button>`;
-  }
-  function schedaLinea(l) {
-    const aps = apDi(l), pd = l.prodotto && l.prodotto.descrizione, w = S.canWrite ? "" : "disabled";
-    return `<section class="scheda">
-      <div class="scheda-h"><h3>Linea ${esc(sigla(l))}</h3>${S.canWrite ? '<button class="btn" type="button" data-act="mod-linea">Modifica</button>' : ""}</div>
-      <div class="lampade" role="group" aria-label="Stato della linea">${STATI.map((st) => `<button type="button" data-stato="${st[0]}" aria-pressed="${stato(l) === st}" ${w}>${spia(st[2])}${st[1]}</button>`).join("")}</div>
-      ${pd ? `<p class="note">${esc(pd)}</p>` : ""}${l.note ? `<p class="note">${esc(l.note)}</p>` : ""}
-      <div class="scheda-h" style="margin-top:4px"><h3>Appunti · ${aps.length}</h3></div>
-      ${S.canWrite ? `<div class="compone"><textarea id="ap-nuovo" placeholder="Una cosa vista in turno su ${esc(sigla(l))}, un promemoria per chi arriva dopo…" aria-label="Nuovo appunto"></textarea><div class="az"><button class="btn primary" type="button" data-act="salva-ap">Salva appunto</button></div></div>` : ""}
-      <div>${aps.length ? aps.map((a) => rigaAp(a)).join("") : '<p class="vuoto">Nessun appunto su questa linea.</p>'}</div>
-    </section>`;
   }
   const rigaAp = (a, conLinea) => `<button class="ap" type="button" data-ap="${esc(a.id)}"><span>${esc(a.testo)}</span><small>${esc([conLinea ? a.linea : "", quando(a.creato)].filter(Boolean).join(" · "))}</small></button>`;
 
@@ -340,13 +350,13 @@ h1, h2, h3, p, ol { margin: 0; }
   function vRicerca() {
     const q = S.q.trim().toLowerCase();
     const has = (arr) => arr.join(" ").toLowerCase().includes(q);
-    const L = S.lines.filter((l) => has([l.codice, l.nome, l.prodotto && l.prodotto.nome, l.prodotto && l.prodotto.descrizione, l.note, stazioni(l).join(" ")]));
+    const L = S.lines.filter((l) => has([l.codice, l.nome, l.prodotto && l.prodotto.nome, l.prodotto && l.prodotto.descrizione, l.note, stazioni(l).join(" "), Object.values(l.sezioni || {}).join(" ")]));
     const P = S.proc.filter((p) => has([p.titolo, p.regola, p.stazione, p.fonte, p.linea, MOM[momentoDi(p)][1], (p.passi || []).map((x) => x.t).join(" ")]));
     const A = S.appunti.filter((a) => has([a.testo, a.linea]));
     const tot = L.length + P.length + A.length;
     let h = `<section class="esito"><div class="esito-h"><h2>${tot} ${tot === 1 ? "risultato" : "risultati"}</h2><span>“${esc(S.q.trim())}”</span></div>`;
     if (!tot) h += `<p class="vuoto">Niente contiene questa parola. Prova con il nome di una macchina o un codice.</p>`;
-    if (L.length) h += `<div class="tasti">${L.map((x) => `<button class="tasto" type="button" data-linea="${esc(x.codice)}"><span class="cnt">${procDi(x).length || ""}</span><span class="big">${esc(sigla(x))}</span><span class="sub">${spia(stato(x)[2])} ${esc(stato(x)[1])}</span></button>`).join("")}</div>`;
+    if (L.length) h += `<div class="tasti">${L.map(tastoLinea).join("")}</div>`;
     h += P.map((p) => rigaProc(p, true)).join("");
     if (A.length) h += `<div>${A.map((a) => rigaAp(a, true)).join("")}</div>`;
     return h + "</section>";
@@ -427,14 +437,13 @@ h1, h2, h3, p, ol { margin: 0; }
   }
 
   function foglioLinea(l) {
-    const nuova = !l; l = l || { codice: "", nome: "", prodotto: { nome: "", descrizione: "" }, stato: "nd", note: "" };
+    const nuova = !l; l = l || { codice: "", nome: "", prodotto: { nome: "", descrizione: "" }, note: "" };
     foglio(`<h3>${nuova ? "Nuova linea" : "Modifica " + esc(l.codice)}</h3>
       <div class="due"><div class="campo"><label for="f-cod">Codice</label><input id="f-cod" value="${esc(l.codice)}" placeholder="L. KZ" autocomplete="off"></div>
       <div class="campo"><label for="f-sig">Sigla sul tasto</label><input id="f-sig" value="${esc(l.nome || "")}" placeholder="KZ" maxlength="6" autocomplete="off"></div></div>
       <div class="campo"><label for="f-pn">Prodotto</label><input id="f-pn" value="${esc(l.prodotto && l.prodotto.nome)}" placeholder="Cosa produce la linea"></div>
       <div class="campo"><label for="f-pd">Descrizione prodotto</label><textarea id="f-pd" rows="2" placeholder="Formato, confezione, particolarità">${esc(l.prodotto && l.prodotto.descrizione)}</textarea></div>
-      <div class="campo"><label for="f-st">Stato</label><select id="f-st">${STATI.map((s) => `<option value="${s[0]}" ${stato(l)[0] === s[0] ? "selected" : ""}>${s[1]}</option>`).join("")}</select></div>
-      <div class="campo"><label for="f-staz">Macchine in ordine</label><textarea id="f-staz" rows="5">${esc(stazioni(l).join("\n"))}</textarea><small>Una per riga, dalla prima all'ultima. Diventano i tasti del passo 3.</small></div>
+      <div class="campo"><label for="f-staz">Macchine in ordine</label><textarea id="f-staz" rows="5">${esc(stazioni(l).join("\n"))}</textarea><small>Una per riga, dalla prima all'ultima. Compaiono nel menu Macchine.</small></div>
       <div class="campo"><label for="f-note">Note</label><textarea id="f-note" rows="3" placeholder="Cose da sapere su questa linea">${esc(l.note || "")}</textarea></div>
       <div id="f-conf"></div>
       <div class="f-az">${nuova ? "" : '<button class="btn danger" type="button" id="f-del">Elimina</button>'}<div><button class="btn" type="button" id="f-ann">Annulla</button><button class="btn primary" type="button" id="f-ok">${nuova ? "Crea linea" : "Salva"}</button></div></div>`, () => {
@@ -444,7 +453,7 @@ h1, h2, h3, p, ol { margin: 0; }
         if (!codice) { toast("Scrivi il codice della linea"); $("#f-cod").focus(); return; }
         if (S.lines.some((x) => x.codice === codice && x.id !== l.id)) { toast("Esiste già una linea " + codice); return; }
         const staz = $("#f-staz").value.split("\n").map((s) => s.trim()).filter(Boolean);
-        const dati = { codice, nome, stato: $("#f-st").value, note: $("#f-note").value.trim(), stazioni: staz.length ? staz : STAZ_BASE,
+        const dati = { codice, nome, note: $("#f-note").value.trim(), stazioni: staz.length ? staz : STAZ_BASE,
           prodotto: { nome: $("#f-pn").value.trim(), descrizione: $("#f-pd").value.trim() }, aggiornato: ora() };
         bloccaBottoni(true);
         try {
@@ -452,7 +461,7 @@ h1, h2, h3, p, ol { margin: 0; }
             const slug = nome.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
             const id = slug && !S.lines.some((x) => x.id === "l-" + slug) ? "l-" + slug : undefined;
             await S.db.collection("linee").doc(id).set(Object.assign({ metodo: [], parametri: {}, tolleranze: [], creato: ora() }, dati));
-            S.linea = codice; S.mom = ""; S.staz = ""; salvaSel(); toast("Linea " + codice + " creata");
+            S.linea = codice; salvaSel(); toast("Linea " + codice + " creata");
           } else {
             await S.db.doc("linee/" + l.id).update(dati);
             if (codice !== l.codice) {
@@ -473,7 +482,7 @@ h1, h2, h3, p, ol { margin: 0; }
             for (const p of procDi(l)) await S.db.doc("procedure/" + p.id).delete();
             for (const x of apDi(l)) await S.db.doc("appunti/" + x.id).delete();
             await S.db.doc("linee/" + l.id).delete();
-            if (S.linea === l.codice) { S.linea = ""; S.mom = ""; S.staz = ""; salvaSel(); }
+            if (S.linea === l.codice) { S.linea = ""; salvaSel(); }
             toast("Linea eliminata"); chiudiFoglio();
           } catch (e) { bloccaBottoni(false); toast(errore(e, "Linea non eliminata")); }
         });
@@ -481,9 +490,9 @@ h1, h2, h3, p, ol { margin: 0; }
     });
   }
 
-  function foglioProc(p, lineaPred, copia) {
+  function foglioProc(p, lineaPred, copia, momPred) {
     const nuovo = !p || copia;
-    const base = p || { titolo: "", linea: lineaPred || "", momento: S.mom || "produzione", stazione: S.staz || "", regola: "", passi: [], fonte: "" };
+    const base = p || { titolo: "", linea: lineaPred || "", momento: momPred || "produzione", stazione: "", regola: "", passi: [], fonte: "" };
     let P = (base.passi || []).map((s) => ({ t: s.t || "", a: !!s.a }));
     if (!P.length) P.push({ t: "", a: false });
     const staz = () => stazioni(lineaDi($("#f-lin") ? $("#f-lin").value : base.linea));
@@ -492,7 +501,7 @@ h1, h2, h3, p, ol { margin: 0; }
     foglio(`<h3>${copia ? "Duplica procedimento" : nuovo ? "Nuovo procedimento" : "Modifica procedimento"}</h3>
       <div class="campo"><label for="f-tit">Titolo</label><input id="f-tit" value="${esc(base.titolo)}" placeholder="Es. Concatenamento (cambio vasca)"></div>
       <div class="due"><div class="campo"><label for="f-lin">Linea</label><select id="f-lin">${optLinee(base.linea)}</select></div>
-      <div class="campo"><label for="f-mom">Momento del turno</label><select id="f-mom">${MOMENTI.map(([k, n]) => `<option value="${k}" ${momentoDi(base) === k ? "selected" : ""}>${n}</option>`).join("")}</select></div></div>
+      <div class="campo"><label for="f-mom">Menu</label><select id="f-mom">${MOMENTI.map(([k, n]) => `<option value="${k}" ${momentoDi(base) === k ? "selected" : ""}>${n}</option>`).join("")}</select></div></div>
       <div class="campo"><label for="f-staz">Macchina</label><select id="f-staz">${optStaz(base.stazione)}</select></div>
       <div class="campo"><label for="f-reg">Regola critica</label><textarea id="f-reg" rows="2" placeholder="Quello che non va mai sbagliato. Va confermata prima della fase 1. Lascia vuoto se non c'è.">${esc(base.regola)}</textarea></div>
       <div class="campo"><span class="lbl">Fasi</span><div class="fasi" id="f-fasi">${fasiHtml()}</div>
@@ -593,10 +602,39 @@ h1, h2, h3, p, ol { margin: 0; }
     return [p.titolo, p.linea + (p.stazione ? " · " + p.stazione : ""), p.regola ? "REGOLA: " + p.regola : "", "",
       ...(p.passi || []).map((s, i) => `${i + 1}. ${s.a ? "⚠ " : ""}${s.t}`), p.fonte ? "\n" + p.fonte : ""].filter((x, i) => x || i === 3).join("\n");
   }
-  async function cambiaStato(l, k) {
-    if (!S.canWrite || !l || l.stato === k) return;
-    try { await S.db.doc("linee/" + l.id).update({ stato: k, aggiornato: ora() }); toast(sigla(l) + " · " + STATO[k][1]); }
-    catch (e) { toast(errore(e, "Stato non cambiato")); }
+  function foglioTesto(l, k) {
+    const m = MOM[k] || [k, k === "macchine" ? "Macchine" : k, "", ""];
+    foglio(`<h3>${esc(m[1])} · ${esc(sigla(l))}</h3>
+      <div class="campo"><label for="f-tx">Note del menu</label><textarea id="f-tx" rows="8" placeholder="${esc(m[3] || "Scrivi qui…")}">${esc((l.sezioni || {})[k] || "")}</textarea><small>Le vede chiunque apra questo menu sulla linea ${esc(sigla(l))}.</small></div>
+      <div class="f-az"><div><button class="btn" type="button" id="f-ann">Annulla</button><button class="btn primary" type="button" id="f-ok">Salva</button></div></div>`, () => {
+      $("#f-ann").onclick = () => chiudiFoglio();
+      $("#f-ok").onclick = async () => {
+        const sez = Object.assign({}, l.sezioni || {}), t = $("#f-tx").value.trim();
+        if (t) sez[k] = t; else delete sez[k];
+        bloccaBottoni(true);
+        try { await S.db.doc("linee/" + l.id).update({ sezioni: sez, aggiornato: ora() }); toast("Note salvate"); chiudiFoglio(); }
+        catch (e) { bloccaBottoni(false); toast(errore(e, "Note non salvate")); }
+      };
+    });
+  }
+  function foglioProdotto(l) {
+    const pr = l.prodotto || {};
+    foglio(`<h3>Prodotto · ${esc(sigla(l))}</h3>
+      <div class="campo"><label for="f-pn">Nome</label><input id="f-pn" value="${esc(pr.nome)}" placeholder="Cosa produce la linea"></div>
+      <div class="campo"><label for="f-pd">Descrizione</label><textarea id="f-pd" rows="2" placeholder="Formato, confezione">${esc(pr.descrizione)}</textarea></div>
+      <div class="campo"><label for="f-tx">Note sul prodotto</label><textarea id="f-tx" rows="5" placeholder="Codici, viscosità, attenzioni particolari">${esc((l.sezioni || {}).prodotto || "")}</textarea></div>
+      <div class="f-az"><div><button class="btn" type="button" id="f-ann">Annulla</button><button class="btn primary" type="button" id="f-ok">Salva</button></div></div>`, () => {
+      $("#f-ann").onclick = () => chiudiFoglio();
+      $("#f-ok").onclick = async () => {
+        const sez = Object.assign({}, l.sezioni || {}), t = $("#f-tx").value.trim();
+        if (t) sez.prodotto = t; else delete sez.prodotto;
+        bloccaBottoni(true);
+        try {
+          await S.db.doc("linee/" + l.id).update({ prodotto: Object.assign({}, pr, { nome: $("#f-pn").value.trim(), descrizione: $("#f-pd").value.trim() }), sezioni: sez, aggiornato: ora() });
+          toast("Prodotto salvato"); chiudiFoglio();
+        } catch (e) { bloccaBottoni(false); toast(errore(e, "Prodotto non salvato")); }
+      };
+    });
   }
 
   /* ---------- Eventi ---------- */
@@ -604,19 +642,20 @@ h1, h2, h3, p, ol { margin: 0; }
     const b = e.target.closest("button"); if (!b || b.disabled) return;
     if (b.closest("#foglio")) return;
     const d = b.dataset, l = lineaDi(S.linea), p = S.run && S.proc.find((x) => x.id === S.run);
-    if (d.linea) { S.linea = d.linea; S.mom = ""; S.staz = ""; S.q = ""; $("#cerca").value = ""; salvaSel(); render(); window.scrollTo(0, 0); return; }
-    if (d.mom != null) { S.mom = S.mom === d.mom ? "" : d.mom; salvaSel(); render(); return; }
-    if (d.staz != null) { S.staz = S.staz === d.staz ? "" : d.staz; salvaSel(); render(); return; }
+    if (d.linea) { S.linea = d.linea; S.q = ""; $("#cerca").value = ""; salvaSel(); render(); window.scrollTo(0, 0); return; }
+    if (d.menu) { APERTI[d.menu] = !APERTI[d.menu]; scrivi("menu-aperti", APERTI); render(); return; }
     if (d.proc) { apriEsec(d.proc); return; }
     if (d.ap) { const a = S.appunti.find((x) => x.id === d.ap); if (a) foglioAp(a); return; }
-    if (d.stato) { cambiaStato(l, d.stato); return; }
     if (d.vai != null && p) { const daElenco = !!b.closest(".elenco"); POS[p.id] = +d.vai; scrivi("posizione", POS); renderEsec(); if (daElenco) $("#esec").scrollTop = 0; return; }
     switch (d.act) {
-      case "cambia-linea": S.linea = ""; S.mom = ""; S.staz = ""; salvaSel(); render(); break;
+      case "cambia-linea": S.linea = ""; salvaSel(); render(); window.scrollTo(0, 0); break;
+      case "tutti-menu": { const tutti = MENU.every((k) => APERTI[k]); MENU.forEach((k) => (APERTI[k] = !tutti)); scrivi("menu-aperti", APERTI); render(); break; }
+      case "note-sez": if (l) foglioTesto(l, d.k); break;
+      case "mod-prodotto": if (l) foglioProdotto(l); break;
       case "nuova-linea": foglioLinea(null); break;
       case "mod-linea": if (l) foglioLinea(l); break;
       case "appunti": foglioTuttiAp(); break;
-      case "nuovo-proc": foglioProc(null, l && l.codice); break;
+      case "nuovo-proc": foglioProc(null, l && l.codice, false, d.k); break;
       case "mod-proc": if (p) foglioProc(p); break;
       case "dup-proc": if (p) foglioProc(p, null, true); break;
       case "copia-proc": if (p) copia(testoProc(p)); break;
