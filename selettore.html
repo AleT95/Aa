@@ -230,6 +230,11 @@ h1, h2, h3, p, ol { margin: 0; }
 .peso { display: grid; grid-template-columns: auto auto; align-items: center; gap: 6px 10px; padding: 10px; background: #1B3D8C; color: #FFFFFF; font: 700 12px var(--font-mono); }
 .peso .auto { grid-column: 1 / -1; background: #2E9E44; text-align: center; padding: 4px; }
 .peso .lbl { color: #F2C200; font-size: 10.5px; } .peso .val { background: #1C6FD0; padding: 5px 10px; text-align: right; font-size: 15px; }
+.lista-v { margin: 0; padding-left: 26px; display: grid; gap: 6px; font-weight: 700; font-size: 16px; }
+.lista-v li::marker { font-family: var(--font-mono); color: var(--ink-2); }
+.op-v { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.op-v b { font-size: 24px; letter-spacing: .06em; }
+.op-v input { width: 150px; border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; background: var(--key); font-family: var(--font-mono); }
 .timer { font: 700 26px/1 var(--font-display); padding: 6px 4px; }
 .ha-rif { display: block; margin-top: 4px; font: 500 12px var(--font-mono); color: var(--ink-2); }
 
@@ -314,7 +319,10 @@ h1, h2, h3, p, ol { margin: 0; }
   const sigla = (l) => (l && (l.nome || String(l.codice || "").replace(/^L\.\s*/i, ""))) || "?";
   const stazioni = (l) => (l && Array.isArray(l.stazioni) && l.stazioni.length ? l.stazioni : STAZ_BASE);
   const lineaDi = (codice) => S.lines.find((l) => l.codice === codice);
-  const procDi = (l) => S.proc.filter((p) => p.linea === l.codice);
+  const TUTTE = "*";
+  const nomeLinea = (c) => (c === TUTTE ? "Tutte le linee" : c || "");
+  const procDi = (l) => S.proc.filter((p) => p.linea === l.codice || p.linea === TUTTE);
+  const procProprie = (l) => S.proc.filter((p) => p.linea === l.codice);
   const apDi = (l) => S.appunti.filter((a) => a.linea === l.codice);
   const momentoDi = (p) => {
     if (p.momento && MOM[p.momento]) return p.momento;
@@ -399,7 +407,7 @@ h1, h2, h3, p, ol { margin: 0; }
   }
   function rigaProc(p, conLinea) {
     const m = MOM[momentoDi(p)], n = (p.passi || []).length, fatti = (SP[p.id] || []).filter((i) => i < n).length;
-    const meta = [conLinea ? p.linea : "", conLinea ? m[1] : "", p.stazione, n ? (fatti ? `${fatti}/${n} fasi` : `${n} fasi`) : "fasi da scrivere"].filter(Boolean).join(" · ");
+    const meta = [conLinea || p.linea === TUTTE ? nomeLinea(p.linea) : "", conLinea ? m[1] : "", p.stazione, n ? (fatti ? `${fatti}/${n} fasi` : `${n} fasi`) : "fasi da scrivere"].filter(Boolean).join(" · ");
     return `<button class="proc" type="button" data-proc="${esc(p.id)}"><b>${esc(p.titolo || "Senza titolo")}</b><span class="vai">${fatti && fatti < n ? "Riprendi" : "Esegui"}</span><span class="meta">${esc(meta)}</span>${p.regola ? '<span class="reg">⚠ Ha una regola critica</span>' : ""}</button>`;
   }
   const rigaAp = (a, conLinea) => `<button class="ap" type="button" data-ap="${esc(a.id)}"><span>${esc(a.testo)}</span><small>${esc([conLinea ? a.linea : "", quando(a.creato)].filter(Boolean).join(" · "))}</small></button>`;
@@ -409,7 +417,7 @@ h1, h2, h3, p, ol { margin: 0; }
     const q = S.q.trim().toLowerCase();
     const has = (arr) => arr.join(" ").toLowerCase().includes(q);
     const L = S.lines.filter((l) => has([l.codice, l.nome, l.prodotto && l.prodotto.nome, l.prodotto && l.prodotto.descrizione, l.note, stazioni(l).join(" "), Object.values(l.sezioni || {}).join(" ")]));
-    const P = S.proc.filter((p) => has([p.titolo, p.regola, p.stazione, p.fonte, p.linea, MOM[momentoDi(p)][1], (p.passi || []).map((x) => x.t).join(" ")]));
+    const P = S.proc.filter((p) => has([p.titolo, p.regola, p.stazione, p.fonte, nomeLinea(p.linea), MOM[momentoDi(p)][1], (p.passi || []).map((x) => x.t).join(" ")]));
     const A = S.appunti.filter((a) => has([a.testo, a.linea]));
     const tot = L.length + P.length + A.length;
     let h = `<section class="esito"><div class="esito-h"><h2>${tot} ${tot === 1 ? "risultato" : "risultati"}</h2><span>“${esc(S.q.trim())}”</span></div>`;
@@ -449,6 +457,9 @@ h1, h2, h3, p, ol { margin: 0; }
       case "dpi": return `<figure class="vis"><div class="dpi">${v.voci.map((k) => { const ic = ICONE[k]; if (!ic) return ""; return `<span class="ic-d"><svg viewBox="0 0 40 40" aria-hidden="true">${ic[0] === "obbligo" ? '<circle cx="20" cy="20" r="18" class="obbligo"/>' : '<path d="M20 4 37 34H3z" class="pericolo"/>'}<g class="${ic[0]}-g">${ic[1]}</g></svg>${esc(ic[2])}</span>`; }).join("")}</div>${cap}</figure>`;
       case "bandelletta": return `<figure class="vis"><div class="band ${v.nera ? "nera" : ""}" role="img" aria-label="Bandelletta termica ${v.nera ? "nera" : "da annerire"}"><span>${esc(v.t || "82°C")}</span></div>${cap}</figure>`;
       case "peso": return `<figure class="vis"><div class="peso"><span class="auto">AUTOMATICO</span><span class="lbl">REGOLAZIONE PESO</span><span class="val">${esc(v.peso)}</span><span class="lbl">VELOCITÀ MACCHINA</span><span class="val">${esc(v.vel)}</span></div>${cap}</figure>`;
+      case "lista": return `<figure class="vis largo"><ol class="lista-v">${v.voci.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>${cap}</figure>`;
+      case "operatore": { const n = leggi("operatore", "");
+        return `<figure class="vis"><div class="op-v">${n ? `<b class="mono">${esc(n)}</b><button class="btn" type="button" data-act="op-cambia">Cambia</button>` : `<input id="op-in" inputmode="numeric" autocomplete="off" placeholder="Il tuo numero" aria-label="Il tuo numero operatore"><button class="btn primary" type="button" data-act="op-salva">Salva</button>`}</div><figcaption>${n ? "Il tuo numero operatore" : "Scrivilo una volta: resta solo su questo telefono"}</figcaption></figure>`; }
       case "timer": return `<figure class="vis"><div class="timer">${esc(v.t)}</div>${cap}</figure>`;
       default: return "";
     }
@@ -465,11 +476,11 @@ h1, h2, h3, p, ol { margin: 0; }
     if (!passi.length) carta = `<div class="fase"><span class="eti">Fasi</span><p class="testo">Le fasi di questo procedimento non sono ancora scritte.</p>${p.regola ? `<p style="color:var(--crit);font-weight:700">⚠ ${esc(p.regola)}</p>` : ""}${S.canWrite ? '<div class="az"><button class="btn primary" type="button" data-act="mod-proc">Scrivi le fasi</button></div>' : ""}</div>`;
     else if (fine) carta = `<div class="fase fine"><span class="eti">Fine</span><p class="testo">${fatti.length === passi.length ? "Tutte le fasi fatte." : `${fatti.length} fasi su ${passi.length} segnate come fatte.`}</p><div class="az"><button class="btn" type="button" data-act="ricomincia">Ricomincia da capo</button><button class="btn primary" type="button" data-act="chiudi-esec">Torna al pannello</button></div></div>`;
     else if (c.regola) carta = `<div class="fase regola"><span class="eti">⚠ Prima di iniziare · regola</span><p class="testo">${esc(c.t)}</p></div>`;
-    else carta = `<div class="fase ${c.a ? "critica" : ""}"><span class="eti">${c.a ? "⚠ " : ""}Fase ${c.i + 1} di ${passi.length}${c.a ? " · attenzione" : ""}</span><p class="testo">${esc(c.t)}</p>${c.v && c.v.length ? `<div class="rif-w"><span class="eti">Sul foglio</span><div class="rif">${c.v.map(vis).join("")}</div></div>` : ""}${fatti.includes(c.i) ? '<span class="fatta">✓ Già segnata come fatta</span>' : ""}</div>`;
+    else carta = `<div class="fase ${c.a ? "critica" : ""}"><span class="eti">${c.a ? "⚠ " : ""}Fase ${c.i + 1} di ${passi.length}${c.a ? " · attenzione" : ""}</span><p class="testo">${esc(c.t)}</p>${c.v && c.v.length ? `<div class="rif-w"><span class="eti">Riferimento</span><div class="rif">${c.v.map(vis).join("")}</div></div>` : ""}${fatti.includes(c.i) ? '<span class="fatta">✓ Già segnata come fatta</span>' : ""}</div>`;
     const pedali = passi.length && !fine ? `<div class="pedali"><button type="button" data-act="prec" ${pos ? "" : "disabled"}>Indietro</button><button type="button" class="avanti ${c.regola ? "rosso" : ""}" data-act="avanti">${c.regola ? "Ho capito" : pos === C.length - 1 ? "Fatto, finito" : "Fatto, avanti"}</button></div>` : "<span></span>";
     const elenco = S.elenco ? `<ol class="elenco">${C.map((x, k) => `<li><button type="button" data-vai="${k}" class="${x.regola || x.a ? "crit" : ""} ${!x.regola && fatti.includes(x.i) ? "ok" : ""} ${k === pos ? "qui" : ""}"><span class="nn">${x.regola ? "!" : !x.regola && fatti.includes(x.i) ? "✓" : x.i + 1}</span><span>${esc(x.t)}</span></button></li>`).join("")}</ol>` : "";
     return `<div class="esec" id="esec" role="dialog" aria-modal="true" aria-label="${esc(p.titolo)}"><div class="esec-in">
-      <div class="esec-t"><button class="tondo" type="button" data-act="chiudi-esec" aria-label="Torna al pannello">←</button><div class="tit"><b>${esc(p.titolo || "Senza titolo")}</b><span>${esc([p.linea, MOM[momentoDi(p)][1], p.stazione].filter(Boolean).join(" · "))}</span></div>${S.canWrite ? '<button class="tondo" type="button" data-act="mod-proc" aria-label="Modifica procedimento">✎</button>' : ""}</div>
+      <div class="esec-t"><button class="tondo" type="button" data-act="chiudi-esec" aria-label="Torna al pannello">←</button><div class="tit"><b>${esc(p.titolo || "Senza titolo")}</b><span>${esc([nomeLinea(p.linea), MOM[momentoDi(p)][1], p.stazione].filter(Boolean).join(" · "))}</span></div>${S.canWrite ? '<button class="tondo" type="button" data-act="mod-proc" aria-label="Modifica procedimento">✎</button>' : ""}</div>
       ${passi.length ? `<div><div class="segm">${seg}</div><div class="segm-l"><span>${fatti.length}/${passi.length} fatte</span><span>${passi.filter((x) => x.a).length} critiche</span></div></div>` : "<span></span>"}
       ${carta}
       <div style="display:grid;gap:14px">${pedali}
@@ -520,7 +531,7 @@ h1, h2, h3, p, ol { margin: 0; }
     if (monta) monta($("#foglio"));
     const primo = $("#foglio input, #foglio textarea, #foglio select"); if (primo) primo.focus({ preventScroll: true });
   }
-  const optLinee = (sel) => S.lines.map((l) => `<option value="${esc(l.codice)}" ${l.codice === sel ? "selected" : ""}>${esc(l.codice)}${l.prodotto && l.prodotto.nome ? " · " + esc(l.prodotto.nome) : ""}</option>`).join("");
+  const optLinee = (sel, conTutte) => (conTutte ? `<option value="${TUTTE}" ${sel === TUTTE ? "selected" : ""}>Tutte le linee</option>` : "") + S.lines.map((l) => `<option value="${esc(l.codice)}" ${l.codice === sel ? "selected" : ""}>${esc(l.codice)}${l.prodotto && l.prodotto.nome ? " · " + esc(l.prodotto.nome) : ""}</option>`).join("");
   function bloccaBottoni(on) { document.querySelectorAll("#foglio button").forEach((b) => (b.disabled = on)); }
   function confermaElimina(box, testo, azione) {
     box.innerHTML = `<div class="conferma"><span>${esc(testo)}</span><div><button class="btn danger" type="button" id="si-elimina">Sì, elimina</button><button class="btn" type="button" id="no-elimina">Annulla</button></div></div>`;
@@ -557,7 +568,7 @@ h1, h2, h3, p, ol { margin: 0; }
           } else {
             await S.db.doc("linee/" + l.id).update(dati);
             if (codice !== l.codice) {
-              for (const p of procDi(l)) await S.db.doc("procedure/" + p.id).update({ linea: codice });
+              for (const p of procProprie(l)) await S.db.doc("procedure/" + p.id).update({ linea: codice });
               for (const a of apDi(l)) await S.db.doc("appunti/" + a.id).update({ linea: codice });
               if (S.linea === l.codice) { S.linea = codice; salvaSel(); }
             }
@@ -567,11 +578,11 @@ h1, h2, h3, p, ol { margin: 0; }
         } catch (e) { bloccaBottoni(false); toast(errore(e, "Linea non salvata")); }
       };
       if (!nuova) $("#f-del").onclick = () => {
-        const n = procDi(l).length, a = apDi(l).length;
+        const n = procProprie(l).length, a = apDi(l).length;
         confermaElimina($("#f-conf"), `Elimini ${l.codice}${n || a ? ` insieme a ${n} procedimenti e ${a} appunti` : ""}? Non si torna indietro.`, async () => {
           bloccaBottoni(true);
           try {
-            for (const p of procDi(l)) await S.db.doc("procedure/" + p.id).delete();
+            for (const p of procProprie(l)) await S.db.doc("procedure/" + p.id).delete();
             for (const x of apDi(l)) await S.db.doc("appunti/" + x.id).delete();
             await S.db.doc("linee/" + l.id).delete();
             if (S.linea === l.codice) { S.linea = ""; salvaSel(); }
@@ -592,7 +603,7 @@ h1, h2, h3, p, ol { margin: 0; }
     const fasiHtml = () => P.map((s, i) => `<div class="fase-e ${s.a ? "crit" : ""}"><span class="n">${i + 1}</span><div><textarea class="f-fase" data-i="${i}" rows="2" aria-label="Fase ${i + 1}" placeholder="Cosa fare in questa fase">${esc(s.t)}</textarea><div class="fase-az"><button type="button" data-crit="${i}" aria-pressed="${s.a}">⚠ Critica</button><button type="button" data-su="${i}" ${i ? "" : "disabled"} aria-label="Sposta su">↑</button><button type="button" data-giu="${i}" ${i < P.length - 1 ? "" : "disabled"} aria-label="Sposta giù">↓</button><button type="button" data-via="${i}">Togli</button></div>${s.v && s.v.length ? `<small class="ha-rif">◧ ${s.v.length} ${s.v.length === 1 ? "riferimento" : "riferimenti"} dal foglio</small>` : ""}</div></div>`).join("");
     foglio(`<h3>${copia ? "Duplica procedimento" : nuovo ? "Nuovo procedimento" : "Modifica procedimento"}</h3>
       <div class="campo"><label for="f-tit">Titolo</label><input id="f-tit" value="${esc(base.titolo)}" placeholder="Es. Concatenamento (cambio vasca)"></div>
-      <div class="due"><div class="campo"><label for="f-lin">Linea</label><select id="f-lin">${optLinee(base.linea)}</select></div>
+      <div class="due"><div class="campo"><label for="f-lin">Linea</label><select id="f-lin">${optLinee(base.linea, true)}</select><small>«Tutte le linee» lo fa comparire in ogni linea.</small></div>
       <div class="campo"><label for="f-mom">Menu</label><select id="f-mom">${MOMENTI.map(([k, n]) => `<option value="${k}" ${momentoDi(base) === k ? "selected" : ""}>${n}</option>`).join("")}</select></div></div>
       <div class="campo"><label for="f-staz">Macchina</label><select id="f-staz">${optStaz(base.stazione)}</select></div>
       <div class="campo"><label for="f-reg">Regola critica</label><textarea id="f-reg" rows="2" placeholder="Quello che non va mai sbagliato. Va confermata prima della fase 1. Lascia vuoto se non c'è.">${esc(base.regola)}</textarea></div>
@@ -691,7 +702,7 @@ h1, h2, h3, p, ol { margin: 0; }
     try { navigator.clipboard.writeText(testo).then(() => toast("Testo copiato"), fallback); } catch (e) { fallback(); }
   }
   function testoProc(p) {
-    return [p.titolo, p.linea + (p.stazione ? " · " + p.stazione : ""), p.regola ? "REGOLA: " + p.regola : "", "",
+    return [p.titolo, nomeLinea(p.linea) + (p.stazione ? " · " + p.stazione : ""), p.regola ? "REGOLA: " + p.regola : "", "",
       ...(p.passi || []).map((s, i) => `${i + 1}. ${s.a ? "⚠ " : ""}${s.t}`), p.fonte ? "\n" + p.fonte : ""].filter((x, i) => x || i === 3).join("\n");
   }
   function foglioTesto(l, k) {
@@ -755,6 +766,8 @@ h1, h2, h3, p, ol { margin: 0; }
       case "avanti": muovi(1, true); break;
       case "prec": muovi(-1, false); break;
       case "elenco": S.elenco = !S.elenco; renderEsec(); break;
+      case "op-salva": { const n = ($("#op-in").value || "").trim(); if (!n) { toast("Scrivi il numero operatore"); break; } scrivi("operatore", n); renderEsec(); toast("Numero operatore salvato"); break; }
+      case "op-cambia": scrivi("operatore", ""); renderEsec(); setTimeout(() => $("#op-in") && $("#op-in").focus(), 0); break;
       case "ricomincia": if (p) { delete SP[p.id]; POS[p.id] = 0; scrivi("spunte", SP); scrivi("posizione", POS); renderEsec(); } break;
       case "salva-ap": {
         const t = $("#ap-nuovo").value.trim(); if (!t || !l) { toast("Scrivi qualcosa prima"); break; }
