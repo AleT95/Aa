@@ -1,0 +1,671 @@
+<title>Selettore di Reparto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Concetto: pulsantiera di macchina. Si sceglie un tasto alla volta (linea, momento, macchina)
+   e il pannello si restringe fino al procedimento giusto, che poi si esegue fase per fase. */
+:root {
+  --bg: #E3E6E0;
+  --panel: #F2F3EF;
+  --key: #FCFCFA;
+  --ink: #151916;
+  --ink-2: #5A625C;
+  --line: #C9CEC6;
+  --accent: #1E5EA8;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DCE7F5;
+  --ok: #23924A;
+  --warn: #C98F00;
+  --crit: #CC3329;
+  --crit-soft: #F7DDD9;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-body: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101311; --panel: #181C19; --key: #222723; --ink: #EBEEE9; --ink-2: #959E97; --line: #323934;
+    --accent: #6EA4E6; --accent-ink: #08121E; --accent-soft: #1A2B40;
+    --ok: #4CC777; --warn: #F0B52A; --crit: #FF6A5E; --crit-soft: #3B1C19; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101311; --panel: #181C19; --key: #222723; --ink: #EBEEE9; --ink-2: #959E97; --line: #323934;
+  --accent: #6EA4E6; --accent-ink: #08121E; --accent-soft: #1A2B40;
+  --ok: #4CC777; --warn: #F0B52A; --crit: #FF6A5E; --crit-soft: #3B1C19; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 500 16px/1.45 var(--font-body); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+h1, h2, h3, p, ol { margin: 0; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); }
+.wrap { max-width: 560px; margin-inline: auto; padding: 0 16px 40px; }
+
+/* ---------- Testata ---------- */
+.testata { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); padding-block: 14px 10px; display: grid; gap: 10px; }
+.riga-t { display: flex; align-items: center; gap: 10px; }
+.marchio { flex: 1; min-width: 0; }
+.marchio h1 { font: 700 26px/1 var(--font-display); letter-spacing: .01em; text-transform: uppercase; }
+.marchio span { display: block; font: 500 12px var(--font-mono); color: var(--ink-2); margin-top: 3px; }
+.tondo { width: 42px; height: 42px; flex: none; border-radius: 50%; border: 1px solid var(--line); background: var(--key); box-shadow: 0 2px 0 var(--line); display: grid; place-items: center; font-weight: 700; font-size: 18px; }
+.tondo:active { transform: translateY(2px); box-shadow: none; }
+.tondo svg { width: 20px; height: 20px; }
+.cerca { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; background: var(--key); }
+.cerca:focus { outline: 3px solid var(--accent); outline-offset: 0; }
+
+/* ---------- Stadi di selezione ---------- */
+.stadio { display: grid; gap: 10px; padding-block: 14px; border-top: 1px solid var(--line); }
+.stadio:first-child { border-top: 0; }
+.stadio-h { display: flex; align-items: baseline; gap: 10px; }
+.stadio-h .n { font: 700 12px var(--font-mono); color: var(--ink-2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+.stadio-h h2 { font: 700 19px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .04em; flex: 1; }
+.stadio-h .lnk { border: 0; background: none; padding: 4px 0; font-weight: 700; font-size: 14px; color: var(--accent); }
+.stadio.fatto .stadio-h h2 { color: var(--ink-2); }
+.scelto { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+.scelto b { font: 700 22px/1 var(--font-display); letter-spacing: .02em; }
+.scelto span:not(.spia) { color: var(--ink-2); font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.tasti { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+.tasti.larghi { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.tasti.larghi .tasto { min-height: 64px; }
+.tasto { position: relative; display: grid; gap: 4px; align-content: start; text-align: left; min-height: 84px; padding: 11px 12px 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--key); box-shadow: 0 3px 0 var(--line); transition: transform .08s, box-shadow .08s; }
+.tasto:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 0 0 var(--line); }
+.tasto .big { font: 700 30px/1 var(--font-display); letter-spacing: .02em; }
+.tasto .nome { font: 700 16px/1.15 var(--font-display); text-transform: uppercase; letter-spacing: .02em; overflow-wrap: anywhere; hyphens: auto; }
+.tasto .sub { font-size: 12.5px; color: var(--ink-2); line-height: 1.3; }
+.tasto .cnt { position: absolute; top: 9px; right: 10px; font: 700 12px var(--font-mono); color: var(--ink-2); }
+.tasto[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 55%, var(--ink)); }
+.tasto[aria-pressed="true"] .sub, .tasto[aria-pressed="true"] .cnt { color: var(--accent-ink); opacity: .85; }
+.tasto:disabled { opacity: .38; cursor: default; box-shadow: 0 1px 0 var(--line); }
+.tasto .barretta { height: 4px; border-radius: 2px; width: 28px; margin-top: 2px; }
+.tasto.aggiungi { border-style: dashed; box-shadow: none; background: transparent; place-content: center; text-align: center; color: var(--ink-2); font-weight: 700; }
+
+.spia { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.spia.on { box-shadow: 0 0 0 3px color-mix(in srgb, var(--spia) 30%, transparent); }
+
+/* ---------- Risultato ---------- */
+.esito { display: grid; gap: 8px; padding-block: 16px 6px; border-top: 2px solid var(--ink); }
+.esito-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.esito-h h2 { font: 700 30px/1 var(--font-display); text-transform: uppercase; letter-spacing: .01em; }
+.esito-h span { font: 500 13px var(--font-mono); color: var(--ink-2); text-align: right; }
+.proc { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; width: 100%; text-align: left; padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--key); }
+.proc b { font-size: 17px; font-weight: 700; line-height: 1.25; }
+.proc .meta { grid-column: 1; font-size: 13px; color: var(--ink-2); }
+.proc .vai { grid-row: 1 / span 2; grid-column: 2; font: 700 15px var(--font-display); text-transform: uppercase; letter-spacing: .05em; background: var(--ink); color: var(--bg); border-radius: 10px; padding: 9px 12px; }
+.proc .reg { grid-column: 1; font-size: 13px; font-weight: 700; color: var(--crit); }
+.vuoto { color: var(--ink-2); font-size: 15px; padding: 6px 0; }
+
+/* ---------- Scheda linea ---------- */
+.scheda { display: grid; gap: 12px; margin-top: 18px; padding: 14px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); }
+.scheda h3 { font: 700 17px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .05em; }
+.scheda-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.lampade { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.lampade button { display: grid; justify-items: center; gap: 6px; padding: 10px 4px 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--key); font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+.lampade button .spia { width: 14px; height: 14px; opacity: .35; }
+.lampade button[aria-pressed="true"] { color: var(--ink); border-color: var(--ink); }
+.lampade button[aria-pressed="true"] .spia { opacity: 1; box-shadow: 0 0 0 4px color-mix(in srgb, var(--spia) 28%, transparent); }
+.lampade button:disabled { cursor: default; }
+.note { white-space: pre-wrap; font-size: 15px; }
+.ap { display: grid; gap: 2px; width: 100%; text-align: left; padding: 10px 0; border: 0; border-top: 1px solid var(--line); background: none; }
+.ap span { font-size: 15px; white-space: pre-wrap; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ap small { font: 500 12px var(--font-mono); color: var(--ink-2); }
+.compone { display: grid; gap: 8px; }
+.compone textarea { width: 100%; min-height: 64px; resize: vertical; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--key); }
+.az { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.btn { border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; background: var(--key); font-weight: 700; font-size: 15px; box-shadow: 0 2px 0 var(--line); }
+.btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); box-shadow: none; }
+.btn.danger { color: var(--crit); }
+.btn:disabled { opacity: .45; cursor: default; }
+
+/* ---------- Esecuzione ---------- */
+.esec { position: fixed; inset: 0; z-index: 40; background: var(--bg); overflow-y: auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.esec-in { max-width: 620px; margin-inline: auto; min-height: 100%; padding: 12px 16px 24px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; }
+.esec-t { display: flex; align-items: center; gap: 10px; }
+.esec-t .tit { flex: 1; min-width: 0; }
+.esec-t .tit b { display: block; font: 700 20px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.esec-t .tit span { font: 500 12px var(--font-mono); color: var(--ink-2); }
+.segm { display: flex; gap: 3px; }
+.segm button { flex: 1; min-width: 0; height: 12px; padding: 0; border: 0; border-radius: 3px; background: var(--line); }
+.segm button.c { background: color-mix(in srgb, var(--crit) 35%, var(--line)); }
+.segm button.f { background: var(--ok); }
+.segm button.r { background: var(--crit); }
+.segm button[aria-current="step"] { outline: 2px solid var(--ink); outline-offset: 2px; }
+.segm-l { display: flex; justify-content: space-between; font: 500 12.5px var(--font-mono); color: var(--ink-2); margin-top: 6px; }
+.fase { align-self: start; display: grid; gap: 14px; padding: 20px 18px; border-radius: 18px; background: var(--key); border: 1px solid var(--line); }
+.fase .eti { display: flex; align-items: center; gap: 8px; font: 700 13px var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); }
+.fase .testo { font: 600 clamp(21px, 5.6vw, 27px)/1.32 var(--font-body); text-wrap: pretty; }
+.fase.critica { border: 2px solid var(--crit); }
+.fase.critica .eti { color: var(--crit); }
+.fase.regola { background: var(--crit-soft); border: 2px solid var(--crit); }
+.fase.regola .eti, .fase.regola .testo { color: var(--crit); }
+.fase.fine { text-align: center; justify-items: center; }
+.fase .fatta { font: 700 13px var(--font-mono); color: var(--ok); }
+.pedali { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+.pedali button { min-height: 60px; border-radius: 16px; font: 700 20px var(--font-display); text-transform: uppercase; letter-spacing: .04em; border: 1px solid var(--line); background: var(--key); box-shadow: 0 3px 0 var(--line); }
+.pedali button:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.pedali .avanti { background: var(--ok); border-color: var(--ok); color: #FFFFFF; box-shadow: 0 3px 0 color-mix(in srgb, var(--ok) 55%, #000); }
+.pedali .avanti.rosso { background: var(--crit); border-color: var(--crit); box-shadow: 0 3px 0 color-mix(in srgb, var(--crit) 55%, #000); }
+.pedali button:disabled { opacity: .35; cursor: default; }
+.elenco { display: grid; gap: 6px; padding: 0; list-style: none; }
+.elenco button { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--key); font-size: 15px; }
+.elenco .nn { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font: 700 12px var(--font-mono); background: var(--panel); border: 1px solid var(--line); }
+.elenco .crit { color: var(--crit); font-weight: 700; }
+.elenco .crit .nn { border-color: var(--crit); }
+.elenco .ok .nn { background: var(--ok); border-color: var(--ok); color: #FFFFFF; }
+.elenco .qui { border-color: var(--ink); }
+.fonte { font-size: 13px; color: var(--ink-2); }
+
+/* ---------- Fogli ---------- */
+.velo { position: fixed; inset: 0; z-index: 60; background: rgb(0 0 0 / .45); display: flex; align-items: flex-end; justify-content: center; }
+.foglio { width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; background: var(--bg); border-radius: 20px 20px 0 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 14px; }
+.foglio h3 { font: 700 24px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .02em; }
+.campo { display: grid; gap: 6px; }
+.campo label, .campo .lbl { font-weight: 700; font-size: 14px; }
+.campo small { color: var(--ink-2); font-size: 13px; }
+.campo input, .campo select, .campo textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--key); }
+.campo textarea { resize: vertical; min-height: 60px; line-height: 1.45; }
+.due { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 12px; }
+.fasi { display: grid; gap: 8px; }
+.fase-e { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; align-items: start; }
+.fase-e .n { width: 28px; height: 28px; margin-top: 6px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line); background: var(--key); font: 700 12px var(--font-mono); }
+.fase-e.crit .n { background: var(--crit); border-color: var(--crit); color: #FFFFFF; }
+.fase-e textarea { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 12px; padding: 9px 11px; background: var(--key); resize: vertical; }
+.fase-e.crit textarea { color: var(--crit); font-weight: 700; }
+.fase-az { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+.fase-az button { border: 1px solid var(--line); border-radius: 8px; padding: 3px 10px; font-size: 12.5px; font-weight: 700; background: var(--panel); color: var(--ink-2); }
+.fase-az button[aria-pressed="true"] { background: var(--crit); border-color: var(--crit); color: #FFFFFF; }
+.fase-az button:disabled { opacity: .35; cursor: default; }
+.conferma { background: var(--crit-soft); color: var(--crit); border-radius: 14px; padding: 12px 14px; display: grid; gap: 10px; font-weight: 600; font-size: 15px; }
+.conferma div { display: flex; gap: 8px; flex-wrap: wrap; }
+.f-az { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; }
+.f-az div { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+
+.avviso { margin-top: 24px; padding: 16px; border-radius: 16px; border: 1px solid var(--line); background: var(--panel); display: grid; gap: 6px; }
+.avviso p { color: var(--ink-2); font-size: 15px; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 80; background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 15px; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="testata">
+    <div class="riga-t">
+      <div class="marchio"><h1>Selettore</h1><span id="sottotitolo">Scegli, restringi, esegui</span></div>
+      <button class="tondo" type="button" data-act="appunti" aria-label="Tutti gli appunti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 13h8M8 17h5"/></svg></button>
+      <button class="tondo" type="button" data-act="nuova-linea" id="btn-nuova" aria-label="Nuova linea" hidden>+</button>
+    </div>
+    <input class="cerca" id="cerca" type="search" placeholder="Cerca in tutte le linee: macchina, parola, codice…" aria-label="Cerca" autocomplete="off">
+  </header>
+  <main id="app"><p class="vuoto" style="padding-top:20px">Accendo il pannello…</p></main>
+</div>
+<div id="esec-root"></div>
+<div id="sheet-root"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  /* ---------- Vocabolario del reparto ---------- */
+  const MOMENTI = [
+    ["avvio", "Avvio linea", "#23924A"],
+    ["produzione", "Produzione", "#1E5EA8"],
+    ["cambio", "Cambio vasca e formato", "#C98F00"],
+    ["pulizia", "Pulizia linea", "#0E8BA6"],
+    ["reclage", "Reclage", "#D2602A"],
+    ["lavaggio", "Lavaggio riempitrice", "#5468D4"],
+    ["fine", "Fine turno", "#8150C9"]
+  ];
+  const MOM = Object.fromEntries(MOMENTI.map((m) => [m[0], m]));
+  const STATI = [
+    ["operativa", "Operativa", "var(--ok)"],
+    ["manutenzione", "Manutenz.", "var(--warn)"],
+    ["ferma", "Ferma", "var(--crit)"],
+    ["nd", "Da definire", "var(--ink-2)"]
+  ];
+  const STATO = Object.fromEntries(STATI.map((s) => [s[0], s]));
+  const STAZ_BASE = ["Alimentatori", "Riempitrice", "Etichettatrice", "Scatolatrice", "Pellettizzatore"];
+
+  const S = { db: null, ready: false, canWrite: true, lines: [], proc: [], appunti: [], okL: false, err: false,
+    linea: "", mom: "", staz: "", q: "", run: "" };
+
+  /* Selezione, spunte e posizione di esecuzione: comodità personali, restano su questo dispositivo */
+  const leggi = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || "null") || d; } catch (e) { return d; } };
+  const scrivi = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  let SP = leggi("spunte", {}), POS = leggi("posizione", {});
+  Object.assign(S, leggi("selezione", {}));
+  const salvaSel = () => scrivi("selezione", { linea: S.linea, mom: S.mom, staz: S.staz });
+
+  const $ = (s, r) => (r || document).querySelector(s);
+  const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const nat = (a, b) => String(a || "").localeCompare(String(b || ""), "it", { numeric: true });
+  const sigla = (l) => (l && (l.nome || String(l.codice || "").replace(/^L\.\s*/i, ""))) || "?";
+  const stazioni = (l) => (l && Array.isArray(l.stazioni) && l.stazioni.length ? l.stazioni : STAZ_BASE);
+  const stato = (l) => STATO[l && l.stato] || STATO.nd;
+  const lineaDi = (codice) => S.lines.find((l) => l.codice === codice);
+  const procDi = (l) => S.proc.filter((p) => p.linea === l.codice);
+  const apDi = (l) => S.appunti.filter((a) => a.linea === l.codice);
+  const momentoDi = (p) => {
+    if (p.momento && MOM[p.momento]) return p.momento;
+    const t = String(p.titolo || "").toLowerCase();
+    if (/reclage/.test(t)) return "reclage";
+    if (/lavagg|cip/.test(t)) return "lavaggio";
+    if (/concaten|cambio/.test(t)) return "cambio";
+    if (/pulizi/.test(t)) return "pulizia";
+    if (/avvio|partenz/.test(t)) return "avvio";
+    if (/fine turno|chiusura|consegn/.test(t)) return "fine";
+    return "produzione";
+  };
+  const ordineMom = (p) => MOMENTI.findIndex((m) => m[0] === momentoDi(p));
+  const dfmt = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  const quando = (iso) => { const d = new Date(iso); return isNaN(d) ? "" : dfmt.format(d); };
+  const ora = () => new Date().toISOString();
+  const spia = (colore, on) => `<span class="spia ${on ? "on" : ""}" style="background:${colore};--spia:${colore}"></span>`;
+  function toast(t) { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (el.hidden = true), 2300); }
+  function errore(e, cosa) {
+    const c = e && e.code;
+    if (c === "permission_denied" || c === "not_granted") return cosa + ": non hai il permesso di modifica";
+    if (c === "unauthenticated" || c === "signed_out") return cosa + ": accedi a claude.ai e riprova";
+    return cosa + ": controlla la connessione e riprova";
+  }
+
+  /* ---------- Pannello di selezione ---------- */
+  function vPannello() {
+    if (!S.lines.length) {
+      return `<div class="avviso"><b>Nessuna linea sul pannello.</b><p>Aggiungi la prima linea: poi potrai scriverci sopra procedimenti e appunti.</p>${S.canWrite ? '<div class="az"><button class="btn primary" type="button" data-act="nuova-linea">+ Aggiungi linea</button></div>' : ""}</div>`;
+    }
+    const l = lineaDi(S.linea);
+    if (!l) { S.linea = ""; S.mom = ""; S.staz = ""; }
+    let h = "";
+
+    /* 1 · Linea */
+    if (!l) {
+      h += `<section class="stadio"><div class="stadio-h"><span class="n">1</span><h2>Su che linea sei?</h2></div><div class="tasti">${S.lines.map((x) => {
+        const s = stato(x), n = procDi(x).length, pn = x.prodotto && x.prodotto.nome;
+        return `<button class="tasto" type="button" data-linea="${esc(x.codice)}"><span class="cnt">${n || ""}</span><span class="big">${esc(sigla(x))}</span><span class="sub">${spia(s[2])} ${esc(pn || s[1])}</span></button>`;
+      }).join("")}${S.canWrite ? '<button class="tasto aggiungi" type="button" data-act="nuova-linea">+ Linea</button>' : ""}</div></section>`;
+      return h;
+    }
+    const s = stato(l), pn = l.prodotto && l.prodotto.nome;
+    h += `<section class="stadio fatto"><div class="stadio-h"><span class="n">1</span><h2>Linea</h2><button class="lnk" type="button" data-act="cambia-linea">Cambia</button></div>
+      <div class="scelto">${spia(s[2], true)}<b>${esc(sigla(l))}</b><span>${esc([l.codice, pn || "prodotto da indicare", s[1]].join(" · "))}</span></div></section>`;
+
+    const tutti = procDi(l);
+    /* 2 · Momento */
+    if (tutti.length) {
+      const conta = (k) => tutti.filter((p) => momentoDi(p) === k && (!S.staz || p.stazione === S.staz)).length;
+      h += `<section class="stadio"><div class="stadio-h"><span class="n">2</span><h2>Cosa stai facendo?</h2>${S.mom ? '<button class="lnk" type="button" data-mom="">Tutti</button>' : ""}</div>
+        <div class="tasti larghi">${MOMENTI.map(([k, n, c]) => { const q = conta(k); return `<button class="tasto" type="button" data-mom="${k}" aria-pressed="${S.mom === k}" ${q || S.mom === k ? "" : "disabled"}><span class="cnt">${q || ""}</span><span class="nome">${esc(n)}</span><span class="barretta" style="background:${c}"></span></button>`; }).join("")}</div></section>`;
+
+      /* 3 · Macchina */
+      const staz = stazioni(l).concat(tutti.map((p) => p.stazione).filter((x) => x && !stazioni(l).includes(x)));
+      const contaS = (st) => tutti.filter((p) => p.stazione === st && (!S.mom || momentoDi(p) === S.mom)).length;
+      h += `<section class="stadio"><div class="stadio-h"><span class="n">3</span><h2>Su che macchina?</h2>${S.staz ? '<button class="lnk" type="button" data-staz="">Tutte</button>' : ""}</div>
+        <div class="tasti">${staz.map((st, i) => { const q = contaS(st); return `<button class="tasto" type="button" data-staz="${esc(st)}" aria-pressed="${S.staz === st}" ${q || S.staz === st ? "" : "disabled"}><span class="cnt">${q || ""}</span><span class="sub mono">${String(i + 1).padStart(2, "0")}</span><span class="nome">${esc(st)}</span></button>`; }).join("")}</div></section>`;
+    }
+
+    /* Esito */
+    const vis = tutti.filter((p) => (!S.mom || momentoDi(p) === S.mom) && (!S.staz || p.stazione === S.staz))
+      .sort((a, b) => ordineMom(a) - ordineMom(b) || nat(a.titolo, b.titolo));
+    const filtro = [S.mom && MOM[S.mom][1], S.staz].filter(Boolean).join(" · ") || "nessun filtro";
+    h += `<section class="esito"><div class="esito-h"><h2>${vis.length} ${vis.length === 1 ? "procedimento" : "procedimenti"}</h2><span>${esc(sigla(l))} · ${esc(filtro)}</span></div>
+      ${vis.length ? vis.map(rigaProc).join("") : `<p class="vuoto">${tutti.length ? "Niente con questa combinazione. Togli un filtro." : "Su questa linea non c'è ancora nessun procedimento scritto."}</p>`}
+      ${S.canWrite ? '<div class="az"><button class="btn" type="button" data-act="nuovo-proc">+ Scrivi procedimento</button></div>' : ""}</section>`;
+
+    h += schedaLinea(l);
+    return h;
+  }
+  function rigaProc(p, conLinea) {
+    const m = MOM[momentoDi(p)], n = (p.passi || []).length, fatti = (SP[p.id] || []).filter((i) => i < n).length;
+    const meta = [conLinea ? p.linea : "", m[1], p.stazione, n ? (fatti ? `${fatti}/${n} fasi` : `${n} fasi`) : "fasi da scrivere"].filter(Boolean).join(" · ");
+    return `<button class="proc" type="button" data-proc="${esc(p.id)}"><b>${esc(p.titolo || "Senza titolo")}</b><span class="vai">${fatti && fatti < n ? "Riprendi" : "Esegui"}</span><span class="meta">${esc(meta)}</span>${p.regola ? '<span class="reg">⚠ Ha una regola critica</span>' : ""}</button>`;
+  }
+  function schedaLinea(l) {
+    const aps = apDi(l), pd = l.prodotto && l.prodotto.descrizione, w = S.canWrite ? "" : "disabled";
+    return `<section class="scheda">
+      <div class="scheda-h"><h3>Linea ${esc(sigla(l))}</h3>${S.canWrite ? '<button class="btn" type="button" data-act="mod-linea">Modifica</button>' : ""}</div>
+      <div class="lampade" role="group" aria-label="Stato della linea">${STATI.map((st) => `<button type="button" data-stato="${st[0]}" aria-pressed="${stato(l) === st}" ${w}>${spia(st[2])}${st[1]}</button>`).join("")}</div>
+      ${pd ? `<p class="note">${esc(pd)}</p>` : ""}${l.note ? `<p class="note">${esc(l.note)}</p>` : ""}
+      <div class="scheda-h" style="margin-top:4px"><h3>Appunti · ${aps.length}</h3></div>
+      ${S.canWrite ? `<div class="compone"><textarea id="ap-nuovo" placeholder="Una cosa vista in turno su ${esc(sigla(l))}, un promemoria per chi arriva dopo…" aria-label="Nuovo appunto"></textarea><div class="az"><button class="btn primary" type="button" data-act="salva-ap">Salva appunto</button></div></div>` : ""}
+      <div>${aps.length ? aps.map((a) => rigaAp(a)).join("") : '<p class="vuoto">Nessun appunto su questa linea.</p>'}</div>
+    </section>`;
+  }
+  const rigaAp = (a, conLinea) => `<button class="ap" type="button" data-ap="${esc(a.id)}"><span>${esc(a.testo)}</span><small>${esc([conLinea ? a.linea : "", quando(a.creato)].filter(Boolean).join(" · "))}</small></button>`;
+
+  /* ---------- Ricerca ---------- */
+  function vRicerca() {
+    const q = S.q.trim().toLowerCase();
+    const has = (arr) => arr.join(" ").toLowerCase().includes(q);
+    const L = S.lines.filter((l) => has([l.codice, l.nome, l.prodotto && l.prodotto.nome, l.prodotto && l.prodotto.descrizione, l.note, stazioni(l).join(" ")]));
+    const P = S.proc.filter((p) => has([p.titolo, p.regola, p.stazione, p.fonte, p.linea, MOM[momentoDi(p)][1], (p.passi || []).map((x) => x.t).join(" ")]));
+    const A = S.appunti.filter((a) => has([a.testo, a.linea]));
+    const tot = L.length + P.length + A.length;
+    let h = `<section class="esito"><div class="esito-h"><h2>${tot} ${tot === 1 ? "risultato" : "risultati"}</h2><span>“${esc(S.q.trim())}”</span></div>`;
+    if (!tot) h += `<p class="vuoto">Niente contiene questa parola. Prova con il nome di una macchina o un codice.</p>`;
+    if (L.length) h += `<div class="tasti">${L.map((x) => `<button class="tasto" type="button" data-linea="${esc(x.codice)}"><span class="cnt">${procDi(x).length || ""}</span><span class="big">${esc(sigla(x))}</span><span class="sub">${spia(stato(x)[2])} ${esc(stato(x)[1])}</span></button>`).join("")}</div>`;
+    h += P.map((p) => rigaProc(p, true)).join("");
+    if (A.length) h += `<div>${A.map((a) => rigaAp(a, true)).join("")}</div>`;
+    return h + "</section>";
+  }
+
+  /* ---------- Esecuzione fase per fase ---------- */
+  const carte = (p) => (p.regola ? [{ regola: true, t: p.regola }] : []).concat((p.passi || []).map((s, i) => ({ t: s.t, a: s.a, i })));
+  function vEsec(p) {
+    const C = carte(p), passi = p.passi || [], fatti = (SP[p.id] || []).filter((i) => i < passi.length);
+    let pos = Math.min(POS[p.id] || 0, C.length);
+    const fine = pos >= C.length, c = C[pos];
+    const seg = C.map((x, k) => `<button type="button" data-vai="${k}" class="${x.regola ? "r" : fatti.includes(x.i) ? "f" : x.a ? "c" : ""}" ${k === pos ? 'aria-current="step"' : ""} aria-label="${x.regola ? "Regola" : "Fase " + (x.i + 1)}"></button>`).join("");
+    let carta;
+    if (!passi.length) carta = `<div class="fase"><span class="eti">Fasi</span><p class="testo">Le fasi di questo procedimento non sono ancora scritte.</p>${p.regola ? `<p style="color:var(--crit);font-weight:700">⚠ ${esc(p.regola)}</p>` : ""}${S.canWrite ? '<div class="az"><button class="btn primary" type="button" data-act="mod-proc">Scrivi le fasi</button></div>' : ""}</div>`;
+    else if (fine) carta = `<div class="fase fine"><span class="eti">Fine</span><p class="testo">${fatti.length === passi.length ? "Tutte le fasi fatte." : `${fatti.length} fasi su ${passi.length} segnate come fatte.`}</p><div class="az"><button class="btn" type="button" data-act="ricomincia">Ricomincia da capo</button><button class="btn primary" type="button" data-act="chiudi-esec">Torna al pannello</button></div></div>`;
+    else if (c.regola) carta = `<div class="fase regola"><span class="eti">⚠ Prima di iniziare · regola</span><p class="testo">${esc(c.t)}</p></div>`;
+    else carta = `<div class="fase ${c.a ? "critica" : ""}"><span class="eti">${c.a ? "⚠ " : ""}Fase ${c.i + 1} di ${passi.length}${c.a ? " · attenzione" : ""}</span><p class="testo">${esc(c.t)}</p>${fatti.includes(c.i) ? '<span class="fatta">✓ Già segnata come fatta</span>' : ""}</div>`;
+    const pedali = passi.length && !fine ? `<div class="pedali"><button type="button" data-act="prec" ${pos ? "" : "disabled"}>Indietro</button><button type="button" class="avanti ${c.regola ? "rosso" : ""}" data-act="avanti">${c.regola ? "Ho capito" : pos === C.length - 1 ? "Fatto, finito" : "Fatto, avanti"}</button></div>` : "<span></span>";
+    const elenco = S.elenco ? `<ol class="elenco">${C.map((x, k) => `<li><button type="button" data-vai="${k}" class="${x.regola || x.a ? "crit" : ""} ${!x.regola && fatti.includes(x.i) ? "ok" : ""} ${k === pos ? "qui" : ""}"><span class="nn">${x.regola ? "!" : !x.regola && fatti.includes(x.i) ? "✓" : x.i + 1}</span><span>${esc(x.t)}</span></button></li>`).join("")}</ol>` : "";
+    return `<div class="esec" id="esec" role="dialog" aria-modal="true" aria-label="${esc(p.titolo)}"><div class="esec-in">
+      <div class="esec-t"><button class="tondo" type="button" data-act="chiudi-esec" aria-label="Torna al pannello">←</button><div class="tit"><b>${esc(p.titolo || "Senza titolo")}</b><span>${esc([p.linea, MOM[momentoDi(p)][1], p.stazione].filter(Boolean).join(" · "))}</span></div>${S.canWrite ? '<button class="tondo" type="button" data-act="mod-proc" aria-label="Modifica procedimento">✎</button>' : ""}</div>
+      ${passi.length ? `<div><div class="segm">${seg}</div><div class="segm-l"><span>${fatti.length}/${passi.length} fatte</span><span>${passi.filter((x) => x.a).length} critiche</span></div></div>` : "<span></span>"}
+      ${carta}
+      <div style="display:grid;gap:14px">${pedali}
+        <div class="az"><button class="btn" type="button" data-act="elenco">${S.elenco ? "Nascondi elenco" : "Tutte le fasi"}</button><button class="btn" type="button" data-act="copia-proc">Copia testo</button>${S.canWrite ? '<button class="btn" type="button" data-act="dup-proc">Duplica</button>' : ""}${fatti.length ? '<button class="btn" type="button" data-act="ricomincia">Azzera</button>' : ""}</div>
+        ${elenco}${p.fonte ? `<p class="fonte">${esc(p.fonte)}</p>` : ""}</div>
+    </div></div>`;
+  }
+  function renderEsec() {
+    const root = $("#esec-root"), p = S.run && S.proc.find((x) => x.id === S.run);
+    if (!p) { if (root.innerHTML) { root.innerHTML = ""; document.body.style.overflow = ""; } S.run = ""; return; }
+    const y = $("#esec") ? $("#esec").scrollTop : 0;
+    root.innerHTML = vEsec(p);
+    $("#esec").scrollTop = y;
+    document.body.style.overflow = "hidden";
+  }
+  function apriEsec(id) { S.run = id; S.elenco = false; renderEsec(); const b = $("#esec .tondo"); if (b) b.focus({ preventScroll: true }); }
+  function muovi(delta, segna) {
+    const p = S.proc.find((x) => x.id === S.run); if (!p) return;
+    const C = carte(p), pos = Math.min(POS[p.id] || 0, C.length), c = C[pos];
+    if (segna && c && !c.regola) { const arr = SP[p.id] || []; if (!arr.includes(c.i)) SP[p.id] = arr.concat(c.i); scrivi("spunte", SP); }
+    POS[p.id] = Math.max(0, Math.min(C.length, pos + delta)); scrivi("posizione", POS);
+    renderEsec(); $("#esec").scrollTop = 0;
+  }
+
+  /* ---------- Render ---------- */
+  function render() {
+    $("#btn-nuova").hidden = !(S.canWrite && S.db);
+    if (!S.ready) return;
+    const app = $("#app");
+    if (!S.db) { app.innerHTML = `<div class="avviso"><b>Da qui non riesco ad aprire i dati.</b><p>Succede quando la pagina si apre come anteprima. Aprila dal link su claude.ai con il tuo account per vedere le linee e modificarle.</p></div>`; return; }
+    if (S.err) { app.innerHTML = `<div class="avviso"><b>Non riesco a leggere i dati.</b><p>Ricarica la pagina tra qualche secondo.</p></div>`; return; }
+    if (!S.okL) { app.innerHTML = '<p class="vuoto" style="padding-top:20px">Carico le linee…</p>'; return; }
+    const bozza = $("#ap-nuovo") ? $("#ap-nuovo").value : null;
+    app.innerHTML = S.q.trim() ? vRicerca() : vPannello();
+    if (bozza != null && $("#ap-nuovo")) $("#ap-nuovo").value = bozza;
+    $("#sottotitolo").textContent = `${S.lines.length} linee · ${S.proc.length} procedimenti`;
+    renderEsec();
+  }
+
+  /* ---------- Fogli di modifica ---------- */
+  let chiudiFoglio = null;
+  function foglio(html, monta) {
+    const root = $("#sheet-root");
+    root.innerHTML = `<div class="velo" id="velo"><div class="foglio" id="foglio" role="dialog" aria-modal="true">${html}</div></div>`;
+    const velo = $("#velo");
+    chiudiFoglio = () => { root.innerHTML = ""; chiudiFoglio = null; render(); };
+    velo.addEventListener("click", (e) => { if (e.target === velo) chiudiFoglio(); });
+    if (monta) monta($("#foglio"));
+    const primo = $("#foglio input, #foglio textarea, #foglio select"); if (primo) primo.focus({ preventScroll: true });
+  }
+  const optLinee = (sel) => S.lines.map((l) => `<option value="${esc(l.codice)}" ${l.codice === sel ? "selected" : ""}>${esc(l.codice)}${l.prodotto && l.prodotto.nome ? " · " + esc(l.prodotto.nome) : ""}</option>`).join("");
+  function bloccaBottoni(on) { document.querySelectorAll("#foglio button").forEach((b) => (b.disabled = on)); }
+  function confermaElimina(box, testo, azione) {
+    box.innerHTML = `<div class="conferma"><span>${esc(testo)}</span><div><button class="btn danger" type="button" id="si-elimina">Sì, elimina</button><button class="btn" type="button" id="no-elimina">Annulla</button></div></div>`;
+    $("#no-elimina").onclick = () => (box.innerHTML = "");
+    $("#si-elimina").onclick = azione;
+  }
+
+  function foglioLinea(l) {
+    const nuova = !l; l = l || { codice: "", nome: "", prodotto: { nome: "", descrizione: "" }, stato: "nd", note: "" };
+    foglio(`<h3>${nuova ? "Nuova linea" : "Modifica " + esc(l.codice)}</h3>
+      <div class="due"><div class="campo"><label for="f-cod">Codice</label><input id="f-cod" value="${esc(l.codice)}" placeholder="L. KZ" autocomplete="off"></div>
+      <div class="campo"><label for="f-sig">Sigla sul tasto</label><input id="f-sig" value="${esc(l.nome || "")}" placeholder="KZ" maxlength="6" autocomplete="off"></div></div>
+      <div class="campo"><label for="f-pn">Prodotto</label><input id="f-pn" value="${esc(l.prodotto && l.prodotto.nome)}" placeholder="Cosa produce la linea"></div>
+      <div class="campo"><label for="f-pd">Descrizione prodotto</label><textarea id="f-pd" rows="2" placeholder="Formato, confezione, particolarità">${esc(l.prodotto && l.prodotto.descrizione)}</textarea></div>
+      <div class="campo"><label for="f-st">Stato</label><select id="f-st">${STATI.map((s) => `<option value="${s[0]}" ${stato(l)[0] === s[0] ? "selected" : ""}>${s[1]}</option>`).join("")}</select></div>
+      <div class="campo"><label for="f-staz">Macchine in ordine</label><textarea id="f-staz" rows="5">${esc(stazioni(l).join("\n"))}</textarea><small>Una per riga, dalla prima all'ultima. Diventano i tasti del passo 3.</small></div>
+      <div class="campo"><label for="f-note">Note</label><textarea id="f-note" rows="3" placeholder="Cose da sapere su questa linea">${esc(l.note || "")}</textarea></div>
+      <div id="f-conf"></div>
+      <div class="f-az">${nuova ? "" : '<button class="btn danger" type="button" id="f-del">Elimina</button>'}<div><button class="btn" type="button" id="f-ann">Annulla</button><button class="btn primary" type="button" id="f-ok">${nuova ? "Crea linea" : "Salva"}</button></div></div>`, () => {
+      $("#f-ann").onclick = () => chiudiFoglio();
+      $("#f-ok").onclick = async () => {
+        const codice = $("#f-cod").value.trim(), nome = $("#f-sig").value.trim() || codice.replace(/^L\.\s*/i, "");
+        if (!codice) { toast("Scrivi il codice della linea"); $("#f-cod").focus(); return; }
+        if (S.lines.some((x) => x.codice === codice && x.id !== l.id)) { toast("Esiste già una linea " + codice); return; }
+        const staz = $("#f-staz").value.split("\n").map((s) => s.trim()).filter(Boolean);
+        const dati = { codice, nome, stato: $("#f-st").value, note: $("#f-note").value.trim(), stazioni: staz.length ? staz : STAZ_BASE,
+          prodotto: { nome: $("#f-pn").value.trim(), descrizione: $("#f-pd").value.trim() }, aggiornato: ora() };
+        bloccaBottoni(true);
+        try {
+          if (nuova) {
+            const slug = nome.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+            const id = slug && !S.lines.some((x) => x.id === "l-" + slug) ? "l-" + slug : undefined;
+            await S.db.collection("linee").doc(id).set(Object.assign({ metodo: [], parametri: {}, tolleranze: [], creato: ora() }, dati));
+            S.linea = codice; S.mom = ""; S.staz = ""; salvaSel(); toast("Linea " + codice + " creata");
+          } else {
+            await S.db.doc("linee/" + l.id).update(dati);
+            if (codice !== l.codice) {
+              for (const p of procDi(l)) await S.db.doc("procedure/" + p.id).update({ linea: codice });
+              for (const a of apDi(l)) await S.db.doc("appunti/" + a.id).update({ linea: codice });
+              if (S.linea === l.codice) { S.linea = codice; salvaSel(); }
+            }
+            toast("Linea salvata");
+          }
+          chiudiFoglio();
+        } catch (e) { bloccaBottoni(false); toast(errore(e, "Linea non salvata")); }
+      };
+      if (!nuova) $("#f-del").onclick = () => {
+        const n = procDi(l).length, a = apDi(l).length;
+        confermaElimina($("#f-conf"), `Elimini ${l.codice}${n || a ? ` insieme a ${n} procedimenti e ${a} appunti` : ""}? Non si torna indietro.`, async () => {
+          bloccaBottoni(true);
+          try {
+            for (const p of procDi(l)) await S.db.doc("procedure/" + p.id).delete();
+            for (const x of apDi(l)) await S.db.doc("appunti/" + x.id).delete();
+            await S.db.doc("linee/" + l.id).delete();
+            if (S.linea === l.codice) { S.linea = ""; S.mom = ""; S.staz = ""; salvaSel(); }
+            toast("Linea eliminata"); chiudiFoglio();
+          } catch (e) { bloccaBottoni(false); toast(errore(e, "Linea non eliminata")); }
+        });
+      };
+    });
+  }
+
+  function foglioProc(p, lineaPred, copia) {
+    const nuovo = !p || copia;
+    const base = p || { titolo: "", linea: lineaPred || "", momento: S.mom || "produzione", stazione: S.staz || "", regola: "", passi: [], fonte: "" };
+    let P = (base.passi || []).map((s) => ({ t: s.t || "", a: !!s.a }));
+    if (!P.length) P.push({ t: "", a: false });
+    const staz = () => stazioni(lineaDi($("#f-lin") ? $("#f-lin").value : base.linea));
+    const optStaz = (sel) => `<option value="">Nessuna in particolare</option>` + staz().map((s) => `<option ${s === sel ? "selected" : ""}>${esc(s)}</option>`).join("") + (sel && !staz().includes(sel) ? `<option selected>${esc(sel)}</option>` : "");
+    const fasiHtml = () => P.map((s, i) => `<div class="fase-e ${s.a ? "crit" : ""}"><span class="n">${i + 1}</span><div><textarea class="f-fase" data-i="${i}" rows="2" aria-label="Fase ${i + 1}" placeholder="Cosa fare in questa fase">${esc(s.t)}</textarea><div class="fase-az"><button type="button" data-crit="${i}" aria-pressed="${s.a}">⚠ Critica</button><button type="button" data-su="${i}" ${i ? "" : "disabled"} aria-label="Sposta su">↑</button><button type="button" data-giu="${i}" ${i < P.length - 1 ? "" : "disabled"} aria-label="Sposta giù">↓</button><button type="button" data-via="${i}">Togli</button></div></div></div>`).join("");
+    foglio(`<h3>${copia ? "Duplica procedimento" : nuovo ? "Nuovo procedimento" : "Modifica procedimento"}</h3>
+      <div class="campo"><label for="f-tit">Titolo</label><input id="f-tit" value="${esc(base.titolo)}" placeholder="Es. Concatenamento (cambio vasca)"></div>
+      <div class="due"><div class="campo"><label for="f-lin">Linea</label><select id="f-lin">${optLinee(base.linea)}</select></div>
+      <div class="campo"><label for="f-mom">Momento del turno</label><select id="f-mom">${MOMENTI.map(([k, n]) => `<option value="${k}" ${momentoDi(base) === k ? "selected" : ""}>${n}</option>`).join("")}</select></div></div>
+      <div class="campo"><label for="f-staz">Macchina</label><select id="f-staz">${optStaz(base.stazione)}</select></div>
+      <div class="campo"><label for="f-reg">Regola critica</label><textarea id="f-reg" rows="2" placeholder="Quello che non va mai sbagliato. Va confermata prima della fase 1. Lascia vuoto se non c'è.">${esc(base.regola)}</textarea></div>
+      <div class="campo"><span class="lbl">Fasi</span><div class="fasi" id="f-fasi">${fasiHtml()}</div>
+        <div class="az"><button class="btn" type="button" id="f-add">+ Aggiungi fase</button><button class="btn" type="button" id="f-incolla-t">Incolla un testo</button></div>
+        <div id="f-incolla" hidden class="campo"><textarea id="f-incolla-tx" rows="5" placeholder="Incolla qui la procedura: ogni riga diventa una fase"></textarea><div class="az"><button class="btn" type="button" id="f-incolla-ok">Trasforma in fasi</button></div></div></div>
+      <div class="campo"><label for="f-fonte">Fonte o nota</label><input id="f-fonte" value="${esc(base.fonte)}" placeholder="Da dove viene la procedura"></div>
+      <div id="f-conf"></div>
+      <div class="f-az">${nuovo ? "" : '<button class="btn danger" type="button" id="f-del">Elimina</button>'}<div><button class="btn" type="button" id="f-ann">Annulla</button><button class="btn primary" type="button" id="f-ok">${nuovo ? "Crea" : "Salva"}</button></div></div>`, (f) => {
+      const ridisegna = () => { $("#f-fasi").innerHTML = fasiHtml(); };
+      f.addEventListener("input", (e) => { if (e.target.classList.contains("f-fase")) P[+e.target.dataset.i].t = e.target.value; });
+      $("#f-fasi").addEventListener("click", (e) => {
+        const b = e.target.closest("button"); if (!b) return;
+        const d = b.dataset;
+        if (d.crit != null) P[+d.crit].a = !P[+d.crit].a;
+        else if (d.su != null) { const i = +d.su; [P[i - 1], P[i]] = [P[i], P[i - 1]]; }
+        else if (d.giu != null) { const i = +d.giu; [P[i + 1], P[i]] = [P[i], P[i + 1]]; }
+        else if (d.via != null) { P.splice(+d.via, 1); if (!P.length) P.push({ t: "", a: false }); }
+        ridisegna();
+      });
+      $("#f-add").onclick = () => { P.push({ t: "", a: false }); ridisegna(); const t = document.querySelectorAll(".f-fase"); t[t.length - 1].focus(); };
+      $("#f-incolla-t").onclick = () => { $("#f-incolla").hidden = !$("#f-incolla").hidden; if (!$("#f-incolla").hidden) $("#f-incolla-tx").focus(); };
+      $("#f-incolla-ok").onclick = () => {
+        const righe = $("#f-incolla-tx").value.split("\n").map((r) => r.replace(/^\s*(\d+[.)]|[-•*])\s*/, "").trim()).filter(Boolean);
+        if (!righe.length) return;
+        P = P.filter((s) => s.t.trim()).concat(righe.map((t) => ({ t, a: /^(attenzione|importante|vietato|mai|nb)\b/i.test(t) })));
+        $("#f-incolla-tx").value = ""; $("#f-incolla").hidden = true; ridisegna(); toast(righe.length + " fasi aggiunte");
+      };
+      $("#f-lin").onchange = () => { $("#f-staz").innerHTML = optStaz($("#f-staz").value); };
+      $("#f-ann").onclick = () => chiudiFoglio();
+      $("#f-ok").onclick = async () => {
+        const titolo = $("#f-tit").value.trim();
+        if (!titolo) { toast("Dai un titolo al procedimento"); $("#f-tit").focus(); return; }
+        if (!$("#f-lin").value) { toast("Crea prima una linea"); return; }
+        const dati = { titolo, linea: $("#f-lin").value, momento: $("#f-mom").value, stazione: $("#f-staz").value, regola: $("#f-reg").value.trim(),
+          passi: P.map((s) => ({ t: s.t.trim(), a: s.a })).filter((s) => s.t), fonte: $("#f-fonte").value.trim(), aggiornato: ora() };
+        bloccaBottoni(true);
+        try {
+          if (nuovo) {
+            const ref = S.db.collection("procedure").doc();
+            await ref.set(Object.assign({ creato: ora() }, dati));
+            chiudiFoglio(); toast(copia ? "Procedimento duplicato" : "Procedimento creato");
+            apriEsec(ref.id);
+          } else {
+            await S.db.doc("procedure/" + p.id).update(dati);
+            if ((p.passi || []).length !== dati.passi.length) { delete SP[p.id]; delete POS[p.id]; scrivi("spunte", SP); scrivi("posizione", POS); }
+            chiudiFoglio(); toast("Procedimento salvato");
+          }
+        } catch (e) { bloccaBottoni(false); toast(errore(e, "Procedimento non salvato")); }
+      };
+      if (!nuovo) $("#f-del").onclick = () => confermaElimina($("#f-conf"), `Elimini "${p.titolo}"? Non si torna indietro.`, async () => {
+        bloccaBottoni(true);
+        try {
+          await S.db.doc("procedure/" + p.id).delete();
+          delete SP[p.id]; delete POS[p.id]; scrivi("spunte", SP); scrivi("posizione", POS);
+          if (S.run === p.id) S.run = "";
+          toast("Procedimento eliminato"); chiudiFoglio();
+        } catch (e) { bloccaBottoni(false); toast(errore(e, "Procedimento non eliminato")); }
+      });
+    });
+  }
+
+  function foglioAp(a) {
+    foglio(`<h3>Appunto</h3><span class="mono" style="font-size:12.5px;color:var(--ink-2)">Scritto ${esc(quando(a.creato))}${a.aggiornato && a.aggiornato !== a.creato ? " · modificato " + esc(quando(a.aggiornato)) : ""}</span>
+      <div class="campo"><label for="f-al">Linea</label><select id="f-al" ${S.canWrite ? "" : "disabled"}>${optLinee(a.linea)}</select></div>
+      <div class="campo"><label for="f-at">Testo</label><textarea id="f-at" rows="6" ${S.canWrite ? "" : "readonly"}>${esc(a.testo)}</textarea></div>
+      <div id="f-conf"></div>
+      <div class="f-az">${S.canWrite ? '<button class="btn danger" type="button" id="f-del">Elimina</button>' : ""}<div><button class="btn" type="button" id="f-copia">Copia</button><button class="btn" type="button" id="f-ann">Chiudi</button>${S.canWrite ? '<button class="btn primary" type="button" id="f-ok">Salva</button>' : ""}</div></div>`, () => {
+      $("#f-ann").onclick = () => chiudiFoglio();
+      $("#f-copia").onclick = () => copia($("#f-at").value);
+      if ($("#f-ok")) $("#f-ok").onclick = async () => {
+        const testo = $("#f-at").value.trim();
+        if (!testo) { toast("L'appunto è vuoto"); return; }
+        bloccaBottoni(true);
+        try { await S.db.doc("appunti/" + a.id).update({ testo, linea: $("#f-al").value, aggiornato: ora() }); toast("Appunto salvato"); chiudiFoglio(); }
+        catch (e) { bloccaBottoni(false); toast(errore(e, "Appunto non salvato")); }
+      };
+      if ($("#f-del")) $("#f-del").onclick = () => confermaElimina($("#f-conf"), "Elimini questo appunto?", async () => {
+        bloccaBottoni(true);
+        try { await S.db.doc("appunti/" + a.id).delete(); toast("Appunto eliminato"); chiudiFoglio(); }
+        catch (e) { bloccaBottoni(false); toast(errore(e, "Appunto non eliminato")); }
+      });
+    });
+  }
+  function foglioTuttiAp() {
+    foglio(`<h3>Tutti gli appunti · ${S.appunti.length}</h3><div>${S.appunti.length ? S.appunti.map((a) => rigaAp(a, true)).join("") : '<p class="vuoto">Nessun appunto scritto per ora. Si scrivono dalla scheda di una linea.</p>'}</div><div class="az"><button class="btn" type="button" id="f-ann">Chiudi</button></div>`, (f) => {
+      $("#f-ann").onclick = () => chiudiFoglio();
+      f.addEventListener("click", (e) => { const b = e.target.closest("[data-ap]"); if (!b) return; const a = S.appunti.find((x) => x.id === b.dataset.ap); if (a) foglioAp(a); });
+    });
+  }
+
+  function copia(testo) {
+    const fallback = () => {
+      foglio(`<h3>Copia il testo</h3><div class="campo"><textarea id="f-copia-tx" rows="10" readonly>${esc(testo)}</textarea><small>Tieni premuto sul testo e scegli Copia.</small></div><div class="az"><button class="btn" type="button" id="f-ann">Chiudi</button></div>`, () => { $("#f-ann").onclick = () => chiudiFoglio(); $("#f-copia-tx").select(); });
+    };
+    try { navigator.clipboard.writeText(testo).then(() => toast("Testo copiato"), fallback); } catch (e) { fallback(); }
+  }
+  function testoProc(p) {
+    return [p.titolo, p.linea + (p.stazione ? " · " + p.stazione : ""), p.regola ? "REGOLA: " + p.regola : "", "",
+      ...(p.passi || []).map((s, i) => `${i + 1}. ${s.a ? "⚠ " : ""}${s.t}`), p.fonte ? "\n" + p.fonte : ""].filter((x, i) => x || i === 3).join("\n");
+  }
+  async function cambiaStato(l, k) {
+    if (!S.canWrite || !l || l.stato === k) return;
+    try { await S.db.doc("linee/" + l.id).update({ stato: k, aggiornato: ora() }); toast(sigla(l) + " · " + STATO[k][1]); }
+    catch (e) { toast(errore(e, "Stato non cambiato")); }
+  }
+
+  /* ---------- Eventi ---------- */
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b || b.disabled) return;
+    if (b.closest("#foglio")) return;
+    const d = b.dataset, l = lineaDi(S.linea), p = S.run && S.proc.find((x) => x.id === S.run);
+    if (d.linea) { S.linea = d.linea; S.mom = ""; S.staz = ""; S.q = ""; $("#cerca").value = ""; salvaSel(); render(); window.scrollTo(0, 0); return; }
+    if (d.mom != null) { S.mom = S.mom === d.mom ? "" : d.mom; salvaSel(); render(); return; }
+    if (d.staz != null) { S.staz = S.staz === d.staz ? "" : d.staz; salvaSel(); render(); return; }
+    if (d.proc) { apriEsec(d.proc); return; }
+    if (d.ap) { const a = S.appunti.find((x) => x.id === d.ap); if (a) foglioAp(a); return; }
+    if (d.stato) { cambiaStato(l, d.stato); return; }
+    if (d.vai != null && p) { const daElenco = !!b.closest(".elenco"); POS[p.id] = +d.vai; scrivi("posizione", POS); renderEsec(); if (daElenco) $("#esec").scrollTop = 0; return; }
+    switch (d.act) {
+      case "cambia-linea": S.linea = ""; S.mom = ""; S.staz = ""; salvaSel(); render(); break;
+      case "nuova-linea": foglioLinea(null); break;
+      case "mod-linea": if (l) foglioLinea(l); break;
+      case "appunti": foglioTuttiAp(); break;
+      case "nuovo-proc": foglioProc(null, l && l.codice); break;
+      case "mod-proc": if (p) foglioProc(p); break;
+      case "dup-proc": if (p) foglioProc(p, null, true); break;
+      case "copia-proc": if (p) copia(testoProc(p)); break;
+      case "chiudi-esec": S.run = ""; renderEsec(); render(); break;
+      case "avanti": muovi(1, true); break;
+      case "prec": muovi(-1, false); break;
+      case "elenco": S.elenco = !S.elenco; renderEsec(); break;
+      case "ricomincia": if (p) { delete SP[p.id]; POS[p.id] = 0; scrivi("spunte", SP); scrivi("posizione", POS); renderEsec(); } break;
+      case "salva-ap": {
+        const t = $("#ap-nuovo").value.trim(); if (!t || !l) { toast("Scrivi qualcosa prima"); break; }
+        b.disabled = true;
+        S.db.collection("appunti").doc().set({ testo: t, linea: l.codice, creato: ora(), aggiornato: ora() })
+          .then(() => { if ($("#ap-nuovo")) $("#ap-nuovo").value = ""; toast("Appunto salvato"); }, (err) => toast(errore(err, "Appunto non salvato")))
+          .finally(() => { b.disabled = false; });
+        break;
+      }
+    }
+  });
+  $("#cerca").addEventListener("input", (e) => { S.q = e.target.value; if (S.okL) $("#app").innerHTML = S.q.trim() ? vRicerca() : vPannello(); });
+  document.addEventListener("keydown", (e) => {
+    if (chiudiFoglio) { if (e.key === "Escape") chiudiFoglio(); return; }
+    if (!S.run) return;
+    if (e.key === "Escape") { S.run = ""; renderEsec(); render(); }
+    else if (e.key === "ArrowRight" && !/TEXTAREA|INPUT/.test(document.activeElement.tagName)) muovi(1, true);
+    else if (e.key === "ArrowLeft" && !/TEXTAREA|INPUT/.test(document.activeElement.tagName)) muovi(-1, false);
+  });
+
+  /* ---------- Avvio ---------- */
+  async function init() {
+    const c = window.claude;
+    if (c && c.use) {
+      try { S.db = await c.use("db"); } catch (e) { S.db = null; }
+      try { const u = await c.use("user"); if (u && typeof u.can === "function") { const cw = await u.can("data.write"); S.canWrite = cw !== false; } } catch (e) {}
+    }
+    S.ready = true; render();
+    if (!S.db) return;
+    S.db.collection("linee").onSnapshot((snap) => {
+      S.lines = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())).sort((a, b) => nat(a.codice, b.codice));
+      S.okL = true; if (!chiudiFoglio) render();
+    }, () => { S.err = true; render(); });
+    S.db.collection("procedure").onSnapshot((snap) => {
+      S.proc = snap.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+      if (!chiudiFoglio) render();
+    }, () => {});
+    S.db.collection("appunti").onSnapshot((snap) => {
+      S.appunti = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())).sort((a, b) => String(b.creato || "").localeCompare(String(a.creato || "")));
+      if (!chiudiFoglio) render();
+    }, () => {});
+  }
+  init();
+})();
+</script>
