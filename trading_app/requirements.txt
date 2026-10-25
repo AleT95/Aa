@@ -1,0 +1,8 @@
+# Librerie necessarie. Installa con:  pip install -r requirements.txt
+pandas>=2.0
+numpy>=1.24
+pyyaml>=6.0
+yfinance>=0.2.40
+# Le prossime le useremo nelle fasi successive:
+# ib_async        (Fase 4 - Interactive Brokers)
+# streamlit       (Fase 5 - dashboard)

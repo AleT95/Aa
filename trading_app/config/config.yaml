@@ -1,0 +1,68 @@
+# =============================================================
+#  FILE DI CONFIGURAZIONE
+#  Qui cambi i parametri SENZA toccare il codice Python.
+#  Regole YAML: l'indentazione (gli spazi) conta! Usa spazi, mai TAB.
+#  Il simbolo # indica un commento (viene ignorato).
+# =============================================================
+
+# --- Dati di mercato -----------------------------------------
+dati:
+  fornitore: yfinance          # oggi "yfinance"; in futuro potremo aggiungerne altri
+  anni_storico: 12             # quanti anni di storia scaricare (per il backtest servono 10+)
+  cartella_cache: data/cache   # dove salvare i dati scaricati (così non li riscarichiamo ogni volta)
+  validita_cache_ore: 12       # dopo quante ore i dati in cache sono considerati "vecchi"
+
+# --- ETF "termometro" di mercato -------------------------------
+# Ogni voce: nome leggibile -> ticker su Yahoo Finance
+etf_benchmark: URTH            # ETF di confronto per il "compra e tieni" (MSCI World)
+
+etf_aree:
+  mondo: URTH                  # iShares MSCI World (quotato in USA)
+  usa_sp500: SPY
+  usa_nasdaq100: QQQ
+  europa: VGK
+  emergenti: EEM
+
+etf_settori:
+  tecnologia: XLK
+  salute: XLV
+  energia: XLE
+  finanza: XLF
+
+# --- Azioni candidate, raggruppate per settore/area ------------
+# La chiave DEVE corrispondere a un nome in etf_settori o etf_aree:
+# così l'app sa quale ETF "guardare" per decidere se comprare queste azioni.
+azioni:
+  tecnologia: [AAPL, MSFT, NVDA, GOOGL, META, AVGO, ORCL, ADBE, CRM, AMD]
+  salute:     [JNJ, UNH, LLY, PFE, MRK, ABBV, TMO, ABT]
+  energia:    [XOM, CVX, COP, SLB, EOG, PSX]
+  finanza:    [JPM, BAC, WFC, GS, MS, BLK, V, MA]
+  europa:     [ASML, SAP, NVO, SHEL, AZN, TTE]   # ADR/titoli quotati in USA
+
+# --- Parametri della strategia (usati dalla Fase 2) ------------
+strategia:
+  media_mobile_breve: 50       # giorni
+  media_mobile_lunga: 200      # giorni
+  momentum_mesi: [3, 6]        # periodi del momentum, in mesi
+  azioni_per_settore: 3        # quante azioni "più forti" comprare per ogni settore positivo
+
+# --- Gestione del rischio (usata dalla Fase 3) -----------------
+rischio:
+  capitale_iniziale: 100000    # in dollari
+  max_per_azione_pct: 5        # massimo 5% del capitale per singola azione
+  stop_loss_pct: 8             # stop loss: vendi se la posizione perde l'8%
+  perdita_max_giornaliera_pct: 3
+  perdita_max_mensile_pct: 10
+
+# --- Costi di trading (usati dal backtest) ---------------------
+costi:
+  commissione_per_azione: 0.005   # $ per azione (tipo IBKR "Fixed")
+  commissione_minima: 1.0         # $ minimi per ordine
+  slippage_pct: 0.05              # 0,05% di prezzo "peggiore" a ogni esecuzione
+
+# --- Broker (Fase 4) -------------------------------------------
+broker:
+  modalita: paper              # SOLO "paper" (conto demo). Non cambiare finché non decidiamo insieme!
+  host: 127.0.0.1
+  porta: 7497                  # 7497 = TWS paper trading
+  client_id: 1
