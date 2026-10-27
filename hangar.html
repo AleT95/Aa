@@ -1,0 +1,1210 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3d4a24">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hangar">
+<title>Hangar – Collezione modellini</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%232c4a6b'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%23e9dfc4'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%234a5a2b'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%233d4a24'/%3E%3Ccircle cx='32' cy='32' r='24' fill='%232c4a6b'/%3E%3Ccircle cx='32' cy='32' r='16' fill='%23e9dfc4'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%234a5a2b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Courier+Prime:wght@400;700&family=Stardos+Stencil:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --olive:#4a5a2b; --olive-dark:#3d4a24; --olive-deep:#2b3418;
+  --sand:#e9dfc4; --sand-2:#d9caa3; --paper:#f4eedc; --card:#fbf7ea;
+  --blue:#2c4a6b; --blue-2:#3d6189;
+  --ink:#2a2a22; --ink-2:#5a5646; --muted:#857f68;
+  --line:#cbbd96; --red:#9b2d20; --brass:#a8873a;
+  --shadow:0 2px 0 rgba(43,52,24,.18), 0 6px 14px rgba(43,52,24,.12);
+  --bar:#4a5a2b; --track:#e6dcc0;
+  --f-stencil:"Stardos Stencil", "Courier New", serif;
+  --f-type:"Courier Prime", "Courier New", monospace;
+  --f-ui:"Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --nav-h:70px;
+  --safe-b:env(safe-area-inset-bottom, 0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1c2014; --card:#272c1c; --sand:#3a3f2a; --sand-2:#4a5036;
+    --ink:#ece3c8; --ink-2:#c9bf9f; --muted:#9a9378; --line:#4d5338;
+    --blue:#6d93bd; --blue-2:#86a9d0; --red:#e07a63; --brass:#cfae5f;
+    --shadow:0 2px 0 rgba(0,0,0,.35), 0 6px 14px rgba(0,0,0,.3);
+    --bar:#93a85c; --track:#353b26;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1c2014; --card:#272c1c; --sand:#3a3f2a; --sand-2:#4a5036;
+  --ink:#ece3c8; --ink-2:#c9bf9f; --muted:#9a9378; --line:#4d5338;
+  --blue:#6d93bd; --blue-2:#86a9d0; --red:#e07a63; --brass:#cfae5f;
+  --shadow:0 2px 0 rgba(0,0,0,.35), 0 6px 14px rgba(0,0,0,.3);
+  --bar:#93a85c; --track:#353b26;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  background-image:repeating-linear-gradient(0deg, transparent 0 27px, rgba(133,127,104,.07) 27px 28px);
+  color:var(--ink); font-family:var(--f-ui); font-size:18px; line-height:1.35;
+  min-height:100vh; padding-bottom:calc(var(--nav-h) + var(--safe-b) + 24px);
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+img{display:block;max-width:100%}
+
+/* ---------- Header ---------- */
+.topbar{
+  position:sticky; top:0; z-index:20;
+  background:var(--olive-dark); color:#efe6cb;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;
+  display:flex; align-items:center; gap:12px;
+  border-bottom:3px solid var(--brass);
+  box-shadow:0 2px 8px rgba(0,0,0,.25);
+}
+.topbar .logo{width:38px;height:38px;flex:none}
+.topbar h1{margin:0;font-family:var(--f-stencil);font-weight:700;font-size:26px;letter-spacing:.08em;line-height:1}
+.topbar .sub{font-family:var(--f-type);font-size:12px;letter-spacing:.12em;opacity:.8;text-transform:uppercase}
+.topbar .grow{flex:1;min-width:0}
+.icon-btn{
+  width:48px;height:48px;border-radius:12px;border:0;background:transparent;color:inherit;
+  display:grid;place-items:center;flex:none;
+}
+.icon-btn:active{background:rgba(255,255,255,.12)}
+.icon-btn svg{width:26px;height:26px}
+
+main{max-width:900px;margin:0 auto;padding:16px}
+
+/* ---------- Bottom nav ---------- */
+.bottomnav{
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  background:var(--olive-deep); border-top:3px solid var(--brass);
+  display:grid; grid-template-columns:repeat(4,1fr);
+  padding-bottom:var(--safe-b);
+}
+.bottomnav a{
+  height:var(--nav-h); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  color:#c9c0a2; text-decoration:none; font-size:15px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+}
+.bottomnav a svg{width:26px;height:26px}
+.bottomnav a.on{color:#f4e9c8;background:rgba(255,255,255,.07);box-shadow:inset 0 3px 0 var(--sand-2)}
+:root[data-theme="dark"] .bottomnav a.on, .bottomnav a.on{box-shadow:inset 0 3px 0 #d9caa3}
+
+.fab{
+  position:fixed; right:18px; bottom:calc(var(--nav-h) + var(--safe-b) + 18px); z-index:25;
+  width:68px;height:68px;border-radius:50%;border:3px solid #e9dfc4;
+  background:var(--blue); color:#fff; box-shadow:0 4px 14px rgba(0,0,0,.35);
+  display:grid;place-items:center;
+}
+.fab svg{width:34px;height:34px}
+.fab:active{transform:scale(.95)}
+.fab[hidden]{display:none}
+
+/* ---------- Toolbar list ---------- */
+.searchrow{display:flex;gap:10px;align-items:stretch}
+.search{
+  flex:1; display:flex; align-items:center; gap:8px; min-width:0;
+  background:var(--card); border:2px solid var(--line); border-radius:14px; padding:0 12px; height:56px;
+}
+.search svg{width:22px;height:22px;color:var(--muted);flex:none}
+.search input{border:0;background:transparent;outline:none;flex:1;min-width:0;font-size:19px;height:100%}
+.tool-btn{
+  position:relative; height:56px; min-width:56px; padding:0 14px; border-radius:14px;
+  background:var(--card); border:2px solid var(--line); display:flex; align-items:center; gap:6px; font-weight:600;
+}
+.tool-btn svg{width:24px;height:24px}
+.tool-btn .badge{
+  position:absolute; top:-7px; right:-7px; min-width:24px; height:24px; border-radius:12px; padding:0 6px;
+  background:var(--red); color:#fff; font-size:14px; display:grid; place-items:center; font-weight:700;
+}
+.listmeta{display:flex;justify-content:space-between;align-items:center;margin:14px 2px 10px;gap:10px}
+.listmeta .count{font-family:var(--f-type);font-size:14px;color:var(--ink-2);letter-spacing:.06em;text-transform:uppercase}
+.sortsel{
+  height:44px;border-radius:10px;border:2px solid var(--line);background:var(--card);padding:0 10px;font-size:16px;font-weight:600;max-width:65%;min-width:150px;
+}
+.activefilters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.activefilters button{
+  border:0;border-radius:999px;background:var(--olive);color:#f4ecd2;padding:6px 12px;font-size:15px;font-weight:600;display:flex;gap:6px;align-items:center;
+}
+
+/* ---------- Gallery ---------- */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (min-width:620px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:860px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.card{
+  background:var(--card); border:2px solid var(--line); border-radius:14px; overflow:hidden;
+  box-shadow:var(--shadow); text-align:left; padding:0; display:flex; flex-direction:column; color:inherit;
+}
+.card:active{transform:translateY(1px)}
+.card .ph{aspect-ratio:4/3;background:var(--sand);position:relative;overflow:hidden}
+.card .ph img{width:100%;height:100%;object-fit:cover}
+.ph-empty{width:100%;height:100%;display:grid;place-items:center;color:var(--muted)}
+.ph-empty svg{width:46%;height:auto;opacity:.55}
+.card .scale{
+  position:absolute; right:8px; bottom:8px; background:rgba(43,52,24,.88); color:#f4ecd2;
+  font-family:var(--f-type); font-weight:700; font-size:14px; padding:3px 8px; border-radius:6px; letter-spacing:.04em;
+}
+.card .war{
+  position:absolute; left:8px; top:8px; background:rgba(233,223,196,.92); color:#2a2a22;
+  font-family:var(--f-stencil); font-weight:700; font-size:13px; padding:2px 7px; border-radius:5px; letter-spacing:.06em;
+}
+.plate{position:relative;padding:10px 12px 12px;border-top:2px dashed var(--line);flex:1;display:flex;flex-direction:column;gap:3px}
+.plate .nm{font-family:var(--f-stencil);font-weight:700;font-size:17px;line-height:1.1;letter-spacing:.02em;display:flex;gap:7px;align-items:flex-start}
+.plate .nm .flag{margin-top:2px}
+.plate .vr{font-family:var(--f-type);font-size:13.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flag{width:27px;height:18px;flex:none;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.25);display:inline-block;vertical-align:middle;overflow:hidden}
+.flag svg{width:100%;height:100%;display:block}
+
+.empty{
+  text-align:center;padding:40px 20px;border:2px dashed var(--line);border-radius:16px;background:var(--card);margin-top:10px;
+}
+.empty svg{width:90px;height:90px;color:var(--olive);opacity:.7}
+.empty h3{font-family:var(--f-stencil);font-size:22px;margin:10px 0 6px;letter-spacing:.04em}
+.empty p{margin:0;color:var(--ink-2);font-size:17px}
+
+/* ---------- Section titles ---------- */
+.stamp{
+  font-family:var(--f-stencil);font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--olive);font-size:15px;margin:22px 0 10px;display:flex;align-items:center;gap:10px;
+}
+:root[data-theme="dark"] .stamp{color:var(--bar)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .stamp{color:var(--bar)}}
+.stamp::after{content:"";flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 13px)}
+.pagetitle{font-family:var(--f-stencil);font-size:28px;margin:4px 0 4px;letter-spacing:.04em;line-height:1.1}
+
+/* ---------- Detail ---------- */
+.carousel{
+  display:flex;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:16px;background:var(--sand);
+  border:2px solid var(--line);scrollbar-width:none;margin:0 0 6px;
+}
+.carousel::-webkit-scrollbar{display:none}
+.carousel .slide{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:4/3;position:relative}
+.carousel .slide img{width:100%;height:100%;object-fit:contain;background:#151810}
+.carousel .slide button{all:unset;display:block;width:100%;height:100%;cursor:zoom-in}
+.dots{display:flex;justify-content:center;gap:7px;margin:8px 0 2px}
+.dots span{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.dots span.on{background:var(--olive);transform:scale(1.2)}
+.mainstar{position:absolute;left:10px;top:10px;background:rgba(43,52,24,.85);color:#f1d27a;border-radius:8px;padding:3px 8px;font-size:13px;font-weight:700;letter-spacing:.05em;display:flex;gap:4px;align-items:center;pointer-events:none}
+.mainstar svg{width:14px;height:14px}
+
+.detail-head{display:flex;gap:12px;align-items:flex-start;margin:14px 0 4px}
+.detail-head .flag{width:42px;height:28px;margin-top:4px}
+.detail-head h2{margin:0;font-family:var(--f-stencil);font-size:28px;line-height:1.05;letter-spacing:.02em}
+.detail-head .vr{font-family:var(--f-type);font-size:17px;color:var(--ink-2);margin-top:4px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.tag{font-family:var(--f-type);font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;padding:4px 9px;border-radius:6px;background:var(--sand);color:var(--ink);border:1px solid var(--line)}
+.tag.blue{background:var(--blue);color:#fff;border-color:transparent}
+.tag.olive{background:var(--olive);color:#f4ecd2;border-color:transparent}
+
+.sheet-card{
+  background:var(--card);border:2px solid var(--line);border-radius:14px;padding:6px 14px 10px;margin-top:6px;position:relative;box-shadow:var(--shadow);
+}
+.sheet-card::before,.sheet-card::after{
+  content:"";position:absolute;top:8px;width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #d8cfb2, #8a8266);box-shadow:0 1px 0 rgba(0,0,0,.25);
+}
+.sheet-card::before{left:8px}.sheet-card::after{right:8px}
+.row{display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px dotted var(--line)}
+.row:last-child{border-bottom:0}
+.row .k{font-family:var(--f-ui);font-weight:600;text-transform:uppercase;letter-spacing:.07em;font-size:14px;color:var(--muted);width:40%;flex:none}
+.row .v{font-family:var(--f-type);font-size:16.5px;flex:1;min-width:0;word-wrap:break-word}
+.row .v.big{font-weight:700;font-size:18px}
+.notes{font-family:var(--f-type);white-space:pre-wrap;font-size:16px;padding:10px 0}
+
+.actions{display:grid;gap:10px;margin-top:22px}
+.actions.two{grid-template-columns:1fr 1fr}
+
+/* ---------- Buttons ---------- */
+.btn{
+  min-height:58px;border-radius:14px;border:0;padding:0 18px;font-size:19px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:10px;background:var(--olive);color:#f6efd8;box-shadow:0 3px 0 var(--olive-deep);
+  text-decoration:none;
+}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--olive-deep)}
+.btn svg{width:24px;height:24px;flex:none}
+.btn.blue{background:var(--blue);box-shadow:0 3px 0 #1c3249;color:#fff}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.btn.danger{background:transparent;color:var(--red);border:2px solid var(--red);box-shadow:none}
+.btn.danger.solid{background:#9b2d20;color:#fff;border:0;box-shadow:0 3px 0 #5e1a12}
+.btn.brass{background:var(--brass);color:#2a2410;box-shadow:0 3px 0 #6f5824}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* ---------- Form ---------- */
+.field{margin:0 0 16px}
+.field > label, .field > .lbl{
+  display:block;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:15px;color:var(--ink-2);margin-bottom:7px;
+}
+.field .hint{font-size:14px;color:var(--muted);margin-top:5px}
+.inp{
+  width:100%;height:56px;border-radius:12px;border:2px solid var(--line);background:var(--card);padding:0 14px;font-size:19px;
+  font-family:var(--f-type);outline:none;
+}
+textarea.inp{height:auto;min-height:110px;padding:12px 14px;resize:vertical;line-height:1.4}
+.inp:focus{border-color:var(--blue)}
+.inp.err{border-color:var(--red)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{position:relative}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips span{
+  display:flex;align-items:center;gap:8px;min-height:48px;padding:0 15px;border-radius:12px;
+  border:2px solid var(--line);background:var(--card);font-weight:600;font-size:17px;
+}
+.chips input:checked + span{background:var(--olive);border-color:var(--olive);color:#f6efd8}
+.chips input:focus-visible + span{outline:3px solid var(--blue);outline-offset:2px}
+.chips.flags{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.chips.flags span{padding:0 10px}
+.chips.wide{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.chips.wide span{justify-content:center;text-align:center;line-height:1.1;padding:6px 8px}
+
+.photos-edit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.pthumb{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--sand);border:3px solid transparent}
+.pthumb.main{border-color:#d9a92c}
+.pthumb img{width:100%;height:100%;object-fit:cover}
+.pthumb .pb{
+  position:absolute;width:40px;height:40px;border-radius:50%;border:0;display:grid;place-items:center;
+  background:rgba(20,22,14,.72);color:#fff;
+}
+.pthumb .pb svg{width:22px;height:22px}
+.pthumb .pb.star{left:4px;bottom:4px}
+.pthumb.main .pb.star{color:#f1c94a}
+.pthumb .pb.del{right:4px;top:4px}
+.pthumb .mainlbl{position:absolute;left:0;right:0;top:0;background:rgba(217,169,44,.92);color:#2a2410;font-size:12px;font-weight:700;text-align:center;letter-spacing:.08em;text-transform:uppercase;padding:2px 0}
+.photo-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-foot{
+  position:sticky;bottom:calc(var(--nav-h) + var(--safe-b) + 10px);margin-top:20px;z-index:5;
+  display:grid;grid-template-columns:1fr 2fr;gap:10px;
+}
+.form-foot .btn{box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- Stats ---------- */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kpi{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.kpi .l{font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:14px;color:var(--muted)}
+.kpi .n{font-family:var(--f-type);font-weight:700;font-size:30px;line-height:1.1;margin-top:4px;word-break:break-word}
+.kpi .s{font-size:14px;color:var(--ink-2);margin-top:2px}
+.kpi.hero{grid-column:1 / -1;background:var(--olive-dark);border-color:var(--olive-deep);color:#f4ecd2}
+.kpi.hero .l{color:#cfc4a1}.kpi.hero .s{color:#d9cfae}
+.kpi.hero .n{font-size:40px}
+.bars{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.bar{display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;align-items:center;gap:10px;padding:7px 0}
+.bar .bl{display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px;min-width:0}
+.bar .bl span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .bt{height:18px;background:var(--track);border-radius:0 4px 4px 0;overflow:hidden}
+.bar .bf{height:100%;background:var(--bar);border-radius:0 4px 4px 0;min-width:3px}
+.bar .bv{font-family:var(--f-type);font-weight:700;font-size:16px;min-width:2.2em;text-align:right}
+.bars .none{color:var(--muted);font-style:italic;padding:6px 0}
+
+/* ---------- Backup ---------- */
+.info{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);font-size:17px}
+.info p{margin:0 0 8px}.info p:last-child{margin:0}
+.ok{color:var(--olive);font-weight:700}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ok{color:var(--bar)}}
+:root[data-theme="dark"] .ok{color:var(--bar)}
+.warn{color:var(--red);font-weight:700}
+
+/* ---------- Modal / sheet ---------- */
+.overlay{position:fixed;inset:0;background:rgba(15,17,10,.6);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.sheet{
+  background:var(--paper);width:100%;max-width:640px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;
+  padding:8px 16px calc(16px + var(--safe-b));border-top:4px solid var(--brass);animation:up .2s ease-out;
+}
+@keyframes up{from{transform:translateY(40px);opacity:.5}}
+.sheet .grab{width:48px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 10px}
+.sheet h3{font-family:var(--f-stencil);font-size:24px;margin:4px 0 8px;letter-spacing:.04em}
+.sheet p{margin:0 0 14px;font-size:18px;color:var(--ink-2)}
+.sheet .btns{display:grid;gap:10px;margin-top:8px}
+.filter-group{margin-bottom:14px}
+.filter-group .lbl{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:15px;color:var(--ink-2);margin-bottom:7px}
+.sheet-foot{position:sticky;bottom:calc(-16px - var(--safe-b));background:var(--paper);padding:10px 0 4px;display:grid;grid-template-columns:1fr 2fr;gap:10px}
+
+.lightbox{position:fixed;inset:0;background:#0d0f09;z-index:120;display:flex;align-items:center;justify-content:center}
+.lightbox img{max-width:100%;max-height:100%;object-fit:contain}
+.lightbox .icon-btn{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:10px;color:#fff;background:rgba(255,255,255,.12)}
+
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + var(--safe-b) + 100px);z-index:200;
+  background:var(--olive-deep);color:#f4ecd2;border:2px solid var(--brass);padding:12px 18px;border-radius:12px;font-size:17px;font-weight:600;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);max-width:calc(100% - 32px);text-align:center;animation:fade .2s;
+}
+.busy{position:fixed;inset:0;background:rgba(15,17,10,.65);z-index:150;display:grid;place-items:center;color:#f4ecd2;font-size:20px;font-weight:600;text-align:center;padding:20px}
+.busy .spin{width:54px;height:54px;margin:0 auto 14px;border-radius:50%;border:5px solid rgba(255,255,255,.2);border-top-color:#d9caa3;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.backlink{display:inline-flex;align-items:center;gap:4px;font-weight:700;color:var(--blue);text-decoration:none;font-size:18px;min-height:44px;background:none;border:0;padding:0}
+.backlink svg{width:22px;height:22px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#2c4a6b" stroke="#e9dfc4" stroke-width="2"/><circle cx="32" cy="32" r="20" fill="#e9dfc4"/><circle cx="32" cy="32" r="10" fill="#4a5a2b"/></svg>
+  <div class="grow">
+    <h1>HANGAR</h1>
+    <div class="sub" id="subtitle">Registro collezione · 1914–1945</div>
+  </div>
+</header>
+
+<main id="app" aria-live="polite"></main>
+
+<button class="fab" id="fab" aria-label="Aggiungi modellino" hidden></button>
+
+<nav class="bottomnav" id="nav" aria-label="Sezioni"></nav>
+
+<input type="file" id="inCamera" accept="image/*" capture="environment" class="visually-hidden" aria-hidden="true" tabindex="-1">
+<input type="file" id="inGallery" accept="image/*" multiple class="visually-hidden" aria-hidden="true" tabindex="-1">
+<input type="file" id="inImport" accept=".json,application/json" class="visually-hidden" aria-hidden="true" tabindex="-1">
+
+<script>
+"use strict";
+/* =========================================================
+   Costanti
+   ========================================================= */
+const GUERRE = { ww1:{nome:"Prima guerra mondiale", breve:"I GM"}, ww2:{nome:"Seconda guerra mondiale", breve:"II GM"} };
+const NAZIONI = [
+  {id:"it", nome:"Italia"}, {id:"de", nome:"Germania"}, {id:"gb", nome:"Regno Unito"}, {id:"us", nome:"USA"},
+  {id:"su", nome:"URSS"}, {id:"jp", nome:"Giappone"}, {id:"fr", nome:"Francia"}, {id:"altro", nome:"Altro"}
+];
+const TIPI = [
+  {id:"caccia", nome:"Caccia"}, {id:"bombardiere", nome:"Bombardiere"}, {id:"cacciabombardiere", nome:"Cacciabombardiere"},
+  {id:"ricognitore", nome:"Ricognitore"}, {id:"aerosilurante", nome:"Aerosilurante"}, {id:"trasporto", nome:"Trasporto"},
+  {id:"idrovolante", nome:"Idrovolante"}
+];
+const SCALE = [{id:"1:144",nome:"1:144"},{id:"1:72",nome:"1:72"},{id:"1:48",nome:"1:48"},{id:"1:32",nome:"1:32"},{id:"altro",nome:"Altro"}];
+const MATERIALI = [
+  {id:"plastica", nome:"Plastica da montare"}, {id:"diecast", nome:"Diecast (metallo)"},
+  {id:"resina", nome:"Resina"}, {id:"legno", nome:"Legno"}
+];
+const STATI = [
+  {id:"nuovo", nome:"Nuovo in scatola"}, {id:"dipinto", nome:"Montato e dipinto"},
+  {id:"dafinire", nome:"Montato da finire"}, {id:"restauro", nome:"Da restaurare"}
+];
+const MARCHE = ["Airfix","Tamiya","Revell","Italeri","Hasegawa","Corgi","Eduard","Academy","Trumpeter","Hobby Boss","ICM","Zvezda","Special Hobby","Kinetic","Wingnut Wings","Oxford","Hobby Master","Esci","Heller","Matchbox"];
+const FIELDS = ["nome","variante","guerra","nazione","nazioneAltro","tipo","marca","scala","scalaAltro","materiale","stato","livrea","dataAcquisto","luogoAcquisto","prezzo","valore","note"];
+const byId = (arr, id) => arr.find(x => x.id === id);
+const nomeDi = (arr, id) => (byId(arr, id) || {}).nome || "";
+
+/* ---------- Bandierine (SVG 3:2) ---------- */
+const FLAGS = {
+  it:`<rect width="30" height="20" fill="#fff"/><rect width="10" height="20" fill="#009246"/><rect x="20" width="10" height="20" fill="#ce2b37"/>`,
+  de:`<rect width="30" height="7" fill="#000"/><rect y="6.67" width="30" height="6.67" fill="#dd0000"/><rect y="13.33" width="30" height="6.67" fill="#ffce00"/>`,
+  gb:`<rect width="30" height="20" fill="#012169"/><path d="M0,0 30,20 M30,0 0,20" stroke="#fff" stroke-width="4"/><path d="M0,0 30,20 M30,0 0,20" stroke="#c8102e" stroke-width="1.5"/><path d="M15,0V20M0,10H30" stroke="#fff" stroke-width="6"/><path d="M15,0V20M0,10H30" stroke="#c8102e" stroke-width="3.4"/>`,
+  us:(()=>{let s=`<rect width="30" height="20" fill="#fff"/>`;for(let i=0;i<7;i++)s+=`<rect y="${(i*2*20/13).toFixed(2)}" width="30" height="${(20/13).toFixed(2)}" fill="#b22234"/>`;s+=`<rect width="13" height="10.77" fill="#3c3b6e"/>`;for(let r=0;r<4;r++)for(let c=0;c<5;c++)s+=`<circle cx="${1.6+c*2.45}" cy="${1.5+r*2.6}" r=".55" fill="#fff"/>`;return s;})(),
+  su:`<rect width="30" height="20" fill="#cc0000"/><path d="M6.5,1.6l.6,1.8h1.9l-1.5,1.1.6,1.8-1.6-1.1-1.6,1.1.6-1.8-1.5-1.1h1.9z" fill="none" stroke="#ffd700" stroke-width=".45"/><path d="M4.6,9.6c.6,2.2 3.2,2.8 4.6,1.2 M5.5,12 8.6,8.8" stroke="#ffd700" stroke-width=".9" fill="none" stroke-linecap="round"/>`,
+  jp:`<rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#bc002d"/>`,
+  fr:`<rect width="30" height="20" fill="#fff"/><rect width="10" height="20" fill="#002395"/><rect x="20" width="10" height="20" fill="#ed2939"/>`,
+  altro:`<rect width="30" height="20" fill="#8b8a6a"/><circle cx="15" cy="10" r="6.2" fill="none" stroke="#f4ecd2" stroke-width="1.1"/><ellipse cx="15" cy="10" rx="2.6" ry="6.2" fill="none" stroke="#f4ecd2" stroke-width=".9"/><path d="M8.8,10H21.2" stroke="#f4ecd2" stroke-width=".9"/>`
+};
+const flag = (id) => `<span class="flag" title="${esc(nomeDi(NAZIONI,id)||"Altro")}"><svg viewBox="0 0 30 20" aria-hidden="true">${FLAGS[id]||FLAGS.altro}</svg></span>`;
+
+/* ---------- Icone ---------- */
+const I = {
+  hangar:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M2 20V10a10 6 0 0 1 20 0v10"/><path d="M2 20h20M7 20v-6h10v6"/></svg>`,
+  star:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>`,
+  starFill:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>`,
+  chart:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></svg>`,
+  box:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>`,
+  plus:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`,
+  search:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>`,
+  filter:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>`,
+  camera:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg>`,
+  image:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-9 8"/></svg>`,
+  edit:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>`,
+  trash:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>`,
+  back:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>`,
+  x:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+  cart:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 4h2l2.5 11h11L21 7H6.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>`,
+  download:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"/></svg>`,
+  upload:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M7 9l5-5 5 5M4 20h16"/></svg>`,
+  share:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M5 12v8h14v-8"/></svg>`,
+  plane:`<svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 4c-2 0-3 2-3 5v13L6 30v6l23-4v14l-7 5v4l10-2 10 2v-4l-7-5V32l23 4v-6L35 22V9c0-3-1-5-3-5z"/></svg>`
+};
+
+/* =========================================================
+   Utilità
+   ========================================================= */
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+const eur = new Intl.NumberFormat("it-IT", {style:"currency", currency:"EUR"});
+const fmtEur = n => (n === null || n === undefined || n === "" || isNaN(n)) ? "—" : eur.format(Number(n));
+const fmtDate = d => { if(!d) return "—"; const [y,m,g] = d.split("-"); return `${g}/${m}/${y}`; };
+const todayISO = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const toNum = v => { if(v === "" || v === null || v === undefined) return null; const n = parseFloat(String(v).replace(",", ".")); return isNaN(n) ? null : n; };
+const scalaLabel = m => m.scala === "altro" ? (m.scalaAltro || "Altro") : (m.scala || "");
+const nazLabel = m => m.nazione === "altro" ? (m.nazioneAltro || "Altro") : nomeDi(NAZIONI, m.nazione);
+const lsGet = (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch(e){ return def; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
+
+function toast(msg, ms = 2600){
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; t.setAttribute("role","status");
+  document.body.appendChild(t); setTimeout(() => t.remove(), ms);
+}
+function busy(msg){
+  const b = document.createElement("div"); b.className = "busy";
+  b.innerHTML = `<div><div class="spin"></div><div class="msg">${esc(msg)}</div></div>`;
+  document.body.appendChild(b);
+  return { set: m => { b.querySelector(".msg").textContent = m; }, close: () => b.remove() };
+}
+/* Finestra di conferma a foglio */
+function dialog({title, text, buttons}){
+  return new Promise(resolve => {
+    const o = document.createElement("div"); o.className = "overlay";
+    o.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="grab"></div>
+      <h3>${esc(title)}</h3>${text ? `<p>${text}</p>` : ""}
+      <div class="btns">${buttons.map((b,i) => `<button class="btn ${b.cls||""}" data-i="${i}">${esc(b.label)}</button>`).join("")}</div></div>`;
+    const close = v => { o.remove(); resolve(v); };
+    o.addEventListener("click", e => {
+      if(e.target === o) return close(null);
+      const b = e.target.closest("[data-i]"); if(b) close(buttons[+b.dataset.i].value);
+    });
+    document.body.appendChild(o);
+    o.querySelector("[data-i]").focus();
+  });
+}
+
+/* =========================================================
+   Database (IndexedDB) — i dati restano sul telefono
+   ========================================================= */
+let db;
+function openDB(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open("hangar-db", 1);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      if(!d.objectStoreNames.contains("models")) d.createObjectStore("models", {keyPath:"id"});
+      if(!d.objectStoreNames.contains("photos")) d.createObjectStore("photos", {keyPath:"id"});
+    };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+const reqP = r => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+const txDone = t => new Promise((res, rej) => { t.oncomplete = () => res(); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error || new Error("Transazione annullata")); });
+const idbAll = store => reqP(db.transaction(store).objectStore(store).getAll());
+const idbGet = (store, id) => reqP(db.transaction(store).objectStore(store).get(id));
+
+async function saveModelTx(model, newPhotos, removedIds){
+  const t = db.transaction(["models","photos"], "readwrite");
+  t.objectStore("models").put(model);
+  const ps = t.objectStore("photos");
+  newPhotos.forEach(p => ps.put(p));
+  removedIds.forEach(id => ps.delete(id));
+  await txDone(t);
+}
+async function deleteModelTx(model){
+  const t = db.transaction(["models","photos"], "readwrite");
+  t.objectStore("models").delete(model.id);
+  (model.photos||[]).forEach(id => t.objectStore("photos").delete(id));
+  await txDone(t);
+}
+
+/* Cache degli URL delle foto */
+const urlCache = new Map();
+async function photoURL(id, kind = "thumb"){
+  const key = id + ":" + kind;
+  if(urlCache.has(key)) return urlCache.get(key);
+  const rec = await idbGet("photos", id);
+  if(!rec) return null;
+  const url = URL.createObjectURL(rec[kind] || rec.full);
+  urlCache.set(key, url);
+  return url;
+}
+function dropPhotoURLs(id){
+  ["thumb","full"].forEach(k => { const u = urlCache.get(id+":"+k); if(u){ URL.revokeObjectURL(u); urlCache.delete(id+":"+k); } });
+}
+async function hydrateImages(root){
+  for(const el of root.querySelectorAll("img[data-photo]")){
+    const url = await photoURL(el.dataset.photo, el.dataset.kind || "thumb");
+    if(url && el.isConnected) el.src = url;
+  }
+}
+
+/* Ridimensiona le foto per non riempire il telefono */
+function loadImage(blob){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(blob); const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("Immagine non leggibile")); };
+    img.src = url;
+  });
+}
+async function resize(blob, max, q){
+  const img = await loadImage(blob);
+  const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.round(img.naturalWidth * k), h = Math.round(img.naturalHeight * k);
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  c.getContext("2d").drawImage(img, 0, 0, w, h);
+  return new Promise(res => c.toBlob(b => res(b), "image/jpeg", q));
+}
+async function makePhoto(file){
+  const full = await resize(file, 1600, 0.85);
+  const thumb = await resize(full, 480, 0.78);
+  return { id: uid(), full, thumb };
+}
+
+/* =========================================================
+   Stato
+   ========================================================= */
+let models = [];
+const state = {
+  q: { collezione: "", desideri: "" },
+  filters: lsGet("hangar.filters", { guerra:[], nazione:[], tipo:[], scala:[], stato:[] }),
+  sort: lsGet("hangar.sort", "nome-asc"),
+};
+let form = null; // stato del modulo aperto
+
+/* =========================================================
+   Navigazione (con il tasto "indietro" del telefono)
+   ========================================================= */
+function nav(hash, replace = false){
+  if(replace) history.replaceState({inApp: !!(history.state && history.state.inApp)}, "", "#" + hash);
+  else history.pushState({inApp:true}, "", "#" + hash);
+  route();
+}
+function goBack(fallback){
+  if(history.state && history.state.inApp && history.length > 1) history.back();
+  else nav(fallback, true);
+}
+window.addEventListener("popstate", route);
+
+const app = document.getElementById("app");
+const fab = document.getElementById("fab");
+
+function renderNav(active){
+  const tabs = [
+    ["collezione", "Hangar", I.hangar], ["desideri", "Desideri", I.star],
+    ["stats", "Statistiche", I.chart], ["backup", "Backup", I.box]
+  ];
+  document.getElementById("nav").innerHTML = tabs.map(([id, l, ic]) =>
+    `<a href="#/${id}" data-tab="${id}" class="${active===id?"on":""}" ${active===id?'aria-current="page"':""}>${ic}<span>${l}</span></a>`).join("");
+}
+document.getElementById("nav").addEventListener("click", e => {
+  const a = e.target.closest("[data-tab]"); if(!a) return;
+  e.preventDefault(); nav("/" + a.dataset.tab, isTabRoute());
+});
+function isTabRoute(){ const p = location.hash.slice(2).split("/")[0]; return ["collezione","desideri","stats","backup",""].includes(p); }
+
+function route(){
+  const parts = (location.hash.slice(1) || "/collezione").split("/").filter(Boolean);
+  const [view, id] = parts;
+  fab.hidden = true; form = null;
+  window.scrollTo(0, 0);
+  switch(view){
+    case "desideri": renderNav("desideri"); return renderList("desideri");
+    case "stats": renderNav("stats"); return renderStats();
+    case "backup": renderNav("backup"); return renderBackup();
+    case "m": return renderDetail(id);
+    case "edit": return renderForm({ id });
+    case "buy": return renderForm({ id, buy: true });
+    case "new": return renderForm({ list: id === "desideri" ? "desideri" : "collezione" });
+    default: renderNav("collezione"); return renderList("collezione");
+  }
+}
+
+/* =========================================================
+   Lista / galleria
+   ========================================================= */
+const FILTER_DEFS = [
+  ["guerra", "Guerra", Object.entries(GUERRE).map(([id, g]) => ({id, nome:g.nome}))],
+  ["nazione", "Nazione", NAZIONI],
+  ["tipo", "Tipo", TIPI],
+  ["scala", "Scala", SCALE],
+  ["stato", "Stato", STATI],
+];
+const SORTS = [
+  ["nome-asc","Nome A→Z"], ["nome-desc","Nome Z→A"],
+  ["data-desc","Acquisto: più recenti"], ["data-asc","Acquisto: meno recenti"],
+  ["valore-desc","Valore: più alto"], ["valore-asc","Valore: più basso"]
+];
+const activeFilterCount = () => Object.values(state.filters).reduce((s, a) => s + a.length, 0);
+
+function filtered(list){
+  const q = norm(state.q[list]);
+  const f = state.filters;
+  let arr = models.filter(m => m.list === list);
+  if(q) arr = arr.filter(m => norm([m.nome, m.variante, m.marca, m.livrea, nazLabel(m)].join(" ")).includes(q));
+  for(const k of Object.keys(f)) if(f[k].length) arr = arr.filter(m => f[k].includes(m[k]));
+  const [key, dir] = state.sort.split("-");
+  const s = dir === "asc" ? 1 : -1;
+  const nameCmp = (a, b) => (a.nome + " " + (a.variante||"")).localeCompare(b.nome + " " + (b.variante||""), "it", {sensitivity:"base"});
+  arr.sort((a, b) => {
+    if(key === "nome") return s * nameCmp(a, b);
+    const va = key === "data" ? a.dataAcquisto : a.valore;
+    const vb = key === "data" ? b.dataAcquisto : b.valore;
+    const ea = va === null || va === undefined || va === "", eb = vb === null || vb === undefined || vb === "";
+    if(ea && eb) return nameCmp(a, b);
+    if(ea) return 1; if(eb) return -1; // i vuoti vanno in fondo
+    if(va < vb) return -s; if(va > vb) return s;
+    return nameCmp(a, b);
+  });
+  return arr;
+}
+
+function renderList(list){
+  const isWish = list === "desideri";
+  fab.hidden = false;
+  fab.innerHTML = I.plus;
+  fab.setAttribute("aria-label", isWish ? "Aggiungi ai desideri" : "Aggiungi modellino");
+  fab.onclick = () => nav("/new/" + list);
+  const nf = activeFilterCount();
+  app.innerHTML = `
+    ${isWish ? `<h2 class="pagetitle">Lista dei desideri</h2><p style="margin:0 0 12px;color:var(--ink-2)">I modellini che ancora mancano all'appello.</p>` : ""}
+    <div class="searchrow">
+      <label class="search">${I.search}<span class="visually-hidden">Cerca</span>
+        <input type="search" id="q" placeholder="Cerca per nome…" value="${esc(state.q[list])}" autocomplete="off" enterkeyhint="search"></label>
+      <button class="tool-btn" id="btnFilter" aria-label="Filtri">${I.filter}${nf ? `<span class="badge">${nf}</span>` : ""}</button>
+    </div>
+    <div class="activefilters" id="chipsActive"></div>
+    <div class="listmeta">
+      <span class="count" id="count"></span>
+      <label><span class="visually-hidden">Ordina</span><select class="sortsel" id="sort">${SORTS.map(([v,l]) => `<option value="${v}" ${state.sort===v?"selected":""}>${l}</option>`).join("")}</select></label>
+    </div>
+    <div id="gallery"></div>`;
+  const q = app.querySelector("#q");
+  q.addEventListener("input", () => { state.q[list] = q.value; renderGallery(list); });
+  app.querySelector("#sort").addEventListener("change", e => { state.sort = e.target.value; lsSet("hangar.sort", state.sort); renderGallery(list); });
+  app.querySelector("#btnFilter").addEventListener("click", () => openFilters(list));
+  renderActiveChips(list);
+  renderGallery(list);
+}
+
+function renderActiveChips(list){
+  const box = app.querySelector("#chipsActive"); if(!box) return;
+  const chips = [];
+  for(const [k, , opts] of FILTER_DEFS) for(const v of state.filters[k]) chips.push([k, v, nomeDi(opts, v)]);
+  box.innerHTML = chips.map(([k, v, l]) => `<button data-k="${k}" data-v="${esc(v)}" aria-label="Togli filtro ${esc(l)}">${esc(l)} ${I.x.replace("<svg", '<svg width="14" height="14"')}</button>`).join("");
+  box.onclick = e => {
+    const b = e.target.closest("button"); if(!b) return;
+    state.filters[b.dataset.k] = state.filters[b.dataset.k].filter(x => x !== b.dataset.v);
+    lsSet("hangar.filters", state.filters); renderList(list);
+  };
+}
+
+function cardHTML(m){
+  const main = m.mainPhoto || (m.photos||[])[0];
+  return `<button class="card" data-id="${m.id}">
+    <div class="ph">${main ? `<img data-photo="${main}" alt="" loading="lazy">` : `<div class="ph-empty">${I.plane}</div>`}
+      ${m.guerra ? `<span class="war">${GUERRE[m.guerra].breve}</span>` : ""}
+      ${scalaLabel(m) ? `<span class="scale">${esc(scalaLabel(m))}</span>` : ""}</div>
+    <div class="plate">
+      <div class="nm">${m.nazione ? flag(m.nazione) : ""}<span>${esc(m.nome)}</span></div>
+      ${m.variante ? `<div class="vr">${esc(m.variante)}</div>` : ""}
+    </div></button>`;
+}
+
+function renderGallery(list){
+  const arr = filtered(list);
+  const total = models.filter(m => m.list === list).length;
+  const g = app.querySelector("#gallery");
+  app.querySelector("#count").textContent = arr.length === total ? `${total} ${total === 1 ? "pezzo" : "pezzi"}` : `${arr.length} di ${total}`;
+  if(!total){
+    g.innerHTML = list === "desideri"
+      ? `<div class="empty">${I.star}<h3>Nessun desiderio?</h3><p>Impossibile. Tocca <b>+</b> e confessa quale modellino stai puntando.</p></div>`
+      : `<div class="empty">${I.plane}<h3>Hangar vuoto</h3><p>Nemmeno un biplano. Tocca <b>+</b> per far decollare il primo modellino.</p></div>`;
+    return;
+  }
+  if(!arr.length){
+    g.innerHTML = `<div class="empty">${I.search}<h3>Nessun velivolo avvistato</h3><p>Il radar non trova niente con questi filtri. Prova ad allargare la ricerca.</p></div>`;
+    return;
+  }
+  g.innerHTML = `<div class="grid">${arr.map(cardHTML).join("")}</div>`;
+  g.querySelector(".grid").addEventListener("click", e => { const c = e.target.closest(".card"); if(c) nav("/m/" + c.dataset.id); });
+  hydrateImages(g);
+}
+
+function openFilters(list){
+  const draft = JSON.parse(JSON.stringify(state.filters));
+  const o = document.createElement("div"); o.className = "overlay";
+  o.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="Filtri"><div class="grab"></div><h3>Filtri</h3>
+    ${FILTER_DEFS.map(([k, l, opts]) => `<div class="filter-group"><div class="lbl">${l}</div>
+      <div class="chips ${k==="nazione"?"flags":""}">${opts.map(o => `<label><input type="checkbox" data-k="${k}" value="${esc(o.id)}" ${draft[k].includes(o.id)?"checked":""}><span>${k==="nazione"?flag(o.id):""}${esc(o.nome)}</span></label>`).join("")}</div></div>`).join("")}
+    <div class="sheet-foot"><button class="btn ghost" data-act="reset">Azzera</button><button class="btn" data-act="apply">Mostra risultati</button></div></div>`;
+  const close = () => o.remove();
+  o.addEventListener("click", e => {
+    if(e.target === o) return close();
+    const act = e.target.closest("[data-act]")?.dataset.act;
+    if(act === "reset"){ o.querySelectorAll("input").forEach(i => i.checked = false); }
+    if(act === "apply"){
+      const f = { guerra:[], nazione:[], tipo:[], scala:[], stato:[] };
+      o.querySelectorAll("input:checked").forEach(i => f[i.dataset.k].push(i.value));
+      state.filters = f; lsSet("hangar.filters", f); close(); renderList(list);
+    }
+  });
+  document.body.appendChild(o);
+}
+
+/* =========================================================
+   Dettaglio
+   ========================================================= */
+async function renderDetail(id){
+  const m = models.find(x => x.id === id);
+  renderNav(m ? m.list : "collezione");
+  if(!m){ app.innerHTML = `<div class="empty"><h3>Modellino non trovato</h3><p>Forse è stato abbattuto (cioè eliminato).</p></div>`; return; }
+  const isWish = m.list === "desideri";
+  const photos = m.photos || [];
+  const main = m.mainPhoto || photos[0];
+  const ordered = main ? [main, ...photos.filter(p => p !== main)] : photos;
+  const row = (k, v, big) => `<div class="row"><span class="k">${k}</span><span class="v ${big?"big":""}">${v ? esc(v) : "—"}</span></div>`;
+  app.innerHTML = `
+    <button class="backlink" id="back">${I.back}${isWish ? "Desideri" : "Hangar"}</button>
+    ${ordered.length ? `<div class="carousel" id="car">${ordered.map((p, i) => `<div class="slide"><button data-p="${p}" aria-label="Ingrandisci foto ${i+1}"><img data-photo="${p}" data-kind="full" alt="Foto ${i+1} di ${esc(m.nome)}"></button>${i===0 && ordered.length>1 ? `<span class="mainstar">${I.starFill}Principale</span>` : ""}</div>`).join("")}</div>
+      ${ordered.length > 1 ? `<div class="dots" id="dots">${ordered.map((_, i) => `<span class="${i===0?"on":""}"></span>`).join("")}</div>` : ""}`
+      : `<div class="carousel"><div class="slide"><div class="ph-empty">${I.plane}</div></div></div>`}
+    <div class="detail-head">${m.nazione ? flag(m.nazione) : ""}<div><h2>${esc(m.nome)}</h2>${m.variante ? `<div class="vr">${esc(m.variante)}</div>` : ""}</div></div>
+    <div class="tags">
+      ${isWish ? `<span class="tag blue">Desiderio</span>` : ""}
+      ${m.guerra ? `<span class="tag olive">${GUERRE[m.guerra].nome}</span>` : ""}
+      ${scalaLabel(m) ? `<span class="tag">${esc(scalaLabel(m))}</span>` : ""}
+      ${m.stato && !isWish ? `<span class="tag">${esc(nomeDi(STATI, m.stato))}</span>` : ""}
+    </div>
+
+    <div class="stamp">Identificazione</div>
+    <div class="sheet-card">
+      ${row("Nazione", nazLabel(m))}
+      ${row("Tipo", nomeDi(TIPI, m.tipo))}
+      ${row("Livrea / reparto / pilota", m.livrea)}
+    </div>
+    <div class="stamp">Modellino</div>
+    <div class="sheet-card">
+      ${row("Marca", m.marca)}
+      ${row("Scala", scalaLabel(m))}
+      ${row("Materiale", nomeDi(MATERIALI, m.materiale))}
+      ${row("Stato", nomeDi(STATI, m.stato))}
+    </div>
+    <div class="stamp">${isWish ? "Dove e quanto" : "Acquisto e valore"}</div>
+    <div class="sheet-card">
+      ${isWish ? row("Dove trovarlo", m.luogoAcquisto) + row("Prezzo indicativo", m.prezzo != null ? fmtEur(m.prezzo) : "", true)
+        : row("Data acquisto", m.dataAcquisto ? fmtDate(m.dataAcquisto) : "") + row("Luogo acquisto", m.luogoAcquisto)
+          + row("Prezzo pagato", m.prezzo != null ? fmtEur(m.prezzo) : "", true) + row("Valore stimato", m.valore != null ? fmtEur(m.valore) : "", true)}
+    </div>
+    ${m.note ? `<div class="stamp">Note</div><div class="sheet-card"><div class="notes">${esc(m.note)}</div></div>` : ""}
+
+    <div class="actions">
+      ${isWish ? `<button class="btn brass" id="buy">${I.cart}L'ho comprato!</button>` : ""}
+      <div class="actions two" style="margin-top:0">
+        <button class="btn" id="edit">${I.edit}Modifica</button>
+        <button class="btn danger" id="del">${I.trash}Elimina</button>
+      </div>
+    </div>`;
+  app.querySelector("#back").onclick = () => goBack("/" + m.list);
+  app.querySelector("#edit").onclick = () => nav("/edit/" + m.id);
+  if(isWish) app.querySelector("#buy").onclick = () => nav("/buy/" + m.id);
+  app.querySelector("#del").onclick = async () => {
+    const ok = await dialog({
+      title: "Eliminare il modellino?",
+      text: `<b>${esc(m.nome)}${m.variante ? " " + esc(m.variante) : ""}</b> verrà eliminato insieme alle sue foto. Non si torna indietro, nemmeno con la macchina del tempo.`,
+      buttons: [{label:"Sì, elimina", value:true, cls:"danger solid"}, {label:"Annulla", value:false, cls:"ghost"}]
+    });
+    if(!ok) return;
+    await deleteModelTx(m);
+    (m.photos||[]).forEach(dropPhotoURLs);
+    models = models.filter(x => x.id !== m.id);
+    toast("Modellino eliminato");
+    goBack("/" + m.list);
+  };
+  const car = app.querySelector("#car");
+  if(car){
+    car.addEventListener("click", e => { const b = e.target.closest("[data-p]"); if(b) openLightbox(b.dataset.p); });
+    const dots = app.querySelector("#dots");
+    if(dots) car.addEventListener("scroll", () => {
+      const i = Math.round(car.scrollLeft / car.clientWidth);
+      dots.querySelectorAll("span").forEach((d, k) => d.classList.toggle("on", k === i));
+    }, {passive:true});
+    hydrateImages(car);
+  }
+}
+
+async function openLightbox(id){
+  const url = await photoURL(id, "full");
+  const o = document.createElement("div"); o.className = "lightbox";
+  o.innerHTML = `<img src="${url}" alt=""><button class="icon-btn" aria-label="Chiudi">${I.x}</button>`;
+  o.onclick = () => o.remove();
+  document.body.appendChild(o);
+}
+
+/* =========================================================
+   Modulo aggiungi / modifica
+   ========================================================= */
+function radios(name, opts, value, cls = "", withFlag = false){
+  return `<div class="chips ${cls}" role="radiogroup">${opts.map(o => `<label><input type="radio" name="${name}" value="${esc(o.id)}" ${value===o.id?"checked":""}><span>${withFlag?flag(o.id):""}${esc(o.nome)}</span></label>`).join("")}</div>`;
+}
+
+async function renderForm({ id, list, buy }){
+  const existing = id ? models.find(x => x.id === id) : null;
+  if(id && !existing){ renderNav("collezione"); app.innerHTML = `<div class="empty"><h3>Modellino non trovato</h3></div>`; return; }
+  const m = existing ? { ...existing } : { id: uid(), list, photos: [], guerra: "ww2" };
+  if(buy){ m.list = "collezione"; m.dataAcquisto = m.dataAcquisto || todayISO(); m.stato = m.stato || "nuovo"; }
+  const isWish = m.list === "desideri";
+  renderNav(m.list);
+  form = {
+    model: m, buy,
+    photos: (m.photos || []).map(pid => ({ id: pid, isNew: false })),
+    main: m.mainPhoto || (m.photos||[])[0] || null,
+    removed: []
+  };
+  const title = buy ? "Benvenuto nell'hangar!" : existing ? "Modifica modellino" : isWish ? "Nuovo desiderio" : "Nuovo modellino";
+  app.innerHTML = `
+    <button class="backlink" id="back">${I.back}Annulla</button>
+    <h2 class="pagetitle">${title}</h2>
+    ${buy ? `<p style="margin:0 0 6px;color:var(--ink-2)">Ottimo acquisto. Completa i dati: prezzo pagato, dove e quando.</p>` : ""}
+    <form id="f" novalidate autocomplete="off">
+      <div class="stamp">Foto</div>
+      <div class="photos-edit" id="pe"></div>
+      <div class="photo-btns">
+        <button type="button" class="btn blue" id="pCam">${I.camera}Scatta</button>
+        <button type="button" class="btn ghost" id="pGal">${I.image}Galleria</button>
+      </div>
+      <p class="hint" style="font-size:14px;color:var(--muted);margin:8px 2px 0">Tocca la stellina per scegliere la foto principale.</p>
+
+      <div class="stamp">Identificazione</div>
+      <div class="field"><label for="nome">Nome dell'aereo *</label>
+        <input class="inp" id="nome" name="nome" value="${esc(m.nome)}" placeholder="es. Supermarine Spitfire" required></div>
+      <div class="field"><label for="variante">Variante</label>
+        <input class="inp" id="variante" name="variante" value="${esc(m.variante)}" placeholder="es. Mk IX, G-6"></div>
+      <div class="field"><span class="lbl">Guerra</span>${radios("guerra", Object.entries(GUERRE).map(([id,g]) => ({id, nome:g.nome})), m.guerra, "wide")}</div>
+      <div class="field"><span class="lbl">Nazione</span>${radios("nazione", NAZIONI, m.nazione, "flags", true)}
+        <input class="inp" name="nazioneAltro" id="nazioneAltro" value="${esc(m.nazioneAltro)}" placeholder="Quale nazione?" style="margin-top:8px" ${m.nazione==="altro"?"":"hidden"}></div>
+      <div class="field"><span class="lbl">Tipo</span>${radios("tipo", TIPI, m.tipo)}</div>
+      <div class="field"><label for="livrea">Livrea, reparto o pilota famoso</label>
+        <input class="inp" id="livrea" name="livrea" value="${esc(m.livrea)}" placeholder="es. 303 Sqn, Francesco Baracca…"></div>
+
+      <div class="stamp">Modellino</div>
+      <div class="field"><label for="marca">Marca</label>
+        <input class="inp" id="marca" name="marca" list="marche" value="${esc(m.marca)}" placeholder="es. Airfix, Tamiya…">
+        <datalist id="marche">${MARCHE.map(x => `<option value="${x}">`).join("")}</datalist></div>
+      <div class="field"><span class="lbl">Scala</span>${radios("scala", SCALE, m.scala)}
+        <input class="inp" name="scalaAltro" id="scalaAltro" value="${esc(m.scalaAltro)}" placeholder="es. 1:100" style="margin-top:8px" ${m.scala==="altro"?"":"hidden"}></div>
+      <div class="field"><span class="lbl">Materiale</span>${radios("materiale", MATERIALI, m.materiale, "wide")}</div>
+      <div class="field"><span class="lbl">Stato</span>${radios("stato", STATI, m.stato, "wide")}</div>
+
+      <div class="stamp">${isWish ? "Dove e quanto" : "Acquisto e valore"}</div>
+      ${isWish ? `
+        <div class="field"><label for="luogoAcquisto">Dove trovarlo</label>
+          <input class="inp" id="luogoAcquisto" name="luogoAcquisto" value="${esc(m.luogoAcquisto)}" placeholder="Negozio, sito, fiera…"></div>
+        <div class="field"><label for="prezzo">Prezzo indicativo (€)</label>
+          <input class="inp" id="prezzo" name="prezzo" inputmode="decimal" value="${m.prezzo ?? ""}" placeholder="0,00"></div>
+      ` : `
+        <div class="cols">
+          <div class="field"><label for="dataAcquisto">Data acquisto</label>
+            <input class="inp" type="date" id="dataAcquisto" name="dataAcquisto" value="${esc(m.dataAcquisto)}"></div>
+          <div class="field"><label for="luogoAcquisto">Luogo</label>
+            <input class="inp" id="luogoAcquisto" name="luogoAcquisto" value="${esc(m.luogoAcquisto)}" placeholder="Negozio, fiera…"></div>
+        </div>
+        <div class="cols">
+          <div class="field"><label for="prezzo">Prezzo pagato (€)</label>
+            <input class="inp" id="prezzo" name="prezzo" inputmode="decimal" value="${m.prezzo ?? ""}" placeholder="0,00"></div>
+          <div class="field"><label for="valore">Valore stimato (€)</label>
+            <input class="inp" id="valore" name="valore" inputmode="decimal" value="${m.valore ?? ""}" placeholder="0,00"></div>
+        </div>`}
+      <div class="field"><label for="note">Note</label>
+        <textarea class="inp" id="note" name="note" placeholder="Decal aftermarket, pezzi mancanti, aneddoti…">${esc(m.note)}</textarea></div>
+
+      <div class="form-foot">
+        <button type="button" class="btn ghost" id="cancel">Annulla</button>
+        <button type="submit" class="btn">Salva</button>
+      </div>
+    </form>`;
+  const f = app.querySelector("#f");
+  const cancel = () => goBack(existing ? "/m/" + m.id : "/" + m.list);
+  app.querySelector("#back").onclick = cancel;
+  app.querySelector("#cancel").onclick = cancel;
+  f.addEventListener("change", e => {
+    if(e.target.name === "nazione") f.nazioneAltro.hidden = e.target.value !== "altro";
+    if(e.target.name === "scala") f.scalaAltro.hidden = e.target.value !== "altro";
+  });
+  app.querySelector("#pCam").onclick = () => document.getElementById("inCamera").click();
+  app.querySelector("#pGal").onclick = () => document.getElementById("inGallery").click();
+  f.addEventListener("submit", e => { e.preventDefault(); saveForm(f); });
+  renderPhotoEdit();
+}
+
+function renderPhotoEdit(){
+  const pe = document.getElementById("pe"); if(!pe || !form) return;
+  if(!form.photos.length){ pe.innerHTML = `<div class="pthumb" style="grid-column:1/-1;aspect-ratio:auto;padding:22px;text-align:center;color:var(--muted);border:2px dashed var(--line)">Nessuna foto. Davanti, di lato, i dettagli: più ce ne sono, meglio è.</div>`; return; }
+  pe.innerHTML = form.photos.map(p => `<div class="pthumb ${p.id===form.main?"main":""}">
+      <img ${p.isNew ? `src="${p.url}"` : `data-photo="${p.id}"`} alt="">
+      ${p.id===form.main ? `<span class="mainlbl">Principale</span>` : ""}
+      <button type="button" class="pb star" data-star="${p.id}" aria-label="Imposta come principale">${p.id===form.main ? I.starFill : I.star}</button>
+      <button type="button" class="pb del" data-del="${p.id}" aria-label="Rimuovi foto">${I.x}</button></div>`).join("");
+  pe.onclick = async e => {
+    const s = e.target.closest("[data-star]"), d = e.target.closest("[data-del]");
+    if(s){ form.main = s.dataset.star; renderPhotoEdit(); }
+    if(d){
+      const ok = await dialog({ title:"Rimuovere la foto?", buttons:[{label:"Rimuovi", value:true, cls:"danger solid"},{label:"Annulla", value:false, cls:"ghost"}] });
+      if(!ok) return;
+      const pid = d.dataset.del;
+      const p = form.photos.find(x => x.id === pid);
+      if(p.isNew) URL.revokeObjectURL(p.url); else form.removed.push(pid);
+      form.photos = form.photos.filter(x => x.id !== pid);
+      if(form.main === pid) form.main = form.photos[0]?.id || null;
+      renderPhotoEdit();
+    }
+  };
+  hydrateImages(pe);
+}
+
+async function addFiles(files){
+  if(!form || !files.length) return;
+  const b = busy("Sviluppo le foto in camera oscura…");
+  try{
+    for(const file of files){
+      if(!file.type.startsWith("image/") && !/\.(heic|heif)$/i.test(file.name)) continue;
+      const p = await makePhoto(file);
+      p.isNew = true; p.url = URL.createObjectURL(p.thumb);
+      form.photos.push(p);
+      if(!form.main) form.main = p.id;
+    }
+  }catch(err){ toast("Una foto non si riesce a leggere. Prova con un'altra."); }
+  b.close();
+  renderPhotoEdit();
+}
+["inCamera","inGallery"].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener("change", () => { addFiles([...el.files]); el.value = ""; });
+});
+
+async function saveForm(f){
+  const fd = new FormData(f);
+  const m = form.model;
+  const nome = (fd.get("nome") || "").trim();
+  if(!nome){ f.nome.classList.add("err"); f.nome.focus(); toast("Serve almeno il nome dell'aereo"); return; }
+  for(const k of FIELDS){
+    if(!f.elements[k] && !["guerra","nazione","tipo","scala","materiale","stato"].includes(k)) continue;
+    let v = fd.get(k); v = v === null ? "" : String(v).trim();
+    if(k === "prezzo" || k === "valore") m[k] = toNum(v);
+    else m[k] = v;
+  }
+  m.nome = nome;
+  if(m.nazione !== "altro") m.nazioneAltro = "";
+  if(m.scala !== "altro") m.scalaAltro = "";
+  m.photos = form.photos.map(p => p.id);
+  m.mainPhoto = form.main;
+  m.updatedAt = Date.now(); m.createdAt = m.createdAt || m.updatedAt;
+  const newPhotos = form.photos.filter(p => p.isNew).map(p => ({ id:p.id, full:p.full, thumb:p.thumb }));
+  try{
+    await saveModelTx(m, newPhotos, form.removed);
+  }catch(err){
+    toast("Salvataggio non riuscito: " + (err && err.name === "QuotaExceededError" ? "memoria piena." : "riprova."), 4000);
+    return;
+  }
+  form.photos.filter(p => p.isNew).forEach(p => URL.revokeObjectURL(p.url));
+  form.removed.forEach(dropPhotoURLs);
+  const i = models.findIndex(x => x.id === m.id);
+  if(i >= 0) models[i] = m; else models.push(m);
+  const wasNew = i < 0, buy = form.buy;
+  toast(buy ? "Atterrato nella collezione!" : wasNew ? (m.list === "desideri" ? "Aggiunto ai desideri" : "Modellino in hangar!") : "Modifiche salvate");
+  if(wasNew) nav("/m/" + m.id, true);
+  else goBack("/m/" + m.id);
+}
+
+/* =========================================================
+   Statistiche
+   ========================================================= */
+function barsHTML(rows, withFlag){
+  const max = Math.max(1, ...rows.map(r => r.n));
+  if(!rows.length) return `<div class="bars"><div class="none">Nessun dato</div></div>`;
+  return `<div class="bars" role="table">${rows.map(r => `<div class="bar" role="row" title="${esc(r.l)}: ${r.n}">
+    <span class="bl" role="cell">${withFlag ? flag(r.id) : ""}<span>${esc(r.l)}</span></span>
+    <span class="bt" role="presentation"><span class="bf" style="display:block;width:${(r.n/max*100).toFixed(1)}%"></span></span>
+    <span class="bv" role="cell">${r.n}</span></div>`).join("")}</div>`;
+}
+function countBy(arr, keyFn, opts){
+  const map = new Map();
+  arr.forEach(m => { const k = keyFn(m); if(k) map.set(k, (map.get(k)||0) + 1); });
+  const rows = [...map].map(([id, n]) => ({ id, n, l: opts ? (nomeDi(opts, id) || id) : id }));
+  return rows.sort((a, b) => b.n - a.n || a.l.localeCompare(b.l, "it"));
+}
+function renderStats(){
+  const col = models.filter(m => m.list === "collezione");
+  const wish = models.filter(m => m.list === "desideri");
+  const valore = col.reduce((s, m) => s + (m.valore || 0), 0);
+  const spesa = col.reduce((s, m) => s + (m.prezzo || 0), 0);
+  const senzaValore = col.filter(m => m.valore == null).length;
+  const wishCost = wish.reduce((s, m) => s + (m.prezzo || 0), 0);
+  const scaleRows = countBy(col, m => m.scala === "altro" ? (m.scalaAltro || "Altro") : m.scala);
+  const scaleOrder = ["1:144","1:72","1:48","1:32"];
+  scaleRows.sort((a, b) => { const ia = scaleOrder.indexOf(a.id), ib = scaleOrder.indexOf(b.id); return (ia<0?99:ia) - (ib<0?99:ib) || b.n - a.n; });
+  const guerraRows = Object.entries(GUERRE).map(([id, g]) => ({ id, l: id === "ww1" ? "1ª guerra mond." : "2ª guerra mond.", n: col.filter(m => m.guerra === id).length }));
+  app.innerHTML = `
+    <h2 class="pagetitle">Statistiche</h2>
+    <p style="margin:0 0 12px;color:var(--ink-2)">Rapporto dello stato maggiore sulla flotta.</p>
+    <div class="kpis">
+      <div class="kpi hero"><div class="l">Valore della collezione</div><div class="n">${fmtEur(valore)}</div>
+        <div class="s">${senzaValore ? `${senzaValore} ${senzaValore===1?"pezzo":"pezzi"} senza valore stimato` : "Tutti i pezzi hanno un valore stimato"}</div></div>
+      <div class="kpi"><div class="l">Pezzi in hangar</div><div class="n">${col.length}</div></div>
+      <div class="kpi"><div class="l">Speso in totale</div><div class="n" style="font-size:24px">${fmtEur(spesa)}</div></div>
+      <div class="kpi"><div class="l">Desideri</div><div class="n">${wish.length}</div><div class="s">${wishCost ? "circa " + fmtEur(wishCost) : "&nbsp;"}</div></div>
+      <div class="kpi"><div class="l">Bilancio</div><div class="n" style="font-size:24px">${col.length ? (valore - spesa >= 0 ? "+" : "") + fmtEur(valore - spesa) : "—"}</div><div class="s">valore − speso</div></div>
+    </div>
+    <div class="stamp">Pezzi per nazione</div>
+    ${barsHTML(countBy(col, m => m.nazione, NAZIONI), true)}
+    <div class="stamp">Pezzi per guerra</div>
+    ${barsHTML(col.length ? guerraRows : [])}
+    <div class="stamp">Pezzi per scala</div>
+    ${barsHTML(scaleRows)}
+    <div class="stamp">Pezzi per tipo</div>
+    ${barsHTML(countBy(col, m => m.tipo, TIPI))}
+    <div class="stamp">Pezzi per stato</div>
+    ${barsHTML(countBy(col, m => m.stato, STATI))}`;
+}
+
+/* =========================================================
+   Backup
+   ========================================================= */
+const blobToDataURL = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsDataURL(b); });
+
+async function buildBackup(onProgress){
+  const photos = await idbAll("photos");
+  const parts = [`{"app":"hangar","version":1,"exportedAt":${JSON.stringify(new Date().toISOString())},"models":${JSON.stringify(models)},"photos":[`];
+  for(let i = 0; i < photos.length; i++){
+    onProgress && onProgress(i + 1, photos.length);
+    parts.push((i ? "," : "") + JSON.stringify({ id: photos[i].id, full: await blobToDataURL(photos[i].full) }));
+  }
+  parts.push("]}");
+  return new Blob(parts, { type: "application/json" });
+}
+const backupName = () => `hangar-backup-${todayISO()}.json`;
+
+async function doExport(share){
+  const b = busy("Preparo il backup…");
+  try{
+    const blob = await buildBackup((i, n) => b.set(`Imballo le foto… ${i}/${n}`));
+    const name = backupName();
+    if(share){
+      const file = new File([blob], name, { type: "application/json" });
+      b.close();
+      try{ await navigator.share({ files: [file], title: "Backup Hangar" }); }
+      catch(err){ if(err.name !== "AbortError") toast("Condivisione non riuscita"); return; }
+    }else{
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      b.close();
+    }
+    lsSet("hangar.lastBackup", Date.now());
+    toast("Backup pronto: " + name, 3500);
+    if(location.hash.includes("backup")) renderBackup();
+  }catch(err){ b.close(); toast("Backup non riuscito: " + err.message, 4000); }
+}
+
+async function doImport(file){
+  let data;
+  const b = busy("Leggo il file…");
+  try{ data = JSON.parse(await file.text()); }
+  catch(e){ b.close(); toast("Questo file non è un backup valido", 3500); return; }
+  b.close();
+  if(!data || data.app !== "hangar" || !Array.isArray(data.models)){ toast("Questo file non è un backup di Hangar", 3500); return; }
+  const nCol = data.models.filter(m => m.list !== "desideri").length, nWish = data.models.length - nCol;
+  const mode = await dialog({
+    title: "Importare il backup?",
+    text: `Il file contiene <b>${nCol}</b> modellini in collezione, <b>${nWish}</b> desideri e <b>${(data.photos||[]).length}</b> foto.<br><br>
+      <b>Sostituisci</b> cancella quello che c'è ora sul telefono. <b>Unisci</b> aggiunge il backup ai dati attuali (i doppioni vengono aggiornati).`,
+    buttons: [{label:"Unisci", value:"merge"}, {label:"Sostituisci tutto", value:"replace", cls:"danger"}, {label:"Annulla", value:null, cls:"ghost"}]
+  });
+  if(!mode) return;
+  if(mode === "replace"){
+    const sure = await dialog({ title:"Sicuro sicuro?", text:"Tutti i dati attuali verranno sostituiti da quelli del backup.", buttons:[{label:"Sì, sostituisci", value:true, cls:"danger solid"},{label:"Annulla", value:false, cls:"ghost"}] });
+    if(!sure) return;
+  }
+  const bz = busy("Atterraggio dei dati in corso…");
+  try{
+    const photos = [];
+    const list = data.photos || [];
+    for(let i = 0; i < list.length; i++){
+      bz.set(`Ripristino le foto… ${i+1}/${list.length}`);
+      const p = list[i];
+      if(!p || !p.id || typeof p.full !== "string" || !p.full.startsWith("data:image/")) continue;
+      const full = await (await fetch(p.full)).blob();
+      const thumb = await resize(full, 480, 0.78);
+      photos.push({ id: String(p.id), full, thumb });
+    }
+    const photoIds = new Set(photos.map(p => p.id));
+    const clean = data.models.filter(m => m && m.id && m.nome).map(m => {
+      const o = { id: String(m.id), list: m.list === "desideri" ? "desideri" : "collezione", createdAt: m.createdAt || Date.now(), updatedAt: m.updatedAt || Date.now() };
+      for(const k of FIELDS) o[k] = (k === "prezzo" || k === "valore") ? toNum(m[k]) : String(m[k] ?? "");
+      o.photos = (Array.isArray(m.photos) ? m.photos : []).map(String).filter(id => photoIds.has(id));
+      o.mainPhoto = o.photos.includes(m.mainPhoto) ? m.mainPhoto : (o.photos[0] || null);
+      return o;
+    });
+    const t = db.transaction(["models","photos"], "readwrite");
+    if(mode === "replace"){ t.objectStore("models").clear(); t.objectStore("photos").clear(); }
+    clean.forEach(m => t.objectStore("models").put(m));
+    photos.forEach(p => t.objectStore("photos").put(p));
+    await txDone(t);
+    urlCache.forEach(u => URL.revokeObjectURL(u)); urlCache.clear();
+    models = await idbAll("models");
+    bz.close();
+    toast(`Importati ${clean.length} modellini`, 3500);
+    renderBackup();
+  }catch(err){
+    bz.close();
+    toast("Importazione non riuscita: " + (err.name === "QuotaExceededError" ? "memoria piena" : err.message), 4500);
+  }
+}
+document.getElementById("inImport").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if(f) doImport(f); });
+
+async function renderBackup(){
+  const last = lsGet("hangar.lastBackup", null);
+  const col = models.filter(m => m.list === "collezione").length;
+  const wish = models.length - col;
+  const canShare = !!(navigator.canShare && navigator.canShare({ files: [new File(["x"], "t.json", {type:"application/json"})] }));
+  let persisted = null, usage = "";
+  try{ if(navigator.storage && navigator.storage.persisted) persisted = await navigator.storage.persisted(); }catch(e){}
+  try{ if(navigator.storage && navigator.storage.estimate){ const e = await navigator.storage.estimate(); usage = (e.usage/1048576).toFixed(1).replace(".", ",") + " MB"; } }catch(e){}
+  const days = last ? Math.floor((Date.now() - last) / 86400000) : null;
+  app.innerHTML = `
+    <h2 class="pagetitle">Backup</h2>
+    <p style="margin:0 0 12px;color:var(--ink-2)">I dati vivono su questo telefono. Il backup è il tuo paracadute: salvalo ogni tanto e conservalo fuori dal telefono (Drive, email, PC).</p>
+    <div class="info">
+      <p><b>${col}</b> modellini in collezione · <b>${wish}</b> desideri${usage ? ` · ${usage} occupati` : ""}</p>
+      <p>Ultimo backup: ${last ? `<b>${new Date(last).toLocaleDateString("it-IT")}</b>${days > 30 ? ` <span class="warn">— sono passati ${days} giorni!</span>` : ""}` : `<span class="warn">mai fatto</span>`}</p>
+      <p>Archivio: ${persisted === true ? `<span class="ok">protetto ✓</span> (il browser non lo cancellerà da solo)` : persisted === false ? `normale — <button class="backlink" id="persist" style="display:inline;min-height:0">chiedi protezione</button>` : "—"}</p>
+    </div>
+    <div class="stamp">Esporta</div>
+    <div class="actions" style="margin-top:0">
+      <button class="btn" id="exp" ${models.length ? "" : "disabled"}>${I.download}Scarica backup</button>
+      ${canShare ? `<button class="btn blue" id="shr" ${models.length ? "" : "disabled"}>${I.share}Invia a Drive / email…</button>` : ""}
+    </div>
+    <div class="stamp">Importa</div>
+    <div class="actions" style="margin-top:0">
+      <button class="btn ghost" id="imp">${I.upload}Carica un backup</button>
+    </div>
+    <p style="color:var(--muted);font-size:15px;margin-top:14px">Cambi telefono? Fai “Scarica backup” sul vecchio, sposta il file sul nuovo, apri Hangar e tocca “Carica un backup”. Fatto, flotta trasferita.</p>`;
+  app.querySelector("#exp").onclick = () => doExport(false);
+  app.querySelector("#shr")?.addEventListener("click", () => doExport(true));
+  app.querySelector("#imp").onclick = () => document.getElementById("inImport").click();
+  app.querySelector("#persist")?.addEventListener("click", async () => {
+    const ok = await navigator.storage.persist();
+    toast(ok ? "Archivio protetto" : "Il browser non lo consente: installa l'app sulla schermata Home e fai backup regolari", 4000);
+    renderBackup();
+  });
+}
+
+/* =========================================================
+   Avvio
+   ========================================================= */
+(async function init(){
+  try{
+    db = await openDB();
+    models = await idbAll("models");
+  }catch(err){
+    app.innerHTML = `<div class="empty"><h3>Archivio non disponibile</h3><p>Il browser non permette di salvare dati (forse sei in navigazione privata). Apri l'app in una finestra normale.</p></div>`;
+    return;
+  }
+  try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+  if(!history.state) history.replaceState({inApp:false}, "", location.hash || "#/collezione");
+  route();
+})();
+</script>
+</body>
+</html>
