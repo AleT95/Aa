@@ -1144,7 +1144,7 @@ async function doImport(file){
     urlCache.forEach(u => URL.revokeObjectURL(u)); urlCache.clear();
     models = await idbAll("models");
     bz.close();
-    toast(`Importati ${clean.length} modellini`, 3500);
+    toast(clean.length === 1 ? "Importato 1 modellino" : `Importati ${clean.length} modellini`, 3500);
     renderBackup();
   }catch(err){
     bz.close();
