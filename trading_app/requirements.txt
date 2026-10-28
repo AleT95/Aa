@@ -6,6 +6,6 @@ numpy==2.5.3
 pyyaml==6.0.3
 yfinance==1.7.0
 matplotlib==3.11.2
-# Le prossime le aggiungeremo nelle fasi successive:
-# ib_async        (Fase 4 - Interactive Brokers)
+ib_async==2.1.0
+# La prossima la aggiungeremo nella Fase 5:
 # streamlit       (Fase 5 - dashboard)

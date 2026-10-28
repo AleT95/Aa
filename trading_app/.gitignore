@@ -5,3 +5,6 @@ data/cache/
 logs/*.log
 risultati/
 data/stato_rischio.json
+data/memoria_app.json
+data/storico_valori.csv
+logs/*.csv

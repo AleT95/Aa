@@ -24,7 +24,7 @@ def carica_config(percorso: str | Path | None = None) -> dict:
 
     # Controllo di sicurezza: se manca una sezione, meglio accorgersene subito
     sezioni_obbligatorie = ["dati", "etf_aree", "etf_settori", "azioni", "strategia",
-                            "backtest", "rischio", "costi", "broker"]
+                            "backtest", "rischio", "costi", "broker", "esecuzione"]
     mancanti = [s for s in sezioni_obbligatorie if s not in config]
     if mancanti:
         raise ValueError(f"Nel file di configurazione mancano le sezioni: {mancanti}")

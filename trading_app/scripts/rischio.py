@@ -15,8 +15,13 @@ from src.rischio.emergenza import attiva_stop_emergenza, puo_operare, sblocca
 
 
 def collega_broker(config):
-    """Il collegamento a Interactive Brokers arriverà nella Fase 4: per ora non c'è."""
-    return None
+    """Prova a collegarsi al conto demo. Se non ci riesce, l'app viene comunque bloccata."""
+    from src.broker.ibkr import BrokerIBKR
+    try:
+        return BrokerIBKR(config)
+    except Exception as e:
+        print(f"\n⚠️  Non riesco a collegarmi al broker: {e}")
+        return None
 
 
 def main():
@@ -35,10 +40,18 @@ def main():
             print("Annullato: non ho fatto nulla.")
             return
         broker = collega_broker(config)
-        stato = attiva_stop_emergenza(config, broker)
+        try:
+            stato = attiva_stop_emergenza(config, broker)
+        finally:
+            if broker is not None:
+                broker.disconnetti()
         print(f"\nApp {stato.descrizione()}")
         if broker is None:
-            print("Nessun broker collegato (arriverà nella Fase 4): l'app è bloccata e non invierà ordini.")
+            print("L'app è bloccata e non invierà ordini, MA le posizioni non sono state chiuse:")
+            print("chiudile a mano da TWS (oppure apri TWS e rilancia questo comando).")
+        else:
+            print("Ordini cancellati e vendite di tutte le posizioni inviate al conto demo.")
+            print("Se la borsa è chiusa, verranno eseguite all'apertura: controlla in TWS.")
         print("Per ripartire: python -m scripts.rischio sblocca\n")
 
     elif args.comando == "sblocca":
