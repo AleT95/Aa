@@ -12,7 +12,7 @@ from .cache import FornitoreConCache
 from .yahoo import FornitoreYahoo
 
 
-def crea_fornitore(config: dict) -> FornitoreDati:
+def crea_fornitore(config: dict, con_cache: bool = True) -> FornitoreDati:
     """
     "Fabbrica" del fornitore dati: legge dal config quale usare.
     Per aggiungere un nuovo fornitore in futuro basta scrivere una nuova classe
@@ -23,6 +23,9 @@ def crea_fornitore(config: dict) -> FornitoreDati:
         fornitore = FornitoreYahoo()
     else:
         raise ValueError(f"Fornitore dati sconosciuto: {nome}")
+
+    if not con_cache:
+        return fornitore
 
     # Avvolgiamo il fornitore con la cache su disco
     return FornitoreConCache(

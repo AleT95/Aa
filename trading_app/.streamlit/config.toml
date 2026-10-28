@@ -1,0 +1,18 @@
+# Impostazioni della dashboard Streamlit
+
+[server]
+# SOLO il tuo computer può aprire la dashboard (nessun altro sulla rete di casa)
+address = "localhost"
+port = 8501
+
+[client]
+# Nasconde il menu per sviluppatori (es. il pulsante Deploy)
+toolbarMode = "viewer"
+
+[browser]
+# Non inviare statistiche d'uso a Streamlit
+gatherUsageStats = false
+
+[theme]
+# Colore principale rosso: è quello del pulsante STOP DI EMERGENZA
+primaryColor = "#d62728"

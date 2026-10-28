@@ -83,7 +83,8 @@ broker:
   modalita: paper              # SOLO "paper" (conto demo). Non cambiare finché non decidiamo insieme!
   host: 127.0.0.1              # 127.0.0.1 = il tuo stesso computer (TWS deve essere aperto lì)
   porta: 7497                  # 7497 = TWS demo, 4002 = IB Gateway demo (le porte del conto reale sono rifiutate)
-  client_id: 1
+  client_id: 1                 # usato dal controllo giornaliero
+  client_id_dashboard: 2       # usato dalla dashboard (due collegamenti non possono avere lo stesso numero)
   timeout_secondi: 15
 
 # --- Esecuzione giornaliera (Fase 4) ---------------------------

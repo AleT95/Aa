@@ -10,7 +10,7 @@ Gli ETF globali e settoriali fanno da "termometro" del mercato: se un'area o un 
 - [x] **Fase 2** – strategia e backtest
 - [x] **Fase 3** – gestione del rischio
 - [x] **Fase 4** – collegamento al conto demo Interactive Brokers
-- [ ] Fase 5 – dashboard Streamlit
+- [x] **Fase 5** – dashboard Streamlit
 
 ## Struttura delle cartelle
 ```
@@ -36,9 +36,11 @@ trading_app/
 │   ├── broker/
 │   │   ├── base.py         ← il "contratto" di un broker
 │   │   └── ibkr.py         ← Interactive Brokers (SOLO conto demo, con doppio controllo)
-│   └── esecuzione/
-│       ├── giornaliero.py  ← il controllo della sera: decide e invia gli ordini
-│       └── memoria.py      ← memoria tra un giorno e l'altro + REGISTRO operazioni
+│   ├── esecuzione/
+│   │   ├── giornaliero.py  ← il controllo della sera: decide e invia gli ordini
+│   │   └── memoria.py      ← memoria tra un giorno e l'altro + REGISTRO operazioni
+│   └── dashboard/
+│       └── dati.py         ← i conti e le tabelle mostrati dalla dashboard
 ├── scripts/
 │   ├── fase1_scarica_dati.py   ← prova della Fase 1
 │   ├── fase2_backtest.py       ← il backtest completo (con e senza freni)
@@ -46,6 +48,8 @@ trading_app/
 │   ├── fase4_test_connessione.py  ← prova il collegamento a IBKR (solo lettura)
 │   └── fase4_giornaliero.py       ← il controllo giornaliero sul conto demo
 ├── avvia_giornaliero.bat   ← avvio automatico su Windows
+├── dashboard.py            ← la dashboard (streamlit run dashboard.py)
+├── .streamlit/config.toml  ← impostazioni della dashboard (visibile solo dal tuo PC)
 ├── risultati/              ← grafico e registro operazioni del backtest (creata in automatico)
 ├── tests/                  ← test automatici
 ├── data/cache/             ← qui finiscono i prezzi scaricati (creata in automatico)
@@ -173,3 +177,29 @@ Gli ordini sono "a mercato" e vengono eseguiti **all'apertura del giorno dopo**.
 > 💱 Se il conto demo è in **euro**, l'app converte i valori in dollari con il cambio di IBKR.
 > Comprando azioni americane con euro, IBKR "presta" i dollari: sul demo va bene; sul conto vero
 > bisognerà convertire prima la valuta.
+
+## Fase 5: la dashboard
+```bash
+streamlit run dashboard.py
+```
+Si apre da sola nel browser (http://localhost:8501). Per chiuderla: `Ctrl + C` nel terminale.
+È visibile **solo dal tuo computer**: nessun altro sulla rete di casa può aprirla.
+
+Cosa trovi:
+- **barra a sinistra**: stato dell'app (attiva/bloccata), 🛑 **STOP DI EMERGENZA** (si attiva solo dopo
+  aver spuntato la conferma) e, se l'app è bloccata, lo sblocco (bisogna scrivere SBLOCCA);
+- **in alto**: valore del conto, variazione da ieri sera, guadagno dall'inizio, cassa, numero di posizioni;
+- **📊 Posizioni**: titoli aperti con settore, peso sul conto, guadagno/perdita e se lo stop loss è attivo
+  (serve TWS aperto);
+- **📈 Andamento vs URTH**: il conto confrontato con il compra e tieni dell'MSCI World, partendo dallo stesso capitale;
+- **📒 Registro**: ordini con motivo, prezzi di esecuzione ed eventi di rischio;
+- **🧪 Backtest**: il grafico dell'ultimo backtest.
+
+Se TWS è chiuso la dashboard funziona lo stesso, con i dati salvati nei file.
+
+## La routine quotidiana, in breve
+1. TWS aperto sul conto **demo**.
+2. Ogni sera, dopo le 22:30, parte da solo il controllo (`avvia_giornaliero.bat`), oppure lo lanci tu
+   con `python -m scripts.fase4_giornaliero --esegui`.
+3. Quando vuoi, dai un'occhiata alla dashboard: `streamlit run dashboard.py`.
+4. Qualcosa non ti convince? 🛑 STOP DI EMERGENZA, e poi ragioni a mente fredda.

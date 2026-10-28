@@ -19,6 +19,15 @@ class Broker(ABC):
     def posizioni(self) -> dict[str, dict]:
         """{ticker: {'quantita': int, 'prezzo_medio': float}} delle azioni in portafoglio."""
 
+    def portafoglio(self) -> list[dict]:
+        """
+        Posizioni con prezzo attuale e guadagno: [{'titolo', 'quantita', 'prezzo_medio',
+        'prezzo_attuale', 'valore', 'guadagno'}]. Un broker che non li conosce restituisce None.
+        """
+        return [{"titolo": t, "quantita": p["quantita"], "prezzo_medio": p["prezzo_medio"],
+                 "prezzo_attuale": None, "valore": None, "guadagno": None}
+                for t, p in self.posizioni().items()]
+
     @abstractmethod
     def stop_attivi(self) -> dict[str, int]:
         """{ticker: quantità coperta} degli ordini di stop loss in attesa presso il broker."""

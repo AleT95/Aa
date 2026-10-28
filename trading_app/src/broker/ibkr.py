@@ -30,7 +30,7 @@ class ErroreSicurezza(RuntimeError):
 
 class BrokerIBKR(Broker):
 
-    def __init__(self, config: dict, ib: IB | None = None):
+    def __init__(self, config: dict, ib: IB | None = None, client_id: int | None = None):
         b = config["broker"]
         if b["modalita"] != "paper":
             raise ErroreSicurezza("È ammessa solo la modalità 'paper' (conto demo).")
@@ -39,7 +39,7 @@ class BrokerIBKR(Broker):
 
         self.ib = ib or IB()
         try:
-            self.ib.connect(b["host"], b["porta"], clientId=b["client_id"], timeout=b["timeout_secondi"])
+            self.ib.connect(b["host"], b["porta"], clientId=client_id or b["client_id"], timeout=b["timeout_secondi"])
         except (ConnectionRefusedError, TimeoutError, OSError) as e:
             raise ConnectionError(
                 "Non riesco a collegarmi a TWS. Controlla che: 1) TWS sia aperto e collegato al conto DEMO; "
@@ -78,6 +78,15 @@ class BrokerIBKR(Broker):
             for p in self.ib.positions(self.account)
             if p.contract.secType == "STK" and p.position != 0
         }
+
+    def portafoglio(self) -> list[dict]:
+        """Posizioni con prezzo attuale e guadagno/perdita, calcolati da IBKR."""
+        return [
+            {"titolo": p.contract.symbol, "quantita": int(p.position), "prezzo_medio": float(p.averageCost),
+             "prezzo_attuale": float(p.marketPrice), "valore": float(p.marketValue), "guadagno": float(p.unrealizedPNL)}
+            for p in self.ib.portfolio(self.account)
+            if p.contract.secType == "STK" and p.position != 0
+        ]
 
     def _ordini_stop_aperti(self, ticker: str | None = None):
         for t in self.ib.openTrades():
