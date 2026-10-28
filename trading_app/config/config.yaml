@@ -40,11 +40,20 @@ azioni:
   europa:     [ASML, SAP, NVO, SHEL, AZN, TTE]   # ADR/titoli quotati in USA
 
 # --- Parametri della strategia (usati dalla Fase 2) ------------
+# Un ETF è "in trend positivo" quando TUTTE queste condizioni sono vere:
+#   prezzo > media mobile breve, prezzo > media mobile lunga, momentum > 0
 strategia:
   media_mobile_breve: 50       # giorni
   media_mobile_lunga: 200      # giorni
-  momentum_mesi: [3, 6]        # periodi del momentum, in mesi
-  azioni_per_settore: 3        # quante azioni "più forti" comprare per ogni settore positivo
+  momentum_mesi: [3, 6]        # periodi del momentum, in mesi (si fa la media dei due)
+  azioni_per_settore: 4        # quante azioni "più forti" comprare per ogni settore positivo
+  filtro_globale: mondo        # se l'ETF "mondo" è negativo si vende tutto (scrivi "nessuno" per disattivarlo)
+  ribilanciamento: mensile     # ogni quanto rifare la classifica delle azioni: mensile | settimanale
+
+# --- Backtest (Fase 2) -----------------------------------------
+backtest:
+  tasso_senza_rischio_pct: 2   # rendimento "sicuro" annuo usato nello Sharpe ratio
+  cartella_risultati: risultati
 
 # --- Gestione del rischio (usata dalla Fase 3) -----------------
 rischio:
@@ -58,6 +67,7 @@ rischio:
 costi:
   commissione_per_azione: 0.005   # $ per azione (tipo IBKR "Fixed")
   commissione_minima: 1.0         # $ minimi per ordine
+  commissione_max_pct: 1.0        # ...ma mai più dell'1% del valore dell'ordine
   slippage_pct: 0.05              # 0,05% di prezzo "peggiore" a ogni esecuzione
 
 # --- Broker (Fase 4) -------------------------------------------

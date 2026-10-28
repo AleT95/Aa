@@ -23,16 +23,28 @@ def carica_config(percorso: str | Path | None = None) -> dict:
         config = yaml.safe_load(f)
 
     # Controllo di sicurezza: se manca una sezione, meglio accorgersene subito
-    sezioni_obbligatorie = ["dati", "etf_aree", "etf_settori", "azioni", "strategia", "rischio", "costi", "broker"]
+    sezioni_obbligatorie = ["dati", "etf_aree", "etf_settori", "azioni", "strategia",
+                            "backtest", "rischio", "costi", "broker"]
     mancanti = [s for s in sezioni_obbligatorie if s not in config]
     if mancanti:
         raise ValueError(f"Nel file di configurazione mancano le sezioni: {mancanti}")
+
+    # Ogni gruppo di azioni deve avere un ETF "termometro" con lo stesso nome
+    etf_tutti = {**config["etf_aree"], **config["etf_settori"]}
+    senza_etf = [g for g in config["azioni"] if g not in etf_tutti]
+    if senza_etf:
+        raise ValueError(f"Questi gruppi di azioni non hanno un ETF con lo stesso nome: {senza_etf}")
 
     # Paracadute: il broker deve restare in modalità demo
     if config["broker"].get("modalita") != "paper":
         raise ValueError("Per sicurezza è ammessa solo la modalità 'paper' (conto demo).")
 
     return config
+
+
+def etf_del_gruppo(config: dict, gruppo: str) -> str:
+    """Restituisce il ticker dell'ETF "termometro" di un gruppo (es. 'tecnologia' -> 'XLK')."""
+    return {**config["etf_aree"], **config["etf_settori"]}[gruppo]
 
 
 def tutti_i_ticker(config: dict) -> list[str]:

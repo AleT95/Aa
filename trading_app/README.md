@@ -7,7 +7,7 @@ Gli ETF globali e settoriali fanno da "termometro" del mercato: se un'area o un 
 
 ## Stato delle fasi
 - [x] **Fase 1** – struttura del progetto e download dati
-- [ ] Fase 2 – strategia e backtest
+- [x] **Fase 2** – strategia e backtest
 - [ ] Fase 3 – gestione del rischio
 - [ ] Fase 4 – collegamento al conto demo Interactive Brokers
 - [ ] Fase 5 – dashboard Streamlit
@@ -18,18 +18,29 @@ trading_app/
 ├── config/config.yaml      ← TUTTI i parametri (ETF, azioni, medie mobili, rischio, costi)
 ├── src/
 │   ├── config.py           ← legge config.yaml
-│   └── dati/
-│       ├── base.py         ← il "contratto" che ogni fonte dati deve rispettare
-│       ├── yahoo.py        ← fonte dati Yahoo Finance (yfinance)
-│       └── cache.py        ← salva i dati su disco per non riscaricarli
-├── scripts/fase1_scarica_dati.py   ← script di prova della Fase 1
+│   ├── dati/
+│   │   ├── base.py         ← il "contratto" che ogni fonte dati deve rispettare
+│   │   ├── yahoo.py        ← fonte dati Yahoo Finance (yfinance)
+│   │   └── cache.py        ← salva i dati su disco per non riscaricarli
+│   ├── strategia/
+│   │   ├── indicatori.py   ← medie mobili, momentum, "trend positivo"
+│   │   └── termometro.py   ← le regole: quali azioni tenere e perché
+│   └── backtest/
+│       ├── motore.py       ← simula il passato giorno per giorno
+│       ├── costi.py        ← commissioni e slippage
+│       └── metriche.py     ← rendimento, drawdown, Sharpe...
+├── scripts/
+│   ├── fase1_scarica_dati.py   ← prova della Fase 1
+│   └── fase2_backtest.py       ← il backtest completo
+├── risultati/              ← grafico e registro operazioni del backtest (creata in automatico)
 ├── tests/                  ← test automatici
 ├── data/cache/             ← qui finiscono i prezzi scaricati (creata in automatico)
 └── logs/                   ← registri (fasi successive)
 ```
 
 ## Installazione (una volta sola)
-Serve Python 3.10 o più recente. Apri il terminale nella cartella `trading_app` e scrivi:
+Serve Python 3.10 o più recente. **Non mettere la cartella dentro OneDrive** (es. Desktop sincronizzato): usa per esempio `C:\progetti\trading_app`.
+Apri il terminale nella cartella `trading_app` e scrivi:
 ```bash
 python -m venv .venv                 # crea un "ambiente virtuale" (una scatola isolata per le librerie)
 # Windows:   .venv\Scripts\activate
@@ -44,3 +55,31 @@ python -m scripts.fase1_scarica_dati     # scarica ~12 anni di prezzi e stampa u
 python -m scripts.fase1_scarica_dati --forza   # come sopra, ma ignora la cache
 ```
 Il primo download dura qualche decina di secondi; i successivi (entro 12 ore) sono istantanei grazie alla cache.
+
+## Test della Fase 2 (backtest)
+```bash
+python -m scripts.fase2_backtest
+```
+Stampa la tabella strategia vs compra e tieni MSCI World (URTH) e salva in `risultati/`:
+- `backtest_grafico.png`: andamento del capitale e drawdown;
+- `backtest_operazioni.csv`: ogni compravendita con data, titolo, prezzo e **motivo** (si apre con Excel);
+- `backtest_valori.csv`: valore del portafoglio giorno per giorno.
+
+### Le regole della strategia
+1. **Ogni giorno** (dopo la chiusura) per ogni settore/area si guarda il suo ETF: è "in trend positivo"
+   se il prezzo è sopra la media a 50 e a 200 giorni **e** il momentum (media dei rendimenti a 3 e 6 mesi) è positivo.
+2. **Filtro globale**: se l'ETF mondo (URTH) non è in trend positivo, si vende tutto.
+3. Se il termometro di un settore diventa negativo, si vendono subito le sue azioni.
+4. **Una volta al mese** si rifà la classifica: per ogni settore positivo si tengono le 4 azioni
+   con il momentum più alto (che siano anche sopra la propria media a 200 giorni).
+5. Ogni azione nuova riceve il **5% del capitale**, e ogni mese le posizioni cresciute oltre il 5% vengono ridotte.
+6. La decisione usa i prezzi di ieri e l'esecuzione avviene alla chiusura di oggi, con commissioni e slippage.
+
+Stop loss e limiti di perdita giornaliera/mensile arrivano nella Fase 3.
+
+### ⚠️ Come leggere i risultati senza farsi illudere
+- **Errore del sopravvissuto**: le azioni della lista (NVDA, LLY, META…) le abbiamo scelte *oggi*, sapendo
+  già che sono andate bene. Nel 2015 nessuno sapeva quali sarebbero diventate le vincenti, quindi il
+  backtest risulta **più bello della realtà**. Il confronto più onesto è con il drawdown e lo Sharpe, più che con il rendimento.
+- **Troppo ritocco = autoinganno**: se cambi i parametri finché il risultato è stupendo, hai solo
+  "imparato a memoria" il passato. Cambiali poco e con un motivo.
