@@ -50,24 +50,25 @@ class StrategiaTermometro:
         """True se il termometro del gruppo segna "caldo" E il mercato globale è ok."""
         return self.mercato_ok(giorno) and bool(self.trend.at[giorno, self.etf_gruppo[gruppo]])
 
-    def migliori_azioni(self, gruppo: str, giorno) -> list[str]:
+    def migliori_azioni(self, gruppo: str, giorno, escludi: set[str] = frozenset()) -> list[str]:
         """
         Le azioni più forti del gruppo in quel giorno.
         Per essere scelta, un'azione deve avere essa stessa momentum positivo e
         prezzo sopra la media mobile lunga (non compriamo un titolo in caduta
         solo perché il suo settore va bene).
+        `escludi`: titoli da saltare (es. quelli appena usciti con uno stop loss).
         """
         candidati = {}
         for azione in self.gruppi[gruppo]:
-            if azione not in self.momentum.columns:
-                continue                                      # nessun dato per questo titolo
+            if azione not in self.momentum.columns or azione in escludi:
+                continue                                      # nessun dato, oppure escluso
             mom = self.momentum.at[giorno, azione]
             if pd.notna(mom) and mom > 0 and self.sopra_mm_lunga.at[giorno, azione]:
                 candidati[azione] = mom
         classifica = sorted(candidati, key=candidati.get, reverse=True)
         return classifica[: self.azioni_per_gruppo]
 
-    def portafoglio_obiettivo(self, giorno) -> dict[str, tuple[str, str]]:
+    def portafoglio_obiettivo(self, giorno, escludi: set[str] = frozenset()) -> dict[str, tuple[str, str]]:
         """
         Cosa vorremmo avere in portafoglio in quel giorno.
         Restituisce {azione: (gruppo, motivo)}.
@@ -77,7 +78,7 @@ class StrategiaTermometro:
             if not self.gruppo_positivo(gruppo, giorno):
                 continue
             etf = self.etf_gruppo[gruppo]
-            for pos, azione in enumerate(self.migliori_azioni(gruppo, giorno), start=1):
+            for pos, azione in enumerate(self.migliori_azioni(gruppo, giorno, escludi), start=1):
                 mom = self.momentum.at[giorno, azione]
                 obiettivo[azione] = (gruppo, f"{etf} in trend positivo; {azione} n.{pos} per momentum ({mom:+.0%})")
         return obiettivo

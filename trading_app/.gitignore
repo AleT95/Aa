@@ -4,3 +4,4 @@ __pycache__/
 data/cache/
 logs/*.log
 risultati/
+data/stato_rischio.json

@@ -1,13 +1,19 @@
 """
-FASE 2 - Backtest della strategia "termometro ETF".
+Backtest della strategia "termometro ETF" (Fase 2, con i freni della Fase 3).
 
 Come si lancia (dalla cartella trading_app):
     python -m scripts.fase2_backtest
 
+Confronta tre portafogli:
+    - la strategia CON la gestione del rischio (stop loss e limiti di perdita)
+    - la stessa strategia SENZA freni (per vedere cosa cambiano)
+    - il semplice compra e tieni dell'ETF MSCI World
+
 Risultati salvati nella cartella "risultati":
-    - backtest_grafico.png        andamento strategia vs compra e tieni MSCI World
+    - backtest_grafico.png        andamento dei portafogli e cadute (drawdown)
     - backtest_operazioni.csv     tutte le compravendite con data, prezzo e motivo
-    - backtest_valori.csv         valore del portafoglio giorno per giorno
+    - backtest_eventi_rischio.csv stop loss scattati, blocchi e ripartenze
+    - backtest_valori.csv         valore dei portafogli giorno per giorno
 """
 
 import logging
@@ -34,65 +40,82 @@ def main():
     inizio = (pd.Timestamp.today() - pd.DateOffset(years=anni)).strftime("%Y-%m-%d")
     prezzi = crea_fornitore(config).scarica(tutti_i_ticker(config), inizio=inizio)
 
-    # --- 2. Simulazione ------------------------------------------------
-    bt = Backtest(config, prezzi)
-    strategia = bt.esegui()
+    # --- 2. Simulazioni ------------------------------------------------
+    bt = Backtest(config, prezzi, rischio_attivo=True)
+    con_freni = bt.esegui().rename("Con freni")
+    senza_freni = Backtest(config, prezzi, rischio_attivo=False).esegui().rename("Senza freni")
 
     benchmark = config["etf_benchmark"]
     riferimento = compra_e_tieni(
-        prezzi.loc[strategia.index, benchmark], bt.capitale_iniziale, ModelloCosti(config),
+        prezzi.loc[con_freni.index, benchmark], bt.capitale_iniziale, ModelloCosti(config),
         nome=f"Compra e tieni {benchmark}",
     )
+    portafogli = [con_freni, senza_freni, riferimento]
 
     # --- 3. Pagelle ----------------------------------------------------
     rf = config["backtest"]["tasso_senza_rischio_pct"]
-    m_strat = calcola_metriche(strategia, rf)
-    m_rif = calcola_metriche(riferimento, rf)
-
+    metriche = [calcola_metriche(p, rf) for p in portafogli]
     operazioni = bt.registro_operazioni()
-    vendite = operazioni[operazioni["operazione"] == "VENDITA"] if len(operazioni) else operazioni
-    vincenti = (vendite["utile"] > 0).mean() if len(vendite) else float("nan")
-    commissioni = operazioni["commissione"].sum() if len(operazioni) else 0.0
-
-    stampa_report(strategia, m_strat, m_rif, riferimento.name, len(operazioni), vincenti, commissioni)
+    eventi = bt.registro_eventi()
+    stampa_report(con_freni, portafogli, metriche, operazioni, eventi)
 
     # --- 4. Salvataggio ------------------------------------------------
     cartella = CARTELLA_PROGETTO / config["backtest"]["cartella_risultati"]
     cartella.mkdir(exist_ok=True)
     operazioni.to_csv(cartella / "backtest_operazioni.csv", index=False)
-    pd.concat([strategia, riferimento], axis=1).to_csv(cartella / "backtest_valori.csv")
-    disegna_grafico(strategia, riferimento, cartella / "backtest_grafico.png")
+    eventi.to_csv(cartella / "backtest_eventi_rischio.csv", index=False)
+    pd.concat(portafogli, axis=1).to_csv(cartella / "backtest_valori.csv")
+    disegna_grafico(portafogli, cartella / "backtest_grafico.png")
     print(f" File salvati nella cartella: {cartella}\n")
 
 
-def stampa_report(valori, m_strat, m_rif, nome_rif, n_operazioni, vincenti, commissioni):
-    formato = {
-        "Capitale finale": lambda v: f"{v:,.0f} $".replace(",", "."),
-        "Sharpe ratio": lambda v: f"{v:.2f}",
-    }
-    print("\n" + "=" * 66)
+def stampa_report(valori, portafogli, metriche, operazioni, eventi):
+    def formatta(chiave, v):
+        if chiave == "Capitale finale":
+            return f"{v:,.0f} $".replace(",", ".")
+        if chiave == "Sharpe ratio":
+            return f"{v:.2f}"
+        if chiave == "Volatilità annua":
+            return f"{v:.1%}"
+        return f"{v:+.1%}"
+
+    larghezza = 26 + 20 * len(portafogli)
+    print("\n" + "=" * larghezza)
     print(f" BACKTEST  {valori.index[0].date()}  ->  {valori.index[-1].date()}")
-    print("=" * 66)
-    print(f" {'':<26}{'Strategia':>18}{nome_rif:>22}")
-    for chiave in m_strat:
-        f = formato.get(chiave, lambda v: f"{v:+.1%}" if chiave != "Volatilità annua" else f"{v:.1%}")
-        print(f" {chiave:<26}{f(m_strat[chiave]):>18}{f(m_rif[chiave]):>22}")
-    print("-" * 66)
-    print(f" {'Numero di operazioni':<26}{n_operazioni:>18}{1:>22}")
-    print(f" {'Vendite in guadagno':<26}{vincenti:>18.0%}{'-':>22}")
-    print(f" {'Commissioni pagate':<26}{commissioni:>16,.0f} ${'-':>22}".replace(",", "."))
-    print("=" * 66)
+    print("=" * larghezza)
+    print(" " + " " * 25 + "".join(f"{p.name:>20}" for p in portafogli))
+    for chiave in metriche[0]:
+        print(f" {chiave:<25}" + "".join(f"{formatta(chiave, m[chiave]):>20}" for m in metriche))
+    print("-" * larghezza)
+
+    vendite = operazioni[operazioni["operazione"] == "VENDITA"] if len(operazioni) else operazioni
+    vincenti = f"{(vendite['utile'] > 0).mean():.0%}" if len(vendite) else "-"
+    commissioni = operazioni["commissione"].sum() if len(operazioni) else 0.0
+    conta = eventi["evento"].value_counts() if len(eventi) else {}
+    righe = {
+        "Numero di operazioni": len(operazioni),
+        "Vendite in guadagno": vincenti,
+        "Commissioni pagate": f"{commissioni:,.0f} $".replace(",", "."),
+        "Stop loss scattati": conta.get("STOP LOSS", 0),
+        "Blocchi giornalieri": conta.get("BLOCCO GIORNALIERO", 0),
+        "Blocchi mensili": conta.get("BLOCCO MENSILE", 0),
+    }
+    print(" (dettagli della strategia con freni)")
+    for chiave, valore in righe.items():
+        print(f" {chiave:<25}{valore:>20}")
+    print("=" * larghezza)
     print(" ATTENZIONE: i risultati passati NON garantiscono quelli futuri.")
     print(" Le azioni in lista sono state scelte OGGI: il backtest è quindi troppo")
     print(" ottimista (\"errore del sopravvissuto\"), vedi README.\n")
 
 
-def disegna_grafico(strategia, riferimento, file):
+def disegna_grafico(portafogli, file):
+    colori = ["#1f6feb", "#e8a33d", "#8c8c8c"]
     fig, (alto, basso) = plt.subplots(2, 1, figsize=(11, 7), sharex=True,
                                       gridspec_kw={"height_ratios": [3, 1]})
-    for serie, colore in [(strategia, "#1f6feb"), (riferimento, "#8c8c8c")]:
-        alto.plot(serie.index, serie.values, label=serie.name, color=colore, linewidth=1.6)
-        basso.plot(serie.index, serie_drawdown(serie).values * 100, color=colore, linewidth=1.2)
+    for serie, colore in zip(portafogli, colori):
+        alto.plot(serie.index, serie.values, label=serie.name, color=colore, linewidth=1.5)
+        basso.plot(serie.index, serie_drawdown(serie).values * 100, color=colore, linewidth=1.1)
     alto.set_title("Strategia termometro ETF vs compra e tieni")
     alto.set_ylabel("Valore del portafoglio ($)")
     alto.legend(loc="upper left")

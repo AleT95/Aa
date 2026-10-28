@@ -55,13 +55,21 @@ backtest:
   tasso_senza_rischio_pct: 2   # rendimento "sicuro" annuo usato nello Sharpe ratio
   cartella_risultati: risultati
 
-# --- Gestione del rischio (usata dalla Fase 3) -----------------
+# --- Gestione del rischio (Fase 3) -----------------------------
 rischio:
   capitale_iniziale: 100000    # in dollari
   max_per_azione_pct: 5        # massimo 5% del capitale per singola azione
-  stop_loss_pct: 8             # stop loss: vendi se la posizione perde l'8%
-  perdita_max_giornaliera_pct: 3
-  perdita_max_mensile_pct: 10
+
+  # Stop loss su OGNI posizione
+  stop_loss_pct: 8             # vendi se il titolo scende dell'8%...
+  stop_loss_tipo: trailing     # ...dal prezzo di acquisto ("fisso") o dal massimo raggiunto dopo l'acquisto ("trailing")
+  giorni_attesa_dopo_stop: 20  # dopo uno stop, quel titolo non si ricompra per 20 giorni di borsa
+
+  # Limiti di perdita: se superati l'app si BLOCCA da sola
+  perdita_max_giornaliera_pct: 3    # perdita del portafoglio in un giorno
+  perdita_max_mensile_pct: 10       # perdita dall'inizio del mese
+  chiudi_posizioni_al_blocco: true  # true = al blocco vende tutto; false = smette solo di comprare
+  file_stato: data/stato_rischio.json   # qui l'app ricorda se è bloccata (anche se spegni il PC)
 
 # --- Costi di trading (usati dal backtest) ---------------------
 costi:
